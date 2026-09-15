@@ -184,7 +184,34 @@
         .card-front .word-display { color: var(--french-text); font-weight: 800; }
         .card-back .word-display { color: #fff; font-weight: 500; font-style: italic; }
         .hint { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; position: absolute; bottom: 30px; opacity: 0.7; }
-        
+        .audio-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    font-size: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.audio-btn:hover {
+    background: var(--primary-color);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-glow);
+}
+
+.audio-btn:active {
+    transform: scale(0.92);
+}
         .controls { display: flex; gap: 15px; width: 100%; max-width: 500px; justify-content: center;}
         .controls button:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -677,7 +704,11 @@ body {
                 <div class="card-stack">
                     <div class="flashcard-container" onclick="flipCard()">
                         <div class="flashcard" id="flashcard">
-                            <div class="card-face card-front">
+                           <div class="card-face card-front">
+    <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen to pronunciation">🔊</button>
+    <div class="word-display" id="word-fr">Loading...</div>
+    <span class="hint">Click deck to flip</span>
+</div>
                                 <div class="word-display" id="word-fr">Loading...</div>
                                 <span class="hint">Click deck to flip</span>
                             </div>
@@ -1751,6 +1782,46 @@ body {
             loadCard();
             if (document.getElementById('mode-list').style.display === 'block') renderList();
         }
+        function speakCurrentWord(event) {
+    if (event) {
+        event.stopPropagation(); // Prevents flipping the card when pressing audio
+    }
+
+    if (!('speechSynthesis' in window)) {
+        alert('Text-to-speech is not supported on this device/browser.');
+        return;
+    }
+
+    if (currentCards.length === 0) return;
+
+    // Clean out metadata tags like (m.), (f.), or slashes so French sounds natural
+    let cleanText = currentCards[currentIndex].fr
+        .replace(/\(.*?\)/g, '')
+        .replace(/\//g, ' ')
+        .trim();
+
+    window.speechSynthesis.cancel(); // Stop any overlapping sound
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.85; // Slightly slower tempo for easy listening
+
+    // Select installed French voice on the phone/browser
+    const voices = window.speechSynthesis.getVoices();
+    const frVoice = voices.find(v => v.lang && (v.lang === 'fr-FR' || v.lang.startsWith('fr')));
+    if (frVoice) {
+        utterance.voice = frVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
+}
+
+// Pre-warm synthesizer voices
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+    };
+}
 
         // FULL UNCUT EXERCISE DATA
         const exerciseData = [
