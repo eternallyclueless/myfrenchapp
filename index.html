@@ -163,7 +163,7 @@
         .progress-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); width: 0%; transition: width 0.4s ease; }
 
-        .card-stack { position: relative; width: 100%; max-width: 500px; height: 320px; margin-bottom: 50px; perspective: 1500px; }
+       .card-stack { position: relative; width: 100%; max-width: 500px; height: 320px; margin-bottom: 50px; perspective: 1500px; -webkit-perspective: 1500px; }
         .card-stack::before, .card-stack::after { content: ''; position: absolute; left: 0; width: 100%; height: 100%; background: #1e293b; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: var(--transition); }
         .card-stack::before { top: 15px; transform: scale(0.95); z-index: 1; opacity: 0.8; }
         .card-stack::after { top: 30px; transform: scale(0.90); z-index: 0; opacity: 0.5; }
@@ -171,14 +171,14 @@
         .card-stack:hover::after { top: 40px; transform: scale(0.90) rotate(3deg); }
 
         .flashcard-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; cursor: pointer; }
-        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; -webkit-transform-style: preserve-3d; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
         .card-stack:hover .flashcard { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); transform: translateY(-10px); }
-        .card-stack:hover .flashcard.is-flipped { transform: translateY(-10px) rotateX(180deg); }
-        .flashcard.is-flipped { transform: rotateX(180deg); }
+        .card-stack:hover .flashcard.is-flipped { transform: translateY(-10px) rotateY(180deg); }
+        .flashcard.is-flipped { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); }
         
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--radius-lg); padding: 40px; box-sizing: border-box; border: 1px solid var(--glass-border); }
-        .card-front { background: radial-gradient(circle at top right, #1e293b, #0f172a); }
-        .card-back { transform: rotateX(180deg); background: radial-gradient(circle at bottom left, #312e81, #1e1b4b); }
+        .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden !important; -webkit-backface-visibility: hidden !important; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--radius-lg); padding: 40px; box-sizing: border-box; border: 1px solid var(--glass-border); }
+        .card-front { background: radial-gradient(circle at top right, #1e293b, #0f172a); transform: rotateY(0deg); -webkit-transform: rotateY(0deg); z-index: 2; }
+        .card-back { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); background: radial-gradient(circle at bottom left, #312e81, #1e1b4b); z-index: 1; }
         
         .word-display { font-size: 42px; text-align: center; margin-bottom: 20px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .card-front .word-display { color: var(--french-text); font-weight: 800; }
@@ -735,14 +735,11 @@ body {
                 <div class="card-stack">
                     <div class="flashcard-container" onclick="flipCard()">
                         <div class="flashcard" id="flashcard">
-                          <div class="card-face card-front">
-    <div class="card-audio-controls">
-        <button class="accent-toggle-btn" id="accentToggleBtn" onclick="toggleAccent(event)" title="Switch Accent">🇫🇷 FR</button>
-        <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen">🔊</button>
-    </div>
-    <div class="word-display" id="word-fr">Loading...</div>
-    <span class="hint">Click deck to flip</span>
-</div>
+                            <div class="card-face card-front">
+                                <div class="card-audio-controls">
+                                    <button class="accent-toggle-btn" id="accentToggleBtn" onclick="toggleAccent(event)" title="Switch Accent">🇫🇷 FR</button>
+                                    <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen">🔊</button>
+                                </div>
                                 <div class="word-display" id="word-fr">Loading...</div>
                                 <span class="hint">Click deck to flip</span>
                             </div>
