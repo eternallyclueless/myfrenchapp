@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.learningfrenchsucks.twa",
+        "sha256_cert_fingerprints": ["6D:60:70:78:E0:AA:FD:56:58:60:27:51:98:79:C1:0D:D8:A8:43:3F:90:8F:27:9C:DC:F4:D2:0B:4B:95:B5:33"]
+      }
+    }]
