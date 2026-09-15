@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium French Study App</title>
+    <title>freefrenchlearningresource</title>
     <style>
         /* --- Core Variables & Reset --- */
         :root {
@@ -84,6 +84,16 @@
             background: linear-gradient(to right, #3b82f6, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+        .navbar h1 .logo-tld {
+            font-size: 0.5em;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: normal;
+            text-transform: lowercase;
+            margin-left: 2px;
+            vertical-align: baseline;
+            -webkit-text-fill-color: initial;
         }
 
         /* --- View Containers --- */
@@ -553,7 +563,7 @@
    <!-- Floating Navbar with Slide-Out Menu Tab -->
     <div class="navbar-container">
         <div class="navbar">
-            <h1>Easy<span>French</span></h1>
+            <h1>LearningFrench<span>Sucks</span><span class="logo-tld">.com</span></h1>
             
             <button id="menu-btn" class="menu-tab-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
                 <span class="menu-tab-icon">☰</span>
