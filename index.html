@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium French Study App</title>
+    <style>
+        /* --- Core Variables & Reset --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --surface-color: #1e293b;
+            --surface-hover: #334155;
+            --primary-color: #3b82f6; 
+            --primary-hover: #2563eb;
+            --accent-color: #8b5cf6;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --french-text: #60a5fa; 
+            --english-text: #cbd5e1; 
+            --radius-md: 12px;
+            --radius-lg: 24px;
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
+            background: var(--bg-gradient);
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* Subtle Background Dot Grid */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .fr { color: var(--french-text); font-weight: 700; }
+        .en { color: var(--english-text); font-style: italic; }
+        .text-green { color: var(--success-color); }
+        .text-red { color: var(--error-color); }
+
+        /* --- Floating Glass Navbar --- */
+        .navbar-container {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+        .navbar { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 10px 20px; 
+            display: flex; 
+            gap: 15px; 
+            align-items: center; 
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            box-shadow: var(--shadow-soft);
+            width: 100%;
+            max-width: 1000px;
+        }
+        .navbar h1 { 
+            margin: 0; padding: 0 20px; font-size: 22px; font-weight: 800; color: #fff; margin-right: auto; letter-spacing: 0.5px;
+        }
+        .navbar h1 span { 
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-btn { 
+            background: transparent; color: var(--text-muted); border: none; padding: 12px 24px; font-size: 15px; 
+            font-weight: 600; cursor: pointer; border-radius: 100px; transition: var(--transition); display: flex; align-items: center; gap: 8px;
+        }
+        .nav-btn:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
+        .nav-btn.active { color: #fff; background-color: var(--primary-color); box-shadow: var(--shadow-glow); }
+        .nav-icon { font-size: 18px; }
+
+        /* --- View Containers --- */
+        .app-main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 0 20px 20px 20px;
+            overflow: hidden;
+        }
+        .view-section { 
+            display: none; width: 100%; max-width: 1000px; overflow-y: auto; padding-right: 10px;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .view-section.active-view { display: flex; flex-direction: column; align-items: center; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px;}
+        ::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        /* --- Rich Banners --- */
+        .page-banner {
+            width: 100%; background: linear-gradient(135deg, var(--surface-color) 0%, rgba(30, 41, 59, 0.4) 100%);
+            border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 30px; margin-bottom: 30px;
+            box-shadow: var(--shadow-soft); text-align: center; position: relative; overflow: hidden;
+        }
+        .page-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        }
+        .page-banner h2 { margin: 0 0 10px 0; font-size: 28px; color: #fff; }
+        .page-banner p { margin: 0; color: var(--text-muted); font-size: 16px; }
+
+        /* --- General Inputs & Buttons --- */
+        select { 
+            width: 100%; max-width: 500px; padding: 15px 20px; font-size: 16px; font-weight: 500; border-radius: var(--radius-md); 
+            background: rgba(15, 23, 42, 0.6); color: #fff; border: 1px solid var(--glass-border);
+            cursor: pointer; outline: none; appearance: none; margin-bottom: 25px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+        select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+        
+        .primary-btn { padding: 15px 35px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: white; border-radius: var(--radius-md); transition: var(--transition); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .primary-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6); }
+        .secondary-btn { padding: 15px 35px; font-size: 16px; font-weight: 600; cursor: pointer; border: 1px solid var(--glass-border); background-color: rgba(255,255,255,0.05); color: var(--text-main); border-radius: var(--radius-md); transition: var(--transition); }
+        .secondary-btn:hover:not(:disabled) { background-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+        /* --- View 1: Vocabulary --- */
+        .vocab-toggles { display: flex; background: rgba(0,0,0,0.2); border-radius: 100px; padding: 6px; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); margin-bottom: 40px; }
+        .vocab-toggles button { flex: 1; padding: 12px 20px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 100px; font-weight: 600; transition: var(--transition); }
+        .vocab-toggles button.active { background: var(--surface-hover); color: #fff; box-shadow: var(--shadow-soft); }
+
+        /* Flashcards */
+        #mode-flashcards { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        
+        .progress-container { width: 100%; max-width: 450px; margin-bottom: 30px; }
+        .card-counter { text-align: center; margin-bottom: 10px; font-size: 15px; font-weight: 600; color: var(--text-muted); }
+        .progress-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); width: 0%; transition: width 0.4s ease; }
+
+        .card-stack { position: relative; width: 100%; max-width: 500px; height: 320px; margin-bottom: 50px; perspective: 1500px; }
+        .card-stack::before, .card-stack::after { content: ''; position: absolute; left: 0; width: 100%; height: 100%; background: #1e293b; border-radius: var(--radius-lg); border: 1px solid var(--glass-border); box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: var(--transition); }
+        .card-stack::before { top: 15px; transform: scale(0.95); z-index: 1; opacity: 0.8; }
+        .card-stack::after { top: 30px; transform: scale(0.90); z-index: 0; opacity: 0.5; }
+        .card-stack:hover::before { top: 20px; transform: scale(0.95) rotate(-3deg); }
+        .card-stack:hover::after { top: 40px; transform: scale(0.90) rotate(3deg); }
+
+        .flashcard-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; cursor: pointer; }
+        .flashcard { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+        .card-stack:hover .flashcard { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); transform: translateY(-10px); }
+        .card-stack:hover .flashcard.is-flipped { transform: translateY(-10px) rotateX(180deg); }
+        .flashcard.is-flipped { transform: rotateX(180deg); }
+        
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--radius-lg); padding: 40px; box-sizing: border-box; border: 1px solid var(--glass-border); }
+        .card-front { background: radial-gradient(circle at top right, #1e293b, #0f172a); }
+        .card-back { transform: rotateX(180deg); background: radial-gradient(circle at bottom left, #312e81, #1e1b4b); }
+        
+        .word-display { font-size: 42px; text-align: center; margin-bottom: 20px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .card-front .word-display { color: var(--french-text); font-weight: 800; }
+        .card-back .word-display { color: #fff; font-weight: 500; font-style: italic; }
+        .hint { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; position: absolute; bottom: 30px; opacity: 0.7; }
+        
+        .controls { display: flex; gap: 15px; width: 100%; max-width: 500px; justify-content: center;}
+        .controls button:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Vocab List Mode */
+        #mode-list { display: none; width: 100%; }
+        .vocab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; width: 100%; align-items: start; }
+        .chapter-table-container { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 0; box-shadow: var(--shadow-soft); overflow: hidden; }
+        .chapter-table-container h3 { margin: 0; padding: 20px; background: rgba(0,0,0,0.2); color: #fff; font-size: 18px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 10px;}
+        .vocab-table { width: 100%; border-collapse: collapse; }
+        .vocab-table th, .vocab-table td { padding: 15px 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 16px; }
+        .vocab-table tr:last-child td { border-bottom: none; }
+        .vocab-table tr:hover td { background-color: rgba(59, 130, 246, 0.1); }
+
+        /* --- View 2: Grammar Guide --- */
+        details { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(5px); border: 1px solid var(--glass-border); border-radius: var(--radius-md); margin-bottom: 20px; overflow: hidden; transition: var(--transition); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        details:hover { border-color: var(--primary-color); transform: translateX(5px); }
+        summary { padding: 20px 25px; font-size: 18px; font-weight: 600; color: #fff; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '▼'; font-size: 14px; color: var(--primary-color); transition: transform 0.3s ease; }
+        details[open] summary::after { transform: rotate(180deg); color: var(--accent-color); }
+        
+        .grammar-content { padding: 25px; line-height: 1.8; font-size: 16px; color: #cbd5e1; background: rgba(0,0,0,0.1);}
+        .grammar-content h4 { color: var(--primary-color); margin-top: 25px; margin-bottom: 15px; font-size: 18px; display: inline-block; border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; }
+        .grammar-content h4:first-child { margin-top: 0; }
+        .grammar-content ul { margin-top: 10px; padding-left: 25px; }
+        .grammar-content li { margin-bottom: 12px; }
+        .grammar-content li strong { color: #fff; }
+        
+        .grammar-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 25px 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--glass-border); }
+        .grammar-table th, .grammar-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+        .grammar-table th { background: rgba(0,0,0,0.4); color: var(--primary-color); font-weight: 700; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;}
+        .grammar-table tr:last-child td { border-bottom: none; }
+        .grammar-table tr:nth-child(even) td { background-color: rgba(255,255,255,0.02); }
+
+        .example-box { background: rgba(15, 23, 42, 0.8); padding: 20px 25px; border-left: 4px solid var(--accent-color); border-radius: 0 var(--radius-md) var(--radius-md) 0; margin: 20px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);}
+        .example-box p { margin: 10px 0; font-family: 'Consolas', 'Courier New', monospace; font-size: 16px;}
+        .example-box p:first-child { margin-top: 0; }
+        .example-box p:last-child { margin-bottom: 0; }
+
+        /* --- View 3: Exercises --- */
+        .exercise-filters { display: flex; gap: 20px; margin-bottom: 30px; width: 100%; justify-content: center; }
+        .exercise-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: 40px; box-shadow: var(--shadow-soft); margin-bottom: 30px; width: 100%; position: relative; overflow: hidden;}
+        .exercise-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, var(--primary-color), var(--accent-color)); }
+        
+        .exercise-instruction { font-size: 20px; color: #fff; margin-top: 0; margin-bottom: 35px; border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;}
+        
+        .question-row { margin-bottom: 35px; display: flex; flex-direction: column; background: rgba(0,0,0,0.2); padding: 20px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.03);}
+        .question-text { font-size: 18px; color: var(--text-main); line-height: 2.2; }
+        .fr-num { color: var(--accent-color); font-weight: bold; margin-right: 8px; font-size: 20px;}
+        
+        .inline-input { 
+            width: 220px; min-width: 100px; padding: 6px 15px; font-size: 18px; font-weight: 600; border-radius: 6px; 
+            background: rgba(15, 23, 42, 0.8); color: var(--french-text); border: 1px solid transparent; 
+            border-bottom: 2px solid var(--primary-color); outline: none; transition: var(--transition); 
+            font-family: 'Consolas', monospace; margin: 0 10px; text-align: center; vertical-align: baseline;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .inline-input:focus { border-bottom-color: var(--accent-color); background: #0f1115; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transform: translateY(-1px);}
+        .inline-input.correct { border-bottom-color: var(--success-color); background: rgba(16, 185, 129, 0.1); color: var(--success-color);}
+        .inline-input.incorrect { border-bottom-color: var(--error-color); background: rgba(239, 68, 68, 0.1); color: var(--error-color);}
+        
+        .feedback { font-size: 15px; margin-top: 15px; font-style: italic; min-height: 20px; display: block; font-weight: 500;}
+        
+        .exercise-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-top: 1px solid var(--glass-border); padding-top: 30px;}
+        .score-display { font-size: 24px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);}
+/* --- Mobile Responsive Rules --- */
+@media screen and (max-width: 768px) {
+    /* Allow natural scrolling on mobile instead of locking screen height */
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    /* Navbar: Wrap buttons cleanly & make them touch-friendly */
+    .navbar-container {
+        padding: 12px 10px;
+        position: sticky;
+        top: 0;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        border-radius: var(--radius-md);
+        padding: 10px 12px;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .navbar h1 {
+        width: 100%;
+        text-align: center;
+        margin-right: 0;
+        padding: 4px 0 8px 0;
+        font-size: 20px;
+    }
+
+    .nav-btn {
+        flex: 1 1 calc(33.33% - 8px);
+        min-width: 90px;
+        padding: 8px 10px;
+        font-size: 13px;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    .nav-btn .nav-icon {
+        font-size: 15px;
+    }
+
+    /* Container Spacing */
+    .app-main {
+        padding: 0 12px 24px 12px;
+        overflow: visible;
+    }
+
+    .view-section {
+        padding-right: 0;
+        overflow-y: visible;
+    }
+
+    .page-banner {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+
+    .page-banner h2 {
+        font-size: 22px;
+    }
+
+    .page-banner p {
+        font-size: 14px;
+    }
+
+    /* Flashcard Scaling */
+    .card-stack {
+        max-width: 100%;
+        height: 240px;
+        margin-bottom: 35px;
+    }
+
+    .card-face {
+        padding: 20px;
+    }
+
+    .word-display {
+        font-size: 26px;
+    }
+
+    .hint {
+        bottom: 15px;
+        font-size: 11px;
+    }
+
+    .card-stack:hover::before,
+    .card-stack:hover::after,
+    .card-stack:hover .flashcard {
+        transform: none; /* Disable 3D hover jitter on touchscreens */
+    }
+
+    /* Buttons & Controls */
+    .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .controls .primary-btn {
+        grid-column: span 2;
+        order: -1;
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+
+    .controls .secondary-btn {
+        padding: 12px 10px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    /* Vocab & Exercise Filters */
+    .vocab-header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    select {
+        max-width: 100%;
+        font-size: 14px;
+        padding: 12px 14px;
+        margin-bottom: 15px;
+    }
+
+    .exercise-filters {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .exercise-card {
+        padding: 20px 16px;
+    }
+
+    .exercise-instruction {
+        font-size: 17px;
+        margin-bottom: 20px;
+    }
+
+    /* Exercises: Adapt text & inputs */
+    .question-row {
+        padding: 14px 12px;
+        margin-bottom: 20px;
+    }
+
+    .question-text {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    .inline-input {
+        width: calc(100% - 20px);
+        max-width: 240px;
+        font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+        margin: 6px auto;
+        display: inline-block;
+    }
+
+    .exercise-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .score-display {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .exercise-actions > div {
+        display: flex;
+        gap: 10px;
+    }
+
+    .exercise-actions button {
+        flex: 1;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    /* Grammar & Vocab Lists */
+    .vocab-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .grammar-content {
+        padding: 15px;
+        font-size: 15px;
+    }
+
+    .grammar-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <!-- Floating Navbar -->
+    <div class="navbar-container">
+        <div class="navbar">
+            <h1>Easy<span>French</span></h1>
+            <button class="nav-btn active" id="btn-vocab" onclick="switchView('vocab-view')"><span class="nav-icon">📚</span> Vocabulary</button>
+            <button class="nav-btn" id="btn-grammar" onclick="switchView('grammar-view')"><span class="nav-icon">📖</span> Grammar Library</button>
+            <button class="nav-btn" id="btn-exercises" onclick="switchView('exercises-view')"><span class="nav-icon">✍️</span> Exercises</button>
+        </div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="app-main">
+
+        <!-- View 1: Vocabulary -->
+        <div id="vocab-view" class="view-section active-view">
+            
+            <div class="page-banner">
+                <h2>Vocabulary Deck</h2>
+                <p>Master high-frequency French words from Chapters 1 through 16</p>
+            </div>
+
+            <div class="vocab-header">
+                <select id="chapterFilter" onchange="filterChapter()">
+                    <option value="all">🌐 All Chapters Vocabulary</option>
+                    <option value="1">📘 Ch 1: Adjectives, Colors, Nationalities</option>
+                    <option value="2">📘 Ch 2: The House & Adverbs</option>
+                    <option value="3">📘 Ch 3: Days, Months, Seasons</option>
+                    <option value="4">📘 Ch 4: Stores & Food</option>
+                    <option value="5">📘 Ch 5: Clothing & Toiletries</option>
+                    <option value="6">📘 Ch 6: Weather & Environment</option>
+                    <option value="7">📘 Ch 7: Reading & Writing</option>
+                    <option value="8">📘 Ch 8: Jobs & Professions</option>
+                    <option value="9">📘 Ch 9: Animals & Plants</option>
+                    <option value="10">📘 Ch 10: Family & Adverbs</option>
+                    <option value="11">📘 Ch 11: House, Garden & DIY</option>
+                    <option value="12">📘 Ch 12: Daily Routine & Body Parts</option>
+                    <option value="13">📘 Ch 13: Transition Words, Sports & Leisure</option>
+                    <option value="14">📘 Ch 14: Time in the Past, Travel & Lodgings</option>
+                    <option value="15">📘 Ch 15: Banking & Business</option>
+                    <option value="16">📘 Ch 16: Friendship & Meeting People</option>
+                </select>
+
+                <div class="vocab-toggles">
+                    <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
+                    <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
+                </div>
+            </div>
+
+            <div id="mode-flashcards">
+                <div class="progress-container">
+                    <div class="card-counter" id="cardCounter">Card 0 of 0</div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <div class="card-stack">
+                    <div class="flashcard-container" onclick="flipCard()">
+                        <div class="flashcard" id="flashcard">
+                            <div class="card-face card-front">
+                                <div class="word-display" id="word-fr">Loading...</div>
+                                <span class="hint">Click deck to flip</span>
+                            </div>
+                            <div class="card-face card-back">
+                                <div class="word-display" id="word-en">Loading...</div>
+                                <span class="hint">Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="secondary-btn" id="prevBtn" onclick="prevCard()">&#8592; Previous</button>
+                    <button class="primary-btn" onclick="flipCard()">Flip Card</button>
+                    <button class="secondary-btn" id="nextBtn" onclick="nextCard()">Next &#8594;</button>
+                </div>
+            </div>
+
+            <div id="mode-list">
+                <div class="vocab-grid" id="vocab-grid"></div>
+            </div>
+        </div>
+
+        <!-- View 2: Grammar Guide -->
+        <div id="grammar-view" class="view-section">
+            <div class="grammar-container">
+                <div class="page-banner">
+                    <h2>Grammar Library</h2>
+                    <p>Comprehensive structural rules and conjugations</p>
+                </div>
+
+                <details>
+                    <summary><span>1. Nouns, Articles, and Adjectives</span></summary>
+                    <div class="grammar-content">
+                        <h4>Definite & Indefinite Articles</h4>
+                        <ul>
+                            <li><strong>Definite Articles (The):</strong> Indicate a specific person, place, or thing. Use <span class="fr">le</span> (masculine singular), <span class="fr">la</span> (feminine singular), <span class="fr">l'</span> (before a vowel or mute h), and <span class="fr">les</span> (plural).</li>
+                            <li><strong>Indefinite Articles (A/An/Some):</strong> Use <span class="fr">un</span> (masculine), <span class="fr">une</span> (feminine), and <span class="fr">des</span> (plural).</li>
+                        </ul>
+                        <h4>Adjectives</h4>
+                        <ul>
+                            <li>Descriptive adjectives usually follow the nouns they modify and agree in gender and number.</li>
+                            <li>The feminine form usually ends in <span class="fr">-e</span>, and the plural adds an <span class="fr">-s</span>.</li>
+                            <li>Exceptions that precede the noun: <span class="fr">autre, beau, bon, grand, gros, jeune, joli, mauvais, même, nouveau, petit, vieux</span>.</li>
+                            <li>Adjectives of color follow the noun and agree with it, except for <span class="fr">marron</span> and <span class="fr">orange</span>, which are invariable.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>2. The Verbs être and avoir, Pronouns & Negation</span></summary>
+                    <div class="grammar-content">
+                        <p>These are the two most essential irregular verbs in French.</p>
+                        <table class="grammar-table">
+                            <tr><th>Pronoun</th><th>être (to be)</th><th>avoir (to have)</th></tr>
+                            <tr><td><span class="fr">Je / J'</span></td><td>suis</td><td>ai</td></tr>
+                            <tr><td><span class="fr">Tu</span></td><td>es</td><td>as</td></tr>
+                            <tr><td><span class="fr">Il/Elle/On</span></td><td>est</td><td>a</td></tr>
+                            <tr><td><span class="fr">Nous</span></td><td>sommes</td><td>avons</td></tr>
+                            <tr><td><span class="fr">Vous</span></td><td>êtes</td><td>avez</td></tr>
+                            <tr><td><span class="fr">Ils/Elles</span></td><td>sont</td><td>ont</td></tr>
+                        </table>
+                        <ul>
+                            <li><strong>Subject Pronouns:</strong> <span class="fr">Tu</span> is familiar singular; <span class="fr">vous</span> is polite singular or plural. <span class="fr">On</span> means one, we, or people.</li>
+                            <li><strong>Idioms with avoir:</strong> Avoir is used for age (<span class="fr">J'ai vingt ans</span>), feeling hot/cold (<span class="fr">avoir chaud/froid</span>), and hunger/thirst (<span class="fr">avoir faim/soif</span>).</li>
+                            <li><strong>Negation:</strong> Place <span class="fr">ne</span> before the conjugated verb and <span class="fr">pas</span> after it (e.g., <span class="fr">Je ne suis pas</span>). Indefinite articles change to <span class="fr">de/d'</span> in negative sentences with <span class="fr">avoir</span>.</li>
+                            <li><strong>There is/There are:</strong> Use the invariable expression <span class="fr">Il y a...</span>. Its negative is <span class="fr">Il n'y a pas de...</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>3. Regular -er Verbs and Interrogatives</span></summary>
+                    <div class="grammar-content">
+                        <h4>Regular <span class="fr">-er</span> Verbs (e.g., parler)</h4>
+                        <p>Drop the -er and add the standard endings: <span class="fr">-e, -es, -e, -ons, -ez, -ent</span>.</p>
+                        <div class="example-box">
+                            <p><span class="fr">Je parl<b>e</b>, Tu parl<b>es</b>, Il parl<b>e</b></span></p>
+                            <p><span class="fr">Nous parl<b>ons</b>, Vous parl<b>ez</b>, Ils parl<b>ent</b></span></p>
+                        </div>
+                        <h4>Forming Questions (Interrogatives)</h4>
+                        <ul>
+                            <li><strong>Intonation:</strong> Raise the pitch of your voice at the end of the sentence (<span class="fr">Vous êtes d'ici?</span>).</li>
+                            <li><strong>Tag Questions:</strong> Add <span class="fr">n'est-ce pas?</span> to the end of a statement to expect agreement.</li>
+                            <li><strong>Est-ce que:</strong> Precede the entire statement with <span class="fr">est-ce que</span> (e.g., <span class="fr">Est-ce qu'elle a une opinion?</span>).</li>
+                            <li><strong>Inversion:</strong> Invert the subject pronoun and verb, connecting them with a hyphen (<span class="fr">Êtes-vous déjà en retard?</span>). Insert a <span class="fr">-t-</span> between two vowels for third-person singular (<span class="fr">Parle-t-il?</span>).</li>
+                            <li><strong>Information Words:</strong> <span class="fr">Qui</span> (who), <span class="fr">Que/Qu'est-ce que</span> (what), <span class="fr">Comment</span> (how), <span class="fr">Où</span> (where), <span class="fr">Quand</span> (when), <span class="fr">Quel</span> (which), <span class="fr">Pourquoi</span> (why).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>4. Time, Dates, and Regular -ir Verbs</span></summary>
+                    <div class="grammar-content">
+                        <h4>Regular <span class="fr">-ir</span> Verbs (e.g., choisir)</h4>
+                        <p>Drop the -ir and add the standard endings: <span class="fr">-is, -is, -it, -issons, -issez, -issent</span>.</p>
+                        <div class="example-box">
+                            <p><span class="fr">Je chois<b>is</b>, Tu chois<b>is</b>, Il chois<b>it</b></span></p>
+                            <p><span class="fr">Nous chois<b>issons</b>, Vous chois<b>issez</b>, Ils chois<b>issent</b></span></p>
+                        </div>
+                        <h4>Telling Time & Dates</h4>
+                        <ul>
+                            <li>Use <span class="fr">Il est...</span> to tell time (e.g., <span class="fr">Il est deux heures</span>).</li>
+                            <li>Use <span class="fr">midi</span> for noon and <span class="fr">minuit</span> for midnight.</li>
+                            <li>To express time after the hour, state the hour plus the minutes (<span class="fr">Il est cinq heures dix</span>). Use <span class="fr">et quart</span> (quarter past) and <span class="fr">et demie</span> (half past).</li>
+                            <li>Dates use the definite article <span class="fr">le</span> + cardinal number + month (<span class="fr">le cinq juillet</span>), except the 1st of the month which uses the ordinal <span class="fr">le premier</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>5. Regular -re Verbs and Spelling Changes</span></summary>
+                    <div class="grammar-content">
+                        <h4>Regular <span class="fr">-re</span> Verbs (e.g., attendre)</h4>
+                        <p>Drop the -re and add: <span class="fr">-s, -s, [nothing], -ons, -ez, -ent</span>.</p>
+                        <div class="example-box">
+                            <p><span class="fr">J'attend<b>s</b>, Tu attend<b>s</b>, Il attend</span></p>
+                            <p><span class="fr">Nous attend<b>ons</b>, Vous attend<b>ez</b>, Ils attend<b>ent</b></span></p>
+                        </div>
+                        <h4>Spelling Changes in <span class="fr">-er</span> Verbs</h4>
+                        <ul>
+                            <li><strong>-cer verbs (commencer):</strong> Change <span class="fr">c</span> to <span class="fr">ç</span> before an -o- in the nous form (<span class="fr">nous commençons</span>) to keep the soft 's' sound.</li>
+                            <li><strong>-ger verbs (manger):</strong> Add an <span class="fr">e</span> before an -o- in the nous form (<span class="fr">nous mangeons</span>) to keep the soft 'g' sound.</li>
+                            <li><strong>-e-er verbs (acheter):</strong> Change mute <span class="fr">e</span> to <span class="fr">è</span> in forms with a mute e ending (e.g., <span class="fr">j'achète</span>, but <span class="fr">nous achetons</span>).</li>
+                            <li><strong>-é-er verbs (préférer):</strong> Change <span class="fr">é</span> to <span class="fr">è</span> in forms where it occurs in the final sounded syllable (e.g., <span class="fr">je préfère</span>, but <span class="fr">nous préférons</span>).</li>
+                            <li><strong>-eler/-eter verbs (appeler/jeter):</strong> Double the consonant <span class="fr">l</span> or <span class="fr">t</span> when the ending contains a mute e (e.g., <span class="fr">j'appelle, je jette</span>).</li>
+                            <li><strong>-yer verbs (envoyer):</strong> Change <span class="fr">y</span> to <span class="fr">i</span> before a mute e ending (e.g., <span class="fr">j'envoie</span>).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>6. Aller, Prepositions, and faire</span></summary>
+                    <div class="grammar-content">
+                        <h4>The Verbs aller (to go) and faire (to do/make)</h4>
+                        <table class="grammar-table">
+                            <tr><th>Pronoun</th><th>aller</th><th>faire</th></tr>
+                            <tr><td><span class="fr">Je / J'</span></td><td>vais</td><td>fais</td></tr>
+                            <tr><td><span class="fr">Tu</span></td><td>vas</td><td>fais</td></tr>
+                            <tr><td><span class="fr">Il/Elle/On</span></td><td>va</td><td>fait</td></tr>
+                            <tr><td><span class="fr">Nous</span></td><td>allons</td><td>faisons</td></tr>
+                            <tr><td><span class="fr">Vous</span></td><td>allez</td><td>faites</td></tr>
+                            <tr><td><span class="fr">Ils/Elles</span></td><td>vont</td><td>font</td></tr>
+                        </table>
+                        <ul>
+                            <li><strong>Futur Proche:</strong> Use the conjugated form of <span class="fr">aller</span> + an infinitive verb to express the near future (e.g., <span class="fr">Je vais dîner</span> <span class="en">&mdash; I'm going to eat dinner</span>).</li>
+                            <li><strong>Weather & Idioms with faire:</strong> Use <span class="fr">Il fait...</span> to describe weather (e.g., <span class="fr">Il fait chaud</span>). <span class="fr">Faire</span> is used in many chores and activities like <span class="fr">faire le ménage</span> (clean house) and <span class="fr">faire du sport</span> (play sports).</li>
+                            <li><strong>Prepositions à and de:</strong> <span class="fr">à</span> indicates location/destination (at/to) or indirect objects. <span class="fr">de</span> indicates origin (from) or possession (of).</li>
+                            <li><strong>Contractions:</strong> They must contract with <span class="fr">le</span> and <span class="fr">les</span>. <span class="fr">à + le = au</span>; <span class="fr">à + les = aux</span>; <span class="fr">de + le = du</span>; <span class="fr">de + les = des</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>7. Irregular Verbs I & Infinitive Constructions</span></summary>
+                    <div class="grammar-content">
+                        <h4>Key Irregular Verb Families</h4>
+                        <ul>
+                            <li><strong>partir (to leave):</strong> <span class="fr">je pars, tu pars, il part, nous partons, vous partez, ils partent</span>. (Also: <span class="fr">dormir, sortir, servir, sentir</span>).</li>
+                            <li><strong>venir (to come):</strong> <span class="fr">je viens, tu viens, il vient, nous venons, vous venez, ils viennent</span>. (Also: <span class="fr">tenir, devenir, revenir</span>). Note: <span class="fr">venir de</span> + infinitive means "to have just done something".</li>
+                            <li><strong>dire (to say):</strong> <span class="fr">je dis, tu dis, il dit, nous disons, vous <b>dites</b>, ils disent</span>.</li>
+                            <li><strong>lire (to read):</strong> <span class="fr">je lis, tu lis, il lit, nous lisons, vous lisez, ils lisent</span>.</li>
+                            <li><strong>écrire (to write):</strong> <span class="fr">j'écris, tu écris, il écrit, nous écrivons, vous écrivez, ils écrivent</span>.</li>
+                            <li><strong>mettre (to put/place):</strong> <span class="fr">je mets, tu mets, il met, nous mettons, vous mettez, ils mettent</span>.</li>
+                            <li><strong>pouvoir (can/able to):</strong> <span class="fr">je peux, tu peux, il peut, nous pouvons, vous pouvez, ils peuvent</span>.</li>
+                            <li><strong>vouloir (to want):</strong> <span class="fr">je veux, tu veux, il veut, nous voulons, vous voulez, ils veulent</span>.</li>
+                            <li><strong>devoir (must/owe):</strong> <span class="fr">je dois, tu dois, il doit, nous devons, vous devez, ils doivent</span>.</li>
+                            <li><strong>recevoir (to receive):</strong> <span class="fr">je reçois, tu reçois, il reçoit, nous recevons, vous recevez, ils reçoivent</span>.</li>
+                        </ul>
+                        <h4>Verb + Verb Constructions</h4>
+                        <ul>
+                            <li>Some verbs require no preposition before a following infinitive (e.g., <span class="fr">aimer, aller, devoir, pouvoir, vouloir</span>).</li>
+                            <li>Some require <span class="fr">à</span> (e.g., <span class="fr">aider à, commencer à, réussir à</span>).</li>
+                            <li>Some require <span class="fr">de</span> (e.g., <span class="fr">accepter de, décider de, essayer de, refuser de</span>).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>8. Irregular Verbs II & Relative Pronouns</span></summary>
+                    <div class="grammar-content">
+                        <h4>Connaître vs. Savoir</h4>
+                        <ul>
+                            <li><strong>connaître:</strong> Means to be acquainted with a person, place, or thing. <span class="fr">je connais, tu connais, il connaît, nous connaissons, vous connaissez, ils connaissent</span>.</li>
+                            <li><strong>savoir:</strong> Means to know a fact or how to do something. <span class="fr">je sais, tu sais, il sait, nous savons, vous savez, ils savent</span>.</li>
+                        </ul>
+                        <h4>More Irregular Families</h4>
+                        <ul>
+                            <li><strong>voir (to see):</strong> <span class="fr">je vois, tu vois, il voit, nous voyons, vous voyez, ils voient</span>. (Also: <span class="fr">croire</span> - to believe).</li>
+                            <li><strong>courir (to run):</strong> <span class="fr">je cours, tu cours, il court, nous courons, vous courez, ils courent</span>.</li>
+                            <li><strong>rire (to laugh):</strong> <span class="fr">je ris, tu ris, il rit, nous rions, vous riez, ils rient</span>.</li>
+                            <li><strong>offrir (to offer):</strong> <span class="fr">j'offre, tu offres, il offre, nous offrons, vous offrez, ils offrent</span>. (Takes -er verb endings! Also: <span class="fr">ouvrir, couvrir, découvrir</span>).</li>
+                            <li><strong>conduire (to drive):</strong> <span class="fr">je conduis, tu conduis, il conduit, nous conduisons, vous conduisez, ils conduisent</span>.</li>
+                            <li><strong>suivre (to follow):</strong> <span class="fr">je suis, tu suis, il suit, nous suivons, vous suivez, ils suivent</span>.</li>
+                            <li><strong>vivre (to live):</strong> <span class="fr">je vis, tu vis, il vit, nous vivons, vous vivez, ils vivent</span>.</li>
+                            <li><strong>craindre (to fear):</strong> <span class="fr">je crains, tu crains, il craint, nous craignons, vous craignez, ils craignent</span>.</li>
+                        </ul>
+                        <h4>Relative Pronouns</h4>
+                        <ul>
+                            <li><span class="fr">qui</span> (who/that/which) is the subject of a relative clause.</li>
+                            <li><span class="fr">que</span> (whom/that/which) is the direct object of a relative clause.</li>
+                            <li><span class="fr">où</span> is used for time and place (where/when).</li>
+                            <li><span class="fr">lequel/laquelle</span> replaces object of prepositions.</li>
+                            <li><span class="fr">dont</span> (of whom/of which/whose) replaces "de + an object" or indicates possession.</li>
+                            <li>Indefinite relative pronouns (what) are <span class="fr">ce qui, ce que, ce dont</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>9. Prendre, boire, Partitives & Object Pronouns</span></summary>
+                    <div class="grammar-content">
+                        <h4>Prendre (to take/have) & Boire (to drink)</h4>
+                        <ul>
+                            <li><strong>prendre:</strong> <span class="fr">je prends, tu prends, il prend, nous prenons, vous prenez, ils pre<b>nn</b>ent</span>.</li>
+                            <li><strong>boire:</strong> <span class="fr">je bois, tu bois, il boit, nous b<b>uv</b>ons, vous b<b>uv</b>ez, ils boivent</span>.</li>
+                        </ul>
+                        <h4>The Partitive Article (Some/Any)</h4>
+                        <ul>
+                            <li>Used for unmeasurable quantities (food/drink). Forms: <span class="fr">du</span> (masc), <span class="fr">de la</span> (fem), <span class="fr">de l'</span> (vowel).</li>
+                            <li>In the negative, or after expressions of quantity (like <span class="fr">beaucoup</span>), all partitive and indefinite articles shorten to <span class="fr">de/d'</span>.</li>
+                        </ul>
+                        <h4>Direct and Indirect Object Pronouns</h4>
+                        <ul>
+                            <li><strong>Direct Objects:</strong> Receive the action directly (answers what? or whom?). Pronouns: <span class="fr">me, te, le, la, nous, vous, les</span>. Placed directly before the conjugated verb.</li>
+                            <li><strong>Indirect Objects:</strong> Answer "to whom?" or "for whom?" (requires à). Pronouns: <span class="fr">me, te, lui, nous, vous, leur</span>. Placed before the conjugated verb.</li>
+                        </ul>
+                        <h4>The Pronouns "y" and "en"</h4>
+                        <ul>
+                            <li><span class="fr">y</span> replaces a preposition of location (there) or "à + a thing/idea".</li>
+                            <li><span class="fr">en</span> replaces nouns preceded by a partitive/indefinite article (some/any) or "de + a noun".</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>10. Possessives, Demonstratives, Comparatives</span></summary>
+                    <div class="grammar-content">
+                        <h4>Possessive Adjectives and Pronouns</h4>
+                        <ul>
+                            <li><strong>Adjectives:</strong> Match the gender/number of the item owned, not the owner. <span class="fr">mon/ma/mes, ton/ta/tes, son/sa/ses, notre/nos, votre/vos, leur/leurs</span>. Use <span class="fr">mon/ton/son</span> before feminine words starting with a vowel.</li>
+                            <li><strong>Pronouns:</strong> Stand alone to mean "mine, yours, etc." Always preceded by a definite article. <span class="fr">le mien, le tien, le sien, le nôtre, le vôtre, le leur</span> (and their feminine/plural forms).</li>
+                        </ul>
+                        <h4>Demonstrative Adjectives and Pronouns</h4>
+                        <ul>
+                            <li><strong>Adjectives (this/that/these/those):</strong> Always precede a noun. <span class="fr">ce</span> (masc), <span class="fr">cet</span> (masc vowel), <span class="fr">cette</span> (fem), <span class="fr">ces</span> (plural).</li>
+                            <li><strong>Pronouns (this one/that one):</strong> Must be followed by -ci/-là, a preposition, or relative clause. <span class="fr">celui, celle, ceux, celles</span>.</li>
+                            <li><strong>Indefinite Demonstratives:</strong> <span class="fr">ceci, cela, ça</span>.</li>
+                        </ul>
+                        <h4>Comparatives and Superlatives</h4>
+                        <ul>
+                            <li><strong>Adjectives/Adverbs:</strong> Compare using <span class="fr">plus...que</span> (more), <span class="fr">aussi...que</span> (as), <span class="fr">moins...que</span> (less). Superlatives use <span class="fr">le/la/les plus</span> or <span class="fr">le moins</span>.</li>
+                            <li><strong>Nouns:</strong> Compare quantities using <span class="fr">plus de...que</span>, <span class="fr">autant de...que</span>, <span class="fr">moins de...que</span>.</li>
+                            <li><strong>Verbs:</strong> Compare actions using <span class="fr">plus que, autant que, moins que</span> after the verb.</li>
+                            <li><strong>Irregulars:</strong> <span class="fr">bon</span> -> <span class="fr">meilleur</span> (better); <span class="fr">bien</span> -> <span class="fr">mieux</span> (better).</li>
+                        </ul>
+                        <h4>Adverbs</h4>
+                        <ul>
+                            <li>Usually formed by adding <span class="fr">-ment</span> to the feminine form of an adjective (e.g., <span class="fr">douce</span> -> <span class="fr">doucement</span>). Or to the masculine if it ends in a vowel (<span class="fr">vraiment</span>). Adjectives ending in -ent/-ant become <span class="fr">-emment</span> and <span class="fr">-amment</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>11. Negatives, Stressed Pronouns, Imperative</span></summary>
+                    <div class="grammar-content">
+                        <h4>Negative Expressions</h4>
+                        <p>Instead of "pas", use these with "ne" before the verb:</p>
+                        <ul>
+                            <li><span class="fr">ne... jamais</span> (never)</li>
+                            <li><span class="fr">ne... pas encore</span> (not yet)</li>
+                            <li><span class="fr">ne... plus</span> (no longer)</li>
+                            <li><span class="fr">ne... rien</span> (nothing)</li>
+                            <li><span class="fr">ne... personne</span> (no one)</li>
+                            <li>To express limits (only), use <span class="fr">ne... que...</span> where "que" is placed before the limited noun.</li>
+                        </ul>
+                        <h4>Stressed (Tonic) Pronouns</h4>
+                        <ul>
+                            <li>Forms: <span class="fr">moi, toi, lui, elle, soi, nous, vous, eux, elles</span>.</li>
+                            <li>Used after prepositions (<span class="fr">avec moi</span>), in compound subjects (<span class="fr">Thomas et toi</span>), for emphasis, after c'est/ce sont, and to indicate possession with "être à".</li>
+                        </ul>
+                        <h4>The Imperative (Commands)</h4>
+                        <ul>
+                            <li>Conjugated in three persons without subject pronouns: <span class="fr">tu, nous, vous</span>.</li>
+                            <li>For -er verbs (and aller), drop the final "s" in the "tu" form (e.g., <span class="fr">Parle!</span> <span class="fr">Va!</span>).</li>
+                            <li><strong>Object Pronouns in Commands:</strong> Attached with a hyphen in affirmative commands (<span class="fr">Passe-moi le sel!</span>), but precede the verb in negative commands (<span class="fr">Ne me passe pas le sel!</span>).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>12. Pronominal Verbs and Present Participle</span></summary>
+                    <div class="grammar-content">
+                        <h4>Pronominal (Reflexive) Verbs</h4>
+                        <ul>
+                            <li>Used when the action reflects back on the subject (e.g., <span class="fr">se laver</span> - to wash oneself).</li>
+                            <li>Accompanied by a reflexive pronoun matching the subject: <span class="fr">je me, tu te, il se, nous nous, vous vous, ils se</span>.</li>
+                            <li><strong>Reciprocal verbs:</strong> Express a mutual action involving two or more people (e.g., <span class="fr">Ils se regardent</span> - They look at each other).</li>
+                            <li><strong>Idiomatic pronominals:</strong> Verbs that change meaning when made reflexive (e.g., <span class="fr">mettre</span> = to put; <span class="fr">se mettre à</span> = to begin to).</li>
+                        </ul>
+                        <h4>The Present Participle</h4>
+                        <ul>
+                            <li>Equivalent to English "-ing".</li>
+                            <li>Formed by dropping the <span class="fr">-ons</span> ending from the "nous" form of the present tense and adding <span class="fr">-ant</span> (e.g., <span class="fr">faisons</span> -> <span class="fr">faisant</span>).</li>
+                            <li>Irregulars: <span class="fr">ayant</span> (avoir), <span class="fr">étant</span> (être), <span class="fr">sachant</span> (savoir).</li>
+                            <li>Often preceded by the preposition <span class="fr">en</span> (while, upon, in, by) to express simultaneous actions or cause and effect (e.g., <span class="fr">en étudiant</span> - by studying).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>13. The Passé Composé</span></summary>
+                    <div class="grammar-content">
+                        <p>The passé composé indicates completed action or actions in the past.</p>
+                        <ul>
+                            <li>It is a compound tense formed with the present tense of the auxiliary verb <span class="fr">avoir</span> (or être for specific verbs) + the past participle of the main verb.</li>
+                        </ul>
+                        <h4>Regular Past Participles</h4>
+                        <ul>
+                            <li>Drop the infinitive ending and replace it.</li>
+                            <li><strong>-er verbs:</strong> add <span class="fr">-é</span> (e.g., parler -> <span class="fr">parlé</span>).</li>
+                            <li><strong>-ir verbs:</strong> add <span class="fr">-i</span> (e.g., choisir -> <span class="fr">choisi</span>).</li>
+                            <li><strong>-re verbs:</strong> add <span class="fr">-u</span> (e.g., attendre -> <span class="fr">attendu</span>).</li>
+                        </ul>
+                        <h4>Key Irregular Past Participles</h4>
+                        <p><span class="fr">eu</span> (avoir), <span class="fr">bu</span> (boire), <span class="fr">vu</span> (voir), <span class="fr">dû</span> (devoir), <span class="fr">lu</span> (lire), <span class="fr">pu</span> (pouvoir), <span class="fr">su</span> (savoir), <span class="fr">pris</span> (prendre), <span class="fr">compris</span> (comprendre), <span class="fr">mis</span> (mettre), <span class="fr">dit</span> (dire), <span class="fr">écrit</span> (écrire), <span class="fr">fait</span> (faire), <span class="fr">offert</span> (offrir), <span class="fr">ouvert</span> (ouvrir).</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>14. The Imparfait & Past Narration</span></summary>
+                    <div class="grammar-content">
+                        <h4>The Imparfait (Imperfect)</h4>
+                        <p>The imparfait is used to describe continuous or habitual past actions or states, and to set the scene in descriptions.</p>
+                        <ul>
+                            <li><strong>Formation:</strong> Drop the <span class="fr">-ons</span> ending from the <span class="fr">nous</span> form of the present tense, and add the endings: <span class="fr">-ais, -ais, -ait, -ions, -iez, -aient</span>.</li>
+                        </ul>
+                        <div class="example-box">
+                            <p><span class="fr">nous parlons</span> -> <span class="fr">je parlais, tu parlais, il parlait, nous parlions, vous parliez, ils parlaient</span>.</p>
+                        </div>
+                        <h4>Passé Composé vs. Imparfait</h4>
+                        <ul>
+                            <li><strong>Passé Composé:</strong> Expresses a completed past action or a sequence of actions (sudden changes, interruptions).</li>
+                            <li><strong>Imparfait:</strong> Indicates ongoing, habitual, background actions, descriptions, and mental/emotional states.</li>
+                        </ul>
+                        <div class="example-box">
+                            <p><span class="fr">J'avais faim quand je me suis réveillé.</span> <span class="en">&mdash; I was (felt) hungry when I woke up.</span></p>
+                        </div>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>15. Future, Conditional, & Pluperfect</span></summary>
+                    <div class="grammar-content">
+                        <h4>The Future Tense</h4>
+                        <ul>
+                            <li><strong>Formation:</strong> Add the endings <span class="fr">-ai, -as, -a, -ons, -ez, -ont</span> to the entire verb infinitive (drop the final -e for -re verbs).</li>
+                            <li><strong>Irregular stems:</strong> <span class="fr">aller (ir-), avoir (aur-), courir (courr-), devoir (devr-), être (ser-), faire (fer-), pouvoir (pourr-), savoir (saur-), venir (viendr-), voir (verr-), vouloir (voudr-)</span>.</li>
+                        </ul>
+                        <h4>The Conditional</h4>
+                        <ul>
+                            <li>Equivalent to the English "would" + infinitive.</li>
+                            <li><strong>Formation:</strong> Use the exact same stem as the future tense, but add the imparfait endings: <span class="fr">-ais, -ais, -ait, -ions, -iez, -aient</span>.</li>
+                        </ul>
+                        <h4>Si-Clauses (If... Then)</h4>
+                        <ul>
+                            <li>If the <span class="fr">si</span> clause uses the <strong>imparfait</strong>, the main clause uses the <strong>conditional</strong>.</li>
+                            <li>If the <span class="fr">si</span> clause uses the <strong>pluperfect</strong>, the main clause uses the <strong>past conditional</strong>.</li>
+                        </ul>
+                        <h4>The Pluperfect (Plus-que-parfait)</h4>
+                        <p>Expresses "had done" something. Formed with the imparfait of the auxiliary verb (<span class="fr">avoir</span> or <span class="fr">être</span>) + the past participle of the main verb.</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>16. The Subjunctive Mood</span></summary>
+                    <div class="grammar-content">
+                        <p>The subjunctive mood expresses the speaker's feelings about an action, concerning necessity, importance, emotion, possibility, or doubt. It usually appears in a dependent clause following <span class="fr">que/qu'</span>.</p>
+                        <h4>Formation</h4>
+                        <ul>
+                            <li>Drop the <span class="fr">-ent</span> from the <span class="fr">ils/elles</span> form of the present indicative, and add the subjunctive endings: <span class="fr">-e, -es, -e, -ions, -iez, -ent</span>.</li>
+                        </ul>
+                        <div class="example-box">
+                            <p><span class="fr">que je parle, que tu parles, qu'il parle, que nous parlions, que vous parliez, qu'ils parlent</span>.</p>
+                        </div>
+                        <h4>Highly Irregular Subjunctives</h4>
+                        <ul>
+                            <li><strong>faire:</strong> <span class="fr">que je fasse, que nous fassions</span></li>
+                            <li><strong>pouvoir:</strong> <span class="fr">que je puisse, que nous puissions</span></li>
+                            <li><strong>savoir:</strong> <span class="fr">que je sache, que nous sachions</span></li>
+                            <li><strong>aller:</strong> <span class="fr">que j'aille, que nous allions</span></li>
+                            <li><strong>vouloir:</strong> <span class="fr">que je veuille, que nous voulions</span></li>
+                            <li><strong>être:</strong> <span class="fr">que je sois, que tu sois, qu'il soit, que nous soyons, que vous soyez, qu'ils soient</span></li>
+                            <li><strong>avoir:</strong> <span class="fr">que j'aie, que tu aies, qu'il ait, que nous ayons, que vous ayez, qu'ils aient</span></li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- View 3: Exercises -->
+        <div id="exercises-view" class="view-section">
+            <div class="exercise-wrapper">
+                <div class="page-banner">
+                    <h2>Interactive Workbook</h2>
+                    <p>Fill in the blanks to test your knowledge</p>
+                </div>
+
+                <div class="exercise-filters">
+                    <select id="exChapterFilter" onchange="populateExerciseList()">
+                        <option value="1">Chapter 1</option>
+                        <option value="2">Chapter 2</option>
+                        <option value="3">Chapter 3</option>
+                        <option value="4">Chapter 4</option>
+                        <option value="5">Chapter 5</option>
+                        <option value="6">Chapter 6</option>
+                        <option value="7">Chapter 7</option>
+                        <option value="8">Chapter 8</option>
+                        <option value="9">Chapter 9</option>
+                        <option value="10">Chapter 10</option>
+                        <option value="11">Chapter 11</option>
+                        <option value="12">Chapter 12</option>
+                        <option value="13">Chapter 13</option>
+                        <option value="14">Chapter 14</option>
+                        <option value="15">Chapter 15</option>
+                        <option value="16">Chapter 16</option>
+                    </select>
+                    <select id="exerciseSelect" onchange="renderExercise()">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="exercise-card" id="exercise-card">
+                    <h3 class="exercise-instruction" id="ex-instruction">Loading instruction...</h3>
+                    <div id="ex-questions-container">
+                        <!-- Questions injected here -->
+                    </div>
+                    
+                    <div class="exercise-actions">
+                        <div class="score-display" id="score-display">Score: --</div>
+                        <div>
+                            <button class="secondary-btn" onclick="renderExercise()" style="margin-right: 10px;">Reset</button>
+                            <button class="primary-btn" onclick="checkAnswers()">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active-view'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active-view');
+            
+            if (viewId === 'vocab-view') document.getElementById('btn-vocab').classList.add('active');
+            else if (viewId === 'grammar-view') document.getElementById('btn-grammar').classList.add('active');
+            else if (viewId === 'exercises-view') document.getElementById('btn-exercises').classList.add('active');
+        }
+
+        function switchVocabMode(mode) {
+            const flashcardView = document.getElementById('mode-flashcards');
+            const listView = document.getElementById('mode-list');
+            const btnFlashcard = document.getElementById('toggle-flashcard');
+            const btnList = document.getElementById('toggle-list');
+
+            if (mode === 'flashcards') {
+                flashcardView.style.display = 'flex';
+                listView.style.display = 'none';
+                btnFlashcard.classList.add('active');
+                btnList.classList.remove('active');
+            } else {
+                flashcardView.style.display = 'none';
+                listView.style.display = 'block';
+                btnFlashcard.classList.remove('active');
+                btnList.classList.add('active');
+                renderList();
+            }
+        }
+
+        // FULL UNCUT VOCABULARY ARRAY
+        const vocabData = [
+            // Chapter 1
+            { "ch": 1, "fr": "le chat", "en": "the cat" }, { "ch": 1, "fr": "le chien", "en": "the dog" }, { "ch": 1, "fr": "le cinéma", "en": "the cinema, film, movies" },
+            { "ch": 1, "fr": "le cours", "en": "the course, class" }, { "ch": 1, "fr": "le football", "en": "soccer" }, { "ch": 1, "fr": "le frère", "en": "the brother" },
+            { "ch": 1, "fr": "le garçon", "en": "the boy" }, { "ch": 1, "fr": "le livre", "en": "the book" }, { "ch": 1, "fr": "le téléphone", "en": "the telephone" },
+            { "ch": 1, "fr": "le vin", "en": "the wine" }, { "ch": 1, "fr": "la banque", "en": "the bank" }, { "ch": 1, "fr": "la boutique", "en": "the store, shop" },
+            { "ch": 1, "fr": "la chemise", "en": "the shirt" }, { "ch": 1, "fr": "la femme", "en": "the woman, wife" }, { "ch": 1, "fr": "la jeune fille", "en": "the girl" },
+            { "ch": 1, "fr": "la lampe", "en": "the lamp" }, { "ch": 1, "fr": "la langue", "en": "the language" }, { "ch": 1, "fr": "la sœur", "en": "the sister" },
+            { "ch": 1, "fr": "la table", "en": "the table" }, { "ch": 1, "fr": "la voiture", "en": "the car" }, { "ch": 1, "fr": "la chaleur", "en": "heat, warmth" },
+            { "ch": 1, "fr": "la croix", "en": "the cross" }, { "ch": 1, "fr": "la distraction", "en": "the amusement" }, { "ch": 1, "fr": "la fleur", "en": "the flower" },
+            { "ch": 1, "fr": "la fois", "en": "the time (occasion)" }, { "ch": 1, "fr": "la forêt", "en": "the forest" }, { "ch": 1, "fr": "la fourmi", "en": "the ant" },
+            { "ch": 1, "fr": "la main", "en": "the hand" }, { "ch": 1, "fr": "la nuit", "en": "the night" }, { "ch": 1, "fr": "la radio", "en": "the radio" },
+            { "ch": 1, "fr": "l'ami (m.)", "en": "the friend (m.)" }, { "ch": 1, "fr": "l'amie (f.)", "en": "the friend (f.)" }, { "ch": 1, "fr": "l'anglais", "en": "English (language)" },
+            { "ch": 1, "fr": "l'architecte", "en": "the architect" }, { "ch": 1, "fr": "l'emploi", "en": "the job" }, { "ch": 1, "fr": "l'énergie", "en": "energy" },
+            { "ch": 1, "fr": "l'enfant", "en": "the child" }, { "ch": 1, "fr": "l'histoire", "en": "the story, history" }, { "ch": 1, "fr": "l'homme", "en": "the man" },
+            { "ch": 1, "fr": "l'hôtel", "en": "the hotel" }, { "ch": 1, "fr": "l'île", "en": "the island" }, { "ch": 1, "fr": "l'orange", "en": "the orange (fruit)" },
+            { "ch": 1, "fr": "l'université", "en": "the university" }, { "ch": 1, "fr": "l'usine", "en": "the factory" }, { "ch": 1, "fr": "la harpe", "en": "the harp" },
+            { "ch": 1, "fr": "le héros", "en": "the hero" }, { "ch": 1, "fr": "la honte", "en": "shame" }, { "ch": 1, "fr": "le hors-d'œuvre", "en": "the appetizer" },
+            { "ch": 1, "fr": "un autobus", "en": "a bus" }, { "ch": 1, "fr": "un billet", "en": "a ticket" }, { "ch": 1, "fr": "un dictionnaire", "en": "a dictionary" },
+            { "ch": 1, "fr": "un fauteuil", "en": "an easy chair" }, { "ch": 1, "fr": "un jardin", "en": "a garden" }, { "ch": 1, "fr": "un musée", "en": "a museum" },
+            { "ch": 1, "fr": "un pianiste", "en": "a pianist" }, { "ch": 1, "fr": "un salon", "en": "a living room" }, { "ch": 1, "fr": "une bibliothèque", "en": "a library" },
+            { "ch": 1, "fr": "une héroïne", "en": "a heroine" }, { "ch": 1, "fr": "une Hollandaise", "en": "a Dutchwoman" }, { "ch": 1, "fr": "une leçon", "en": "a lesson" },
+            { "ch": 1, "fr": "une librairie", "en": "a bookstore" }, { "ch": 1, "fr": "une mère", "en": "a mother" }, { "ch": 1, "fr": "une page", "en": "a (book) page" },
+            { "ch": 1, "fr": "une valise", "en": "a suitcase" }, { "ch": 1, "fr": "une ville", "en": "a city" }, { "ch": 1, "fr": "un choix", "en": "a choice" },
+            { "ch": 1, "fr": "le nez", "en": "the nose" }, { "ch": 1, "fr": "le bureau", "en": "the desk (or office)" }, { "ch": 1, "fr": "un hôpital", "en": "a hospital" },
+            { "ch": 1, "fr": "le lieu", "en": "the place" }, { "ch": 1, "fr": "le travail", "en": "the work, the task" }, { "ch": 1, "fr": "agréable", "en": "pleasant" },
+            { "ch": 1, "fr": "avare", "en": "stingy" }, { "ch": 1, "fr": "beau (bel, belle)", "en": "beautiful/handsome" }, { "ch": 1, "fr": "bon (bonne)", "en": "good" },
+            { "ch": 1, "fr": "bon marché", "en": "inexpensive" }, { "ch": 1, "fr": "cher (chère)", "en": "expensive; dear" }, { "ch": 1, "fr": "chic", "en": "stylish, chic" },
+            { "ch": 1, "fr": "content(e)", "en": "happy, pleased" }, { "ch": 1, "fr": "costaud(e)", "en": "sturdy (person)" }, { "ch": 1, "fr": "dernier (-ière)", "en": "last, final" },
+            { "ch": 1, "fr": "désolé(e)", "en": "sorry" }, { "ch": 1, "fr": "difficile", "en": "difficult" }, { "ch": 1, "fr": "drôle", "en": "funny" },
+            { "ch": 1, "fr": "excellent(e)", "en": "excellent" }, { "ch": 1, "fr": "facile", "en": "easy" }, { "ch": 1, "fr": "fantastique", "en": "wonderful" },
+            { "ch": 1, "fr": "fatigué(e)", "en": "tired" }, { "ch": 1, "fr": "formidable", "en": "fabulous" }, { "ch": 1, "fr": "fort(e)", "en": "strong" },
+            { "ch": 1, "fr": "grand(e)", "en": "big, tall; great" }, { "ch": 1, "fr": "gros(se)", "en": "fat" }, { "ch": 1, "fr": "heureux (-euse)", "en": "happy" },
+            { "ch": 1, "fr": "idéaliste", "en": "idealistic" }, { "ch": 1, "fr": "intelligent(e)", "en": "intelligent" }, { "ch": 1, "fr": "intéressant(e)", "en": "interesting" },
+            { "ch": 1, "fr": "jeune", "en": "young" }, { "ch": 1, "fr": "joli(e)", "en": "pretty" }, { "ch": 1, "fr": "laid(e)", "en": "ugly" },
+            { "ch": 1, "fr": "mauvais(e)", "en": "bad" }, { "ch": 1, "fr": "mince", "en": "thin" }, { "ch": 1, "fr": "nouveau/nouvel/nouvelle", "en": "new" },
+            { "ch": 1, "fr": "pauvre", "en": "poor" }, { "ch": 1, "fr": "petit(e)", "en": "small; short" }, { "ch": 1, "fr": "premier (-ière)", "en": "first" },
+            { "ch": 1, "fr": "riche", "en": "rich" }, { "ch": 1, "fr": "sincère", "en": "sincere" }, { "ch": 1, "fr": "sociable", "en": "friendly" },
+            { "ch": 1, "fr": "sympathique", "en": "nice" }, { "ch": 1, "fr": "timide", "en": "shy, timid" }, { "ch": 1, "fr": "triste", "en": "sad" },
+            { "ch": 1, "fr": "typique", "en": "typical" }, { "ch": 1, "fr": "vieux/vieil/vieille", "en": "old" }, { "ch": 1, "fr": "blanc(he)", "en": "white" },
+            { "ch": 1, "fr": "blond(e)", "en": "blond(e)" }, { "ch": 1, "fr": "bleu(e)", "en": "blue" }, { "ch": 1, "fr": "brun(e)", "en": "dark-haired" },
+            { "ch": 1, "fr": "gris(e)", "en": "gray" }, { "ch": 1, "fr": "rose", "en": "pink" }, { "ch": 1, "fr": "jaune", "en": "yellow" },
+            { "ch": 1, "fr": "rouge", "en": "red" }, { "ch": 1, "fr": "marron", "en": "brown" }, { "ch": 1, "fr": "vert(e)", "en": "green" },
+            { "ch": 1, "fr": "noir(e)", "en": "black" }, { "ch": 1, "fr": "violet(te)", "en": "purple" }, { "ch": 1, "fr": "orange", "en": "orange" },
+            { "ch": 1, "fr": "allemand(e)", "en": "German" }, { "ch": 1, "fr": "américain(e)", "en": "American" }, { "ch": 1, "fr": "anglais(e)", "en": "English" },
+            { "ch": 1, "fr": "belge", "en": "Belgian" }, { "ch": 1, "fr": "canadien(ne)", "en": "Canadian" }, { "ch": 1, "fr": "chinois(e)", "en": "Chinese" },
+            { "ch": 1, "fr": "espagnol(e)", "en": "Spanish" }, { "ch": 1, "fr": "français(e)", "en": "French" }, { "ch": 1, "fr": "haïtien(ne)", "en": "Haitian" },
+            { "ch": 1, "fr": "israélien(ne)", "en": "Israeli" }, { "ch": 1, "fr": "italien(ne)", "en": "Italian" }, { "ch": 1, "fr": "japonais(e)", "en": "Japanese" },
+            { "ch": 1, "fr": "libanais(e)", "en": "Lebanese" }, { "ch": 1, "fr": "marocain(e)", "en": "Moroccan" }, { "ch": 1, "fr": "mexicain(e)", "en": "Mexican" },
+            { "ch": 1, "fr": "russe", "en": "Russian" }, { "ch": 1, "fr": "sénégalais(e)", "en": "Senegalese" }, { "ch": 1, "fr": "suisse", "en": "Swiss" },
+            { "ch": 1, "fr": "vietnamien(ne)", "en": "Vietnamese" },
+            // Chapter 2
+            { "ch": 2, "fr": "assez", "en": "fairly, rather" }, { "ch": 2, "fr": "assez de", "en": "enough" }, { "ch": 2, "fr": "aujourd'hui", "en": "today" },
+            { "ch": 2, "fr": "aussi", "en": "also" }, { "ch": 2, "fr": "beaucoup (de)", "en": "much, many, a lot" }, { "ch": 2, "fr": "bien", "en": "very, well" },
+            { "ch": 2, "fr": "donc", "en": "therefore, so" }, { "ch": 2, "fr": "et", "en": "and" }, { "ch": 2, "fr": "ici", "en": "here" },
+            { "ch": 2, "fr": "là-bas", "en": "over there" }, { "ch": 2, "fr": "maintenant", "en": "now" }, { "ch": 2, "fr": "mais", "en": "but" },
+            { "ch": 2, "fr": "ou", "en": "or" }, { "ch": 2, "fr": "parfois", "en": "sometimes" }, { "ch": 2, "fr": "peu", "en": "hardly, not very" },
+            { "ch": 2, "fr": "plutôt", "en": "rather" }, { "ch": 2, "fr": "quelquefois", "en": "sometimes" }, { "ch": 2, "fr": "rarement", "en": "rarely" },
+            { "ch": 2, "fr": "si", "en": "if" }, { "ch": 2, "fr": "souvent", "en": "often" }, { "ch": 2, "fr": "toujours", "en": "always" },
+            { "ch": 2, "fr": "très", "en": "very" }, { "ch": 2, "fr": "trop (de)", "en": "too, too much (many)" }, { "ch": 2, "fr": "un peu (de)", "en": "a little" },
+            { "ch": 2, "fr": "la bibliothèque", "en": "library, study" }, { "ch": 2, "fr": "le bois", "en": "wood" }, { "ch": 2, "fr": "le cahier", "en": "notebook" },
+            { "ch": 2, "fr": "le canapé", "en": "sofa" }, { "ch": 2, "fr": "la glace", "en": "mirror" }, { "ch": 2, "fr": "le jardin", "en": "garden, yard" },
+            { "ch": 2, "fr": "la lampe", "en": "lamp, light" }, { "ch": 2, "fr": "la chaise", "en": "chair" }, { "ch": 2, "fr": "la chambre", "en": "bedroom" },
+            { "ch": 2, "fr": "le lit", "en": "bed" }, { "ch": 2, "fr": "la maison", "en": "house" }, { "ch": 2, "fr": "le mur", "en": "wall" },
+            { "ch": 2, "fr": "la cheminée", "en": "fireplace; chimney" }, { "ch": 2, "fr": "l'ordinateur", "en": "computer" }, { "ch": 2, "fr": "le piano", "en": "piano" },
+            { "ch": 2, "fr": "la clé", "en": "key" }, { "ch": 2, "fr": "le crayon", "en": "pencil" }, { "ch": 2, "fr": "la cuisine", "en": "kitchen" },
+            { "ch": 2, "fr": "la cuisinière", "en": "stove" }, { "ch": 2, "fr": "le placard", "en": "cupboard; closet" }, { "ch": 2, "fr": "le plafond", "en": "ceiling" },
+            { "ch": 2, "fr": "le plancher", "en": "floor" }, { "ch": 2, "fr": "la porte", "en": "door" }, { "ch": 2, "fr": "le fauteuil", "en": "armchair, easy chair" },
+            { "ch": 2, "fr": "la fenêtre", "en": "window" }, { "ch": 2, "fr": "le réveil", "en": "alarm clock" }, { "ch": 2, "fr": "les rideaux", "en": "curtains" },
+            { "ch": 2, "fr": "le four", "en": "oven" }, { "ch": 2, "fr": "la salle à manger", "en": "dining room" }, { "ch": 2, "fr": "le foyer", "en": "entryway, hearth" },
+            { "ch": 2, "fr": "la salle de bains", "en": "bathroom" }, { "ch": 2, "fr": "le frigo", "en": "refrigerator" }, { "ch": 2, "fr": "le salon", "en": "living room" },
+            { "ch": 2, "fr": "le stylo", "en": "pen" }, { "ch": 2, "fr": "le tableau", "en": "picture, painting" }, { "ch": 2, "fr": "le tapis", "en": "rug, carpet" },
+            { "ch": 2, "fr": "la terrasse", "en": "patio, terrace" }, { "ch": 2, "fr": "la vidéo", "en": "video (DVD)" }, { "ch": 2, "fr": "ancien(ne)", "en": "old; former" },
+            { "ch": 2, "fr": "bleu marine", "en": "navy blue" }, { "ch": 2, "fr": "confortable", "en": "comfortable" }, { "ch": 2, "fr": "extérieur(e)", "en": "outside" },
+            { "ch": 2, "fr": "fin(e)", "en": "fine, delicate" }, { "ch": 2, "fr": "intérieur(e)", "en": "inside, interior" }, { "ch": 2, "fr": "long(ue)", "en": "long" },
+            { "ch": 2, "fr": "privé(e)", "en": "private" }, { "ch": 2, "fr": "propre", "en": "clean" }, { "ch": 2, "fr": "spacieux (-euse)", "en": "spacious" },
+            // Chapter 3
+            { "ch": 3, "fr": "lundi", "en": "Monday" }, { "ch": 3, "fr": "mardi", "en": "Tuesday" }, { "ch": 3, "fr": "mercredi", "en": "Wednesday" },
+            { "ch": 3, "fr": "jeudi", "en": "Thursday" }, { "ch": 3, "fr": "vendredi", "en": "Friday" }, { "ch": 3, "fr": "samedi", "en": "Saturday" },
+            { "ch": 3, "fr": "dimanche", "en": "Sunday" }, { "ch": 3, "fr": "janvier", "en": "January" }, { "ch": 3, "fr": "février", "en": "February" },
+            { "ch": 3, "fr": "mars", "en": "March" }, { "ch": 3, "fr": "avril", "en": "April" }, { "ch": 3, "fr": "mai", "en": "May" },
+            { "ch": 3, "fr": "juin", "en": "June" }, { "ch": 3, "fr": "juillet", "en": "July" }, { "ch": 3, "fr": "août", "en": "August" },
+            { "ch": 3, "fr": "septembre", "en": "September" }, { "ch": 3, "fr": "octobre", "en": "October" }, { "ch": 3, "fr": "novembre", "en": "November" },
+            { "ch": 3, "fr": "décembre", "en": "December" }, { "ch": 3, "fr": "l'été", "en": "summer" }, { "ch": 3, "fr": "l'hiver", "en": "winter" },
+            { "ch": 3, "fr": "l'automne", "en": "autumn, fall" }, { "ch": 3, "fr": "le printemps", "en": "spring" }, { "ch": 3, "fr": "le matin", "en": "morning" },
+            { "ch": 3, "fr": "l'après-midi", "en": "afternoon" }, { "ch": 3, "fr": "le soir", "en": "evening" }, { "ch": 3, "fr": "la nuit", "en": "night" },
+            { "ch": 3, "fr": "adorer", "en": "to love, to adore" }, { "ch": 3, "fr": "aimer mieux", "en": "to prefer, to like better" }, { "ch": 3, "fr": "arriver", "en": "to arrive" },
+            { "ch": 3, "fr": "chercher", "en": "to look for" }, { "ch": 3, "fr": "danser", "en": "to dance" }, { "ch": 3, "fr": "détester", "en": "to hate, to detest" },
+            { "ch": 3, "fr": "étudier", "en": "to study" }, { "ch": 3, "fr": "expliquer", "en": "to explain" }, { "ch": 3, "fr": "fermer", "en": "to close" },
+            { "ch": 3, "fr": "habiter", "en": "to live" }, { "ch": 3, "fr": "jouer", "en": "to play" }, { "ch": 3, "fr": "louer", "en": "to rent" },
+            { "ch": 3, "fr": "regarder", "en": "to look at, to watch" }, { "ch": 3, "fr": "rêver", "en": "to dream" }, { "ch": 3, "fr": "travailler", "en": "to work" },
+            { "ch": 3, "fr": "trouver", "en": "to find" }, { "ch": 3, "fr": "utiliser", "en": "to use" }, { "ch": 3, "fr": "visiter", "en": "to visit (a place)" },
+            { "ch": 3, "fr": "l'an", "en": "year" }, { "ch": 3, "fr": "le jour", "en": "day" }, { "ch": 3, "fr": "l'anniversaire", "en": "birthday; anniversary" },
+            { "ch": 3, "fr": "le journal", "en": "newspaper" }, { "ch": 3, "fr": "l'arbre", "en": "tree" }, { "ch": 3, "fr": "le lieu", "en": "place" },
+            { "ch": 3, "fr": "l'argent", "en": "money" }, { "ch": 3, "fr": "le magasin", "en": "store" }, { "ch": 3, "fr": "l'ascenseur", "en": "elevator" },
+            { "ch": 3, "fr": "le mail", "en": "e-mail" }, { "ch": 3, "fr": "l'autobus", "en": "bus" }, { "ch": 3, "fr": "le médicament", "en": "medicine" },
+            { "ch": 3, "fr": "l'avion", "en": "airplane" }, { "ch": 3, "fr": "le message", "en": "message" }, { "ch": 3, "fr": "les bagages", "en": "luggage" },
+            { "ch": 3, "fr": "le mois", "en": "month" }, { "ch": 3, "fr": "le bâtiment", "en": "building" }, { "ch": 3, "fr": "le mot", "en": "word" },
+            { "ch": 3, "fr": "le bruit", "en": "noise" }, { "ch": 3, "fr": "le mur", "en": "wall" }, { "ch": 3, "fr": "les cheveux", "en": "hair" },
+            { "ch": 3, "fr": "le musée", "en": "museum" }, { "ch": 3, "fr": "les devoirs", "en": "homework" }, { "ch": 3, "fr": "le papier", "en": "paper" },
+            { "ch": 3, "fr": "l'enfant", "en": "child" }, { "ch": 3, "fr": "le parc", "en": "park" }, { "ch": 3, "fr": "l'escalier", "en": "stairway" },
+            { "ch": 3, "fr": "le pays", "en": "country" }, { "ch": 3, "fr": "l'étage", "en": "floor (building)" }, { "ch": 3, "fr": "le prix", "en": "price" },
+            { "ch": 3, "fr": "le feutre", "en": "felt-tip pen" }, { "ch": 3, "fr": "le rêve", "en": "dream" }, { "ch": 3, "fr": "les gens", "en": "people" },
+            { "ch": 3, "fr": "le théâtre", "en": "theater" }, { "ch": 3, "fr": "le thème", "en": "theme" }, { "ch": 3, "fr": "le voyage", "en": "trip" },
+            { "ch": 3, "fr": "l'addition", "en": "check, bill" }, { "ch": 3, "fr": "l'avenue", "en": "avenue" }, { "ch": 3, "fr": "la campagne", "en": "country" },
+            { "ch": 3, "fr": "la carte postale", "en": "postcard" }, { "ch": 3, "fr": "la douche", "en": "shower, bath" }, { "ch": 3, "fr": "l'école", "en": "school" },
+            { "ch": 3, "fr": "l'église", "en": "church" }, { "ch": 3, "fr": "l'entrée", "en": "entry; first course" }, { "ch": 3, "fr": "la fête", "en": "party; holiday" },
+            { "ch": 3, "fr": "la feuille", "en": "leaf; sheet (paper)" }, { "ch": 3, "fr": "la guerre", "en": "war" }, { "ch": 3, "fr": "la lettre", "en": "letter" },
+            { "ch": 3, "fr": "la musique", "en": "music" }, { "ch": 3, "fr": "la page", "en": "page" }, { "ch": 3, "fr": "la phrase", "en": "sentence" },
+            { "ch": 3, "fr": "la pièce", "en": "room; play (theater)" }, { "ch": 3, "fr": "la plage", "en": "beach" }, { "ch": 3, "fr": "la question", "en": "question" },
+            { "ch": 3, "fr": "la rue", "en": "street" }, { "ch": 3, "fr": "la salle de classe", "en": "classroom" }, { "ch": 3, "fr": "la santé", "en": "health" },
+            { "ch": 3, "fr": "la semaine", "en": "week" }, { "ch": 3, "fr": "la soirée", "en": "evening; party" }, { "ch": 3, "fr": "la sortie", "en": "exit" },
+            { "ch": 3, "fr": "affectueux (-euse)", "en": "affectionate" }, { "ch": 3, "fr": "aimable", "en": "nice, kind" }, { "ch": 3, "fr": "amical(e)", "en": "friendly" },
+            { "ch": 3, "fr": "aveugle", "en": "blind" }, { "ch": 3, "fr": "bas(se)", "en": "low, short" }, { "ch": 3, "fr": "court(e)", "en": "short (in length)" },
+            { "ch": 3, "fr": "curieux (-euse)", "en": "curious; odd" }, { "ch": 3, "fr": "dangereux (-euse)", "en": "dangerous" }, { "ch": 3, "fr": "doux (-ce)", "en": "sweet; mild; soft" },
+            { "ch": 3, "fr": "dur(e)", "en": "hard" }, { "ch": 3, "fr": "élégant(e)", "en": "elegant" }, { "ch": 3, "fr": "étrange", "en": "strange" },
+            { "ch": 3, "fr": "étroit(e)", "en": "narrow" }, { "ch": 3, "fr": "faible", "en": "weak" }, { "ch": 3, "fr": "fidèle", "en": "faithful" },
+            { "ch": 3, "fr": "fier (-ère)", "en": "proud" }, { "ch": 3, "fr": "large", "en": "wide" }, { "ch": 3, "fr": "lent(e)", "en": "slow" },
+            { "ch": 3, "fr": "libre", "en": "free" }, { "ch": 3, "fr": "lourd(e)", "en": "heavy" }, { "ch": 3, "fr": "paresseux (-euse)", "en": "lazy" },
+            { "ch": 3, "fr": "particulier (-ière)", "en": "special" }, { "ch": 3, "fr": "passionnant(e)", "en": "exciting" }, { "ch": 3, "fr": "profond(e)", "en": "deep" },
+            { "ch": 3, "fr": "rapide", "en": "fast" }, { "ch": 3, "fr": "sourd(e)", "en": "deaf" }, { "ch": 3, "fr": "spécial(e)", "en": "special" },
+            { "ch": 3, "fr": "tranquille (calme)", "en": "quiet, calm" },
+            // Chapter 4
+            { "ch": 4, "fr": "agir", "en": "to act" }, { "ch": 4, "fr": "finir (de)", "en": "to finish" }, { "ch": 4, "fr": "réfléchir (à)", "en": "to reflect (on), consider" },
+            { "ch": 4, "fr": "remplir", "en": "to fill" }, { "ch": 4, "fr": "réussir (à)", "en": "to succeed (in)" }, { "ch": 4, "fr": "blanchir", "en": "to bleach, whiten" },
+            { "ch": 4, "fr": "brunir", "en": "to tan; to brown" }, { "ch": 4, "fr": "élargir", "en": "to widen, broaden" }, { "ch": 4, "fr": "grandir", "en": "to grow up" },
+            { "ch": 4, "fr": "grossir", "en": "to gain weight" }, { "ch": 4, "fr": "jaunir", "en": "to yellow" }, { "ch": 4, "fr": "maigrir", "en": "to lose weight" },
+            { "ch": 4, "fr": "pâlir", "en": "to grow pale" }, { "ch": 4, "fr": "ralentir", "en": "to slow down" }, { "ch": 4, "fr": "rétrécir", "en": "to shrink, grow smaller" },
+            { "ch": 4, "fr": "rougir", "en": "to blush, grow red" }, { "ch": 4, "fr": "salir", "en": "to get dirty" }, { "ch": 4, "fr": "vieillir", "en": "to grow old, age" },
+            { "ch": 4, "fr": "l'agence de voyages", "en": "travel agency" }, { "ch": 4, "fr": "la blanchisserie", "en": "laundry" }, { "ch": 4, "fr": "la boucherie", "en": "butcher shop" },
+            { "ch": 4, "fr": "la boulangerie", "en": "bakery" }, { "ch": 4, "fr": "la charcuterie", "en": "delicatessen" }, { "ch": 4, "fr": "le coiffeur", "en": "hairdresser" },
+            { "ch": 4, "fr": "la confiserie", "en": "candy store" }, { "ch": 4, "fr": "le cordonnier", "en": "shoemaker" }, { "ch": 4, "fr": "la droguerie", "en": "paint store, cleaning products" },
+            { "ch": 4, "fr": "l'épicerie", "en": "grocery" }, { "ch": 4, "fr": "le fleuriste", "en": "florist's shop" }, { "ch": 4, "fr": "le grand magasin", "en": "department store" },
+            { "ch": 4, "fr": "l'hypermarché", "en": "big box store" }, { "ch": 4, "fr": "le magasin de chaussures", "en": "shoe store" }, { "ch": 4, "fr": "le magasin de fruits et légumes", "en": "produce market" },
+            { "ch": 4, "fr": "le magasin d'informatique", "en": "computers and software" }, { "ch": 4, "fr": "le magasin de vêtements", "en": "clothing store" }, { "ch": 4, "fr": "le marchand de vins", "en": "wine merchant" },
+            { "ch": 4, "fr": "l'opticien", "en": "optician" }, { "ch": 4, "fr": "la papeterie", "en": "stationery store" }, { "ch": 4, "fr": "la pâtisserie", "en": "pastry shop" },
+            { "ch": 4, "fr": "la pharmacie", "en": "drugstore, pharmacy" }, { "ch": 4, "fr": "la poste", "en": "post office" }, { "ch": 4, "fr": "un rabais", "en": "a discount" },
+            { "ch": 4, "fr": "la quincaillerie", "en": "hardware store" }, { "ch": 4, "fr": "des soldes", "en": "a sale" }, { "ch": 4, "fr": "le supermarché", "en": "supermarket" },
+            { "ch": 4, "fr": "le tailleur", "en": "tailor" }, { "ch": 4, "fr": "la teinturerie", "en": "dry cleaner's" }, { "ch": 4, "fr": "l'abricot", "en": "apricot" },
+            { "ch": 4, "fr": "l'ananas", "en": "pineapple" }, { "ch": 4, "fr": "l'apéritif", "en": "before-dinner drink" }, { "ch": 4, "fr": "l'assiette", "en": "plate; bowl" },
+            { "ch": 4, "fr": "la baguette", "en": "baguette" }, { "ch": 4, "fr": "la banane", "en": "banana" }, { "ch": 4, "fr": "le beurre", "en": "butter" },
+            { "ch": 4, "fr": "la bière", "en": "beer" }, { "ch": 4, "fr": "le bifteck", "en": "steak" }, { "ch": 4, "fr": "le bœuf", "en": "beef" },
+            { "ch": 4, "fr": "la boisson", "en": "drink" }, { "ch": 4, "fr": "la bouteille", "en": "bottle" }, { "ch": 4, "fr": "le café", "en": "coffee" },
+            { "ch": 4, "fr": "la carotte", "en": "carrot" }, { "ch": 4, "fr": "la carte", "en": "menu" }, { "ch": 4, "fr": "le céleri", "en": "celery" },
+            { "ch": 4, "fr": "les céréales", "en": "cereal" }, { "ch": 4, "fr": "les cerises", "en": "cherries" }, { "ch": 4, "fr": "les champignons", "en": "mushrooms" },
+            { "ch": 4, "fr": "le chocolat", "en": "chocolate" }, { "ch": 4, "fr": "le client", "en": "customer" }, { "ch": 4, "fr": "la confiture", "en": "jam, preserves" },
+            { "ch": 4, "fr": "le couteau", "en": "knife" }, { "ch": 4, "fr": "la crème", "en": "cream" }, { "ch": 4, "fr": "les crevettes", "en": "shrimp" },
+            { "ch": 4, "fr": "le croissant", "en": "croissant" }, { "ch": 4, "fr": "la cuillère", "en": "spoon" }, { "ch": 4, "fr": "le déjeuner", "en": "lunch" },
+            { "ch": 4, "fr": "le dessert", "en": "dessert" }, { "ch": 4, "fr": "le dîner", "en": "dinner" }, { "ch": 4, "fr": "l'eau", "en": "water" },
+            { "ch": 4, "fr": "l'entrée", "en": "first course" }, { "ch": 4, "fr": "les épices", "en": "spices" }, { "ch": 4, "fr": "la farine", "en": "flour" },
+            { "ch": 4, "fr": "la fourchette", "en": "fork" }, { "ch": 4, "fr": "les fraises", "en": "strawberries" }, { "ch": 4, "fr": "les framboises", "en": "raspberries" },
+            { "ch": 4, "fr": "les frites", "en": "French fries" }, { "ch": 4, "fr": "le fromage", "en": "cheese" }, { "ch": 4, "fr": "le fruit", "en": "fruit" },
+            { "ch": 4, "fr": "le gâteau", "en": "cake; cookie" }, { "ch": 4, "fr": "la glace", "en": "ice cream" }, { "ch": 4, "fr": "le goûter", "en": "afternoon snack" },
+            { "ch": 4, "fr": "les haricots verts", "en": "green beans" }, { "ch": 4, "fr": "les herbes", "en": "herbs" }, { "ch": 4, "fr": "le homard", "en": "lobster" },
+            { "ch": 4, "fr": "les hors-d'œuvre", "en": "appetizers" }, { "ch": 4, "fr": "l'huile d'olive", "en": "olive oil" }, { "ch": 4, "fr": "le jambon", "en": "ham" },
+            { "ch": 4, "fr": "le lait", "en": "milk" }, { "ch": 4, "fr": "le lard", "en": "bacon" }, { "ch": 4, "fr": "le légume", "en": "vegetable" },
+            { "ch": 4, "fr": "la limonade", "en": "carbonated soft drink" }, { "ch": 4, "fr": "le melon", "en": "melon" }, { "ch": 4, "fr": "le menu du jour", "en": "daily special" },
+            { "ch": 4, "fr": "la moutarde", "en": "mustard" }, { "ch": 4, "fr": "la noix", "en": "nut, walnut" }, { "ch": 4, "fr": "l'œuf", "en": "egg" },
+            { "ch": 4, "fr": "les olives", "en": "olives" }, { "ch": 4, "fr": "l'orange", "en": "orange" }, { "ch": 4, "fr": "le pain", "en": "bread" },
+            { "ch": 4, "fr": "le pain au chocolat", "en": "chocolate croissant" }, { "ch": 4, "fr": "le pamplemousse", "en": "grapefruit" }, { "ch": 4, "fr": "la pêche", "en": "peach" },
+            { "ch": 4, "fr": "la petite cuillère", "en": "teaspoon" }, { "ch": 4, "fr": "le petit déjeuner", "en": "breakfast" }, { "ch": 4, "fr": "les petits pains", "en": "rolls" },
+            { "ch": 4, "fr": "les petits pois", "en": "peas" }, { "ch": 4, "fr": "le plat", "en": "dish; course" }, { "ch": 4, "fr": "le plat principal", "en": "main course" },
+            { "ch": 4, "fr": "la poire", "en": "pear" }, { "ch": 4, "fr": "le poisson", "en": "fish" }, { "ch": 4, "fr": "le poivre", "en": "pepper" },
+            { "ch": 4, "fr": "le poivron", "en": "green pepper" }, { "ch": 4, "fr": "la pomme", "en": "apple" }, { "ch": 4, "fr": "la pomme de terre", "en": "potato" },
+            { "ch": 4, "fr": "le porc", "en": "pork" }, { "ch": 4, "fr": "le potage", "en": "vegetable soup" }, { "ch": 4, "fr": "le poulet", "en": "chicken" },
+            { "ch": 4, "fr": "le pourboire", "en": "tip" }, { "ch": 4, "fr": "le raisin", "en": "grapes" }, { "ch": 4, "fr": "le riz", "en": "rice" },
+            { "ch": 4, "fr": "la salade", "en": "salad; lettuce" }, { "ch": 4, "fr": "le sandwich", "en": "sandwich" }, { "ch": 4, "fr": "les saucisses", "en": "sausages" },
+            { "ch": 4, "fr": "le sel", "en": "salt" }, { "ch": 4, "fr": "le serveur", "en": "server" }, { "ch": 4, "fr": "service compris", "en": "tip included" },
+            { "ch": 4, "fr": "la serviette", "en": "napkin; towel" }, { "ch": 4, "fr": "la soupe", "en": "soup" }, { "ch": 4, "fr": "le sucre", "en": "sugar" },
+            { "ch": 4, "fr": "la tartine", "en": "buttered bread" }, { "ch": 4, "fr": "la tasse", "en": "cup" }, { "ch": 4, "fr": "la tarte", "en": "tart, pie" },
+            { "ch": 4, "fr": "le thé", "en": "tea" }, { "ch": 4, "fr": "la tomato", "en": "tomato" }, { "ch": 4, "fr": "le veau", "en": "veal" },
+            { "ch": 4, "fr": "le verre", "en": "glass" }, { "ch": 4, "fr": "la viande", "en": "meat" }, { "ch": 4, "fr": "le vin", "en": "wine" },
+            { "ch": 4, "fr": "le yaourt", "en": "yogurt" },
+            // Chapter 5
+            { "ch": 5, "fr": "attendre", "en": "to wait for" }, { "ch": 5, "fr": "défendre", "en": "to defend; to forbid" }, { "ch": 5, "fr": "descendre", "en": "to go down; to get off" },
+            { "ch": 5, "fr": "entendre", "en": "to hear" }, { "ch": 5, "fr": "perdre", "en": "to lose" }, { "ch": 5, "fr": "rendre", "en": "to give back, to return" },
+            { "ch": 5, "fr": "répondre (à)", "en": "to answer" }, { "ch": 5, "fr": "rendre visite à", "en": "to visit (a person)" }, { "ch": 5, "fr": "tendre", "en": "to stretch out; to offer" },
+            { "ch": 5, "fr": "vendre", "en": "to sell" }, { "ch": 5, "fr": "actuellement", "en": "presently, currently, nowadays" }, { "ch": 5, "fr": "bientôt", "en": "soon" },
+            { "ch": 5, "fr": "en ce moment", "en": "right now" }, { "ch": 5, "fr": "plus tard", "en": "later" }, { "ch": 5, "fr": "prochain(e)", "en": "next" },
+            { "ch": 5, "fr": "tout à l'heure", "en": "in a little while" }, { "ch": 5, "fr": "annoncer", "en": "to announce" }, { "ch": 5, "fr": "avancer", "en": "to advance" },
+            { "ch": 5, "fr": "dénoncer", "en": "to denounce" }, { "ch": 5, "fr": "divorcer", "en": "to divorce" }, { "ch": 5, "fr": "forcer (à)", "en": "to force" },
+            { "ch": 5, "fr": "menacer", "en": "to threaten" }, { "ch": 5, "fr": "percer", "en": "to pierce" }, { "ch": 5, "fr": "placer", "en": "to place" },
+            { "ch": 5, "fr": "prononcer", "en": "to pronounce" }, { "ch": 5, "fr": "remplacer", "en": "to replace" }, { "ch": 5, "fr": "tracer", "en": "to trace" },
+            { "ch": 5, "fr": "arranger", "en": "to arrange" }, { "ch": 5, "fr": "bouger", "en": "to move" }, { "ch": 5, "fr": "changer", "en": "to change" },
+            { "ch": 5, "fr": "corriger", "en": "to correct" }, { "ch": 5, "fr": "dégager", "en": "to free, release" }, { "ch": 5, "fr": "diriger", "en": "to direct" },
+            { "ch": 5, "fr": "échanger", "en": "to exchange" }, { "ch": 5, "fr": "engager", "en": "to hire" }, { "ch": 5, "fr": "interroger", "en": "to question" },
+            { "ch": 5, "fr": "juger", "en": "to judge" }, { "ch": 5, "fr": "loger", "en": "to live; to house" }, { "ch": 5, "fr": "mélanger", "en": "to mix" },
+            { "ch": 5, "fr": "nager", "en": "to swim" }, { "ch": 5, "fr": "neiger", "en": "to snow" }, { "ch": 5, "fr": "obliger (à)", "en": "to oblige; to force" },
+            { "ch": 5, "fr": "partager", "en": "to share" }, { "ch": 5, "fr": "songer (à)", "en": "to dream; to think of" }, { "ch": 5, "fr": "voyager", "en": "to travel" },
+            { "ch": 5, "fr": "achever (de)", "en": "to finish" }, { "ch": 5, "fr": "amener", "en": "to bring (someone)" }, { "ch": 5, "fr": "élever", "en": "to erect; to raise" },
+            { "ch": 5, "fr": "emmener", "en": "to lead away" }, { "ch": 5, "fr": "enlever", "en": "to remove" }, { "ch": 5, "fr": "geler", "en": "to freeze" },
+            { "ch": 5, "fr": "se lever", "en": "to get up, stand up" }, { "ch": 5, "fr": "mener", "en": "to lead, guide" }, { "ch": 5, "fr": "peser", "en": "to weigh" },
+            { "ch": 5, "fr": "promener", "en": "to walk" }, { "ch": 5, "fr": "soulever", "en": "to lift (up)" }, { "ch": 5, "fr": "célébrer", "en": "to celebrate" },
+            { "ch": 5, "fr": "compléter", "en": "to complete" }, { "ch": 5, "fr": "considérer", "en": "to consider" }, { "ch": 5, "fr": "espérer", "en": "to hope to" },
+            { "ch": 5, "fr": "exagérer", "en": "to exaggerate" }, { "ch": 5, "fr": "s'inquiéter", "en": "to worry" }, { "ch": 5, "fr": "pénétrer", "en": "to penetrate" },
+            { "ch": 5, "fr": "posséder", "en": "to own, possess" }, { "ch": 5, "fr": "répéter", "en": "to repeat" }, { "ch": 5, "fr": "révéler", "en": "to show, reveal" },
+            { "ch": 5, "fr": "suggérer", "en": "to suggest" }, { "ch": 5, "fr": "s'appeler", "en": "to be named, be called" }, { "ch": 5, "fr": "épeler", "en": "to spell" },
+            { "ch": 5, "fr": "projeter", "en": "to plan; to project" }, { "ch": 5, "fr": "rappeler", "en": "to recall; to call again" }, { "ch": 5, "fr": "se rappeler", "en": "to remember" },
+            { "ch": 5, "fr": "rejeter", "en": "to reject" }, { "ch": 5, "fr": "renouveler", "en": "to renew; to renovate" }, { "ch": 5, "fr": "aboyer", "en": "to bark" },
+            { "ch": 5, "fr": "appuyer (sur)", "en": "to lean on; to press on" }, { "ch": 5, "fr": "employer", "en": "to use" }, { "ch": 5, "fr": "ennuyer", "en": "to bore; to annoy" },
+            { "ch": 5, "fr": "essuyer", "en": "to wipe; to suffer" }, { "ch": 5, "fr": "nettoyer", "en": "to clean" }, { "ch": 5, "fr": "payer", "en": "to pay" },
+            { "ch": 5, "fr": "un appareil-photo", "en": "camera" }, { "ch": 5, "fr": "des bas", "en": "stockings" }, { "ch": 5, "fr": "des boucles d'oreille", "en": "earrings" },
+            { "ch": 5, "fr": "un bracelet", "en": "bracelet" }, { "ch": 5, "fr": "un caleçon", "en": "men's briefs" }, { "ch": 5, "fr": "une ceinture", "en": "belt" },
+            { "ch": 5, "fr": "un chapeau", "en": "hat" }, { "ch": 5, "fr": "des chaussettes", "en": "socks" }, { "ch": 5, "fr": "des chaussures", "en": "shoes" },
+            { "ch": 5, "fr": "une chemise", "en": "shirt" }, { "ch": 5, "fr": "un chemisier", "en": "blouse" }, { "ch": 5, "fr": "un collier", "en": "necklace" },
+            { "ch": 5, "fr": "une écharpe", "en": "scarf (knit)" }, { "ch": 5, "fr": "un foulard", "en": "scarf (silk)" }, { "ch": 5, "fr": "des gants", "en": "gloves" },
+            { "ch": 5, "fr": "un gilet", "en": "vest" }, { "ch": 5, "fr": "un jean", "en": "jeans" }, { "ch": 5, "fr": "une jupe", "en": "skirt" },
+            { "ch": 5, "fr": "des lunettes (de soleil)", "en": "sunglasses" }, { "ch": 5, "fr": "un maillot de bain", "en": "swimsuit" }, { "ch": 5, "fr": "un manteau", "en": "coat, overcoat" },
+            { "ch": 5, "fr": "une montre", "en": "wristwatch" }, { "ch": 5, "fr": "un pantalon", "en": "pants, trousers" }, { "ch": 5, "fr": "des pantoufles", "en": "slippers" },
+            { "ch": 5, "fr": "un parapluie", "en": "umbrella" }, { "ch": 5, "fr": "un portable", "en": "cell phone" }, { "ch": 5, "fr": "un portefeuille", "en": "wallet" },
+            { "ch": 5, "fr": "un pull", "en": "sweater" }, { "ch": 5, "fr": "un pyjama", "en": "pyjamas" }, { "ch": 5, "fr": "une robe", "en": "dress" },
+            { "ch": 5, "fr": "une robe de nuit", "en": "nightgown" }, { "ch": 5, "fr": "un sac", "en": "handbag" }, { "ch": 5, "fr": "des sandales", "en": "sandals" },
+            { "ch": 5, "fr": "un short", "en": "shorts" }, { "ch": 5, "fr": "un slip", "en": "underpants" }, { "ch": 5, "fr": "un sweat-shirt", "en": "sweatshirt" },
+            { "ch": 5, "fr": "un T-shirt", "en": "T-shirt" }, { "ch": 5, "fr": "un soutien-gorge", "en": "bra" }, { "ch": 5, "fr": "une veste", "en": "jacket" },
+            { "ch": 5, "fr": "une brosse à cheveux", "en": "hairbrush" }, { "ch": 5, "fr": "une brosse à dents", "en": "toothbrush" }, { "ch": 5, "fr": "des couches", "en": "disposable diapers" },
+            { "ch": 5, "fr": "une crème démaquillante", "en": "cleansing cream, cold cream" }, { "ch": 5, "fr": "une crème solaire", "en": "sunscreen" }, { "ch": 5, "fr": "du démêlant", "en": "conditioner" },
+            { "ch": 5, "fr": "du dentifrice", "en": "toothpaste" }, { "ch": 5, "fr": "du déodorant", "en": "deodorant" }, { "ch": 5, "fr": "une éponge", "en": "sponge" },
+            { "ch": 5, "fr": "du fil et une aiguille", "en": "thread and a needle" }, { "ch": 5, "fr": "une lotion", "en": "lotion" }, { "ch": 5, "fr": "du maquillage", "en": "makeup" },
+            { "ch": 5, "fr": "un miroir", "en": "mirror" }, { "ch": 5, "fr": "des mouchoirs", "en": "tissues" }, { "ch": 5, "fr": "une lime à ongles", "en": "nail file" },
+            { "ch": 5, "fr": "du vernis à ongles", "en": "nail polish" }, { "ch": 5, "fr": "du papier hygiénique", "en": "toilet paper" }, { "ch": 5, "fr": "du parfum", "en": "perfume" },
+            { "ch": 5, "fr": "un peigne", "en": "comb" }, { "ch": 5, "fr": "des lames de rasoir", "en": "razor blades" }, { "ch": 5, "fr": "un rouge à lèvres", "en": "lipstick" },
+            { "ch": 5, "fr": "un rasoir", "en": "razor" }, { "ch": 5, "fr": "un savon", "en": "soap" }, { "ch": 5, "fr": "un sèche-cheveux", "en": "hair dryer" },
+            { "ch": 5, "fr": "des serviettes hygiéniques", "en": "sanitary napkins" }, { "ch": 5, "fr": "du shampooing", "en": "shampoo" }, { "ch": 5, "fr": "des tampons périodiques", "en": "tampons" },
+            // Chapter 6
+            { "ch": 6, "fr": "l'année prochaine", "en": "next year" }, { "ch": 6, "fr": "après-demain", "en": "the day after tomorrow" }, { "ch": 6, "fr": "cet après-midi", "en": "this afternoon" },
+            { "ch": 6, "fr": "demain", "en": "tomorrow" }, { "ch": 6, "fr": "dans huit/quinze jours", "en": "in a week/two weeks" }, { "ch": 6, "fr": "ce matin", "en": "this morning" },
+            { "ch": 6, "fr": "la semaine prochaine", "en": "next week" }, { "ch": 6, "fr": "ce soir", "en": "this evening, tonight" }, { "ch": 6, "fr": "tout à l'heure", "en": "in a little while, soon" },
+            { "ch": 6, "fr": "tout de suite", "en": "right away, immediately" }, { "ch": 6, "fr": "plus tard", "en": "later" }, { "ch": 6, "fr": "ce week-end", "en": "this weekend" },
+            { "ch": 6, "fr": "l'atmosphère", "en": "atmosphere" }, { "ch": 6, "fr": "l'aube", "en": "dawn" }, { "ch": 6, "fr": "la baie", "en": "bay" },
+            { "ch": 6, "fr": "le brouillard", "en": "fog" }, { "ch": 6, "fr": "la brume", "en": "mist" }, { "ch": 6, "fr": "le canyon", "en": "canyon" },
+            { "ch": 6, "fr": "le ciel", "en": "sky" }, { "ch": 6, "fr": "la colline", "en": "hill" }, { "ch": 6, "fr": "la comète", "en": "comet" },
+            { "ch": 6, "fr": "le continent", "en": "continent" }, { "ch": 6, "fr": "la côte", "en": "coast" }, { "ch": 6, "fr": "le coucher du soleil", "en": "sunset" },
+            { "ch": 6, "fr": "le désert", "en": "desert" }, { "ch": 6, "fr": "la dune", "en": "sand dune" }, { "ch": 6, "fr": "l'étoile", "en": "star" },
+            { "ch": 6, "fr": "la falaise", "en": "cliff" }, { "ch": 6, "fr": "le fleuve", "en": "river" }, { "ch": 6, "fr": "la foudre", "en": "lightning" },
+            { "ch": 6, "fr": "la grotte", "en": "cave" }, { "ch": 6, "fr": "l'incendie", "en": "accidental fire" }, { "ch": 6, "fr": "l'inondation", "en": "flood" },
+            { "ch": 6, "fr": "le lac", "en": "lake" }, { "ch": 6, "fr": "le lever du soleil", "en": "sunrise" }, { "ch": 6, "fr": "la lune", "en": "moon" },
+            { "ch": 6, "fr": "le marais", "en": "swamp, marsh" }, { "ch": 6, "fr": "la mer", "en": "sea" }, { "ch": 6, "fr": "la montagne", "en": "mountain" },
+            { "ch": 6, "fr": "la neige", "en": "snow" }, { "ch": 6, "fr": "les nuages", "en": "clouds" }, { "ch": 6, "fr": "l'océan", "en": "ocean" },
+            { "ch": 6, "fr": "l'orage", "en": "storm" }, { "ch": 6, "fr": "l'ouragan", "en": "hurricane" }, { "ch": 6, "fr": "la plage", "en": "beach" },
+            { "ch": 6, "fr": "la plaine", "en": "plain" }, { "ch": 6, "fr": "la pluie", "en": "rain" }, { "ch": 6, "fr": "la pollution", "en": "pollution" },
+            { "ch": 6, "fr": "la poussière", "en": "dust" }, { "ch": 6, "fr": "le réchauffement de la planète", "en": "global warming" }, { "ch": 6, "fr": "la rivière", "en": "river (tributary)" },
+            { "ch": 6, "fr": "la roche", "en": "rock" }, { "ch": 6, "fr": "le ruisseau", "en": "stream" }, { "ch": 6, "fr": "le sable", "en": "sand" },
+            { "ch": 6, "fr": "le soleil", "en": "sun" }, { "ch": 6, "fr": "la tempête", "en": "storm" }, { "ch": 6, "fr": "la terre", "en": "the Earth; soil, land" },
+            { "ch": 6, "fr": "le tonnerre", "en": "thunder" }, { "ch": 6, "fr": "le tremblement de terre", "en": "earthquake" }, { "ch": 6, "fr": "la vague", "en": "ocean wave" },
+            { "ch": 6, "fr": "la vallée", "en": "valley" }, { "ch": 6, "fr": "le vent", "en": "wind" }, { "ch": 6, "fr": "le volcan", "en": "volcano" },
+            // Chapter 7
+            { "ch": 7, "fr": "l'article", "en": "article" }, { "ch": 7, "fr": "l'auteur", "en": "author" }, { "ch": 7, "fr": "la bibliothèque", "en": "library; shelf" },
+            { "ch": 7, "fr": "la biographie", "en": "biography" }, { "ch": 7, "fr": "le bloc-notes", "en": "notepad" }, { "ch": 7, "fr": "le cahier", "en": "notebook" },
+            { "ch": 7, "fr": "la carte", "en": "map; menu" }, { "ch": 7, "fr": "la carte postale", "en": "postcard" }, { "ch": 7, "fr": "le chapitre", "en": "chapter" },
+            { "ch": 7, "fr": "le clavier", "en": "keyboard" }, { "ch": 7, "fr": "le compte rendu", "en": "review" }, { "ch": 7, "fr": "le conte", "en": "story, fairy tale" },
+            { "ch": 7, "fr": "le crayon", "en": "pencil" }, { "ch": 7, "fr": "le critique", "en": "critic" }, { "ch": 7, "fr": "le dictionnaire", "en": "dictionary" },
+            { "ch": 7, "fr": "la dissertation", "en": "term paper" }, { "ch": 7, "fr": "l'écran", "en": "screen" }, { "ch": 7, "fr": "les écrits", "en": "writings" },
+            { "ch": 7, "fr": "l'écrivain", "en": "writer" }, { "ch": 7, "fr": "l'éditeur", "en": "publisher" }, { "ch": 7, "fr": "l'édition", "en": "publishing" },
+            { "ch": 7, "fr": "l'encyclopédie", "en": "encyclopedia" }, { "ch": 7, "fr": "l'enveloppe", "en": "envelope" }, { "ch": 7, "fr": "l'essai", "en": "nonfiction" },
+            { "ch": 7, "fr": "l'étude", "en": "research study" }, { "ch": 7, "fr": "l'examen", "en": "exam, test" }, { "ch": 7, "fr": "une feuille de papier", "en": "a sheet of paper" },
+            { "ch": 7, "fr": "le fichier", "en": "computer file" }, { "ch": 7, "fr": "hebdomadaire", "en": "weekly" }, { "ch": 7, "fr": "imprimer", "en": "to print" },
+            { "ch": 7, "fr": "l'imprimante", "en": "printer" }, { "ch": 7, "fr": "sur Internet", "en": "on the Internet" }, { "ch": 7, "fr": "le journal", "en": "newspaper" },
+            { "ch": 7, "fr": "la librairie", "en": "bookstore" }, { "ch": 7, "fr": "la littérature", "en": "literature" }, { "ch": 7, "fr": "le lien", "en": "link, Web link" },
+            { "ch": 7, "fr": "le livre", "en": "book" }, { "ch": 7, "fr": "le logiciel", "en": "software" }, { "ch": 7, "fr": "le magazine", "en": "magazine" },
+            { "ch": 7, "fr": "le manuel", "en": "textbook" }, { "ch": 7, "fr": "mensuel(le)", "en": "monthly" }, { "ch": 7, "fr": "le mot", "en": "word" },
+            { "ch": 7, "fr": "le moteur de recherche", "en": "search engine" }, { "ch": 7, "fr": "la nouvelle", "en": "novella; news" }, { "ch": 7, "fr": "l'ordinateur", "en": "computer" },
+            { "ch": 7, "fr": "du papier", "en": "paper" }, { "ch": 7, "fr": "les paroles", "en": "words (poem, song)" }, { "ch": 7, "fr": "le paragraphe", "en": "paragraph" },
+            { "ch": 7, "fr": "les petites annonces", "en": "classified ads" }, { "ch": 7, "fr": "la phrase", "en": "sentence" }, { "ch": 7, "fr": "la pièce (de théâtre)", "en": "play" },
+            { "ch": 7, "fr": "le poème", "en": "poem" }, { "ch": 7, "fr": "la poésie", "en": "poetry" }, { "ch": 7, "fr": "le portable", "en": "laptop; cell phone" },
+            { "ch": 7, "fr": "le programme", "en": "program" }, { "ch": 7, "fr": "la publicité", "en": "advertising" }, { "ch": 7, "fr": "les recherches", "en": "research" },
+            { "ch": 7, "fr": "le rédacteur (-trice)", "en": "copyeditor" }, { "ch": 7, "fr": "la revue", "en": "journal, review" }, { "ch": 7, "fr": "le roman", "en": "novel" },
+            { "ch": 7, "fr": "le roman policier", "en": "mystery" }, { "ch": 7, "fr": "le site Web", "en": "website" }, { "ch": 7, "fr": "la souris", "en": "mouse" },
+            { "ch": 7, "fr": "le stylo", "en": "pen" }, { "ch": 7, "fr": "le traitement de texte", "en": "word processing" }, { "ch": 7, "fr": "les touches", "en": "keys (keyboard)" },
+            { "ch": 7, "fr": "le traducteur", "en": "translator" }, { "ch": 7, "fr": "la traduction", "en": "translation" },
+            // Chapter 8
+            { "ch": 8, "fr": "l'acteur (-trice)", "en": "actor" }, { "ch": 8, "fr": "l'agent de change", "en": "stockbroker" }, { "ch": 8, "fr": "l'agent de police", "en": "police officer" },
+            { "ch": 8, "fr": "l'agent de voyages", "en": "travel agent" }, { "ch": 8, "fr": "l'agriculteur (-trice)", "en": "farmer" }, { "ch": 8, "fr": "l'archéologue", "en": "archeologist" },
+            { "ch": 8, "fr": "l'architecte", "en": "architect" }, { "ch": 8, "fr": "l'artisan(e)", "en": "artisan" }, { "ch": 8, "fr": "l'artiste", "en": "artist" },
+            { "ch": 8, "fr": "l'assistant(e) social(e)", "en": "social worker" }, { "ch": 8, "fr": "l'astronome", "en": "astronomer" }, { "ch": 8, "fr": "l'athlète", "en": "athlete" },
+            { "ch": 8, "fr": "l'auteur", "en": "author" }, { "ch": 8, "fr": "l'avocat(e)", "en": "lawyer" }, { "ch": 8, "fr": "le banquier (-ière)", "en": "banker" },
+            { "ch": 8, "fr": "le biologiste", "en": "biologist" }, { "ch": 8, "fr": "le boulanger (-ère)", "en": "baker" }, { "ch": 8, "fr": "le cadre", "en": "manager" },
+            { "ch": 8, "fr": "le chanteur (-euse)", "en": "singer" }, { "ch": 8, "fr": "le chauffeur de taxi", "en": "taxi driver" }, { "ch": 8, "fr": "le chercheur (-euse)", "en": "researcher" },
+            { "ch": 8, "fr": "le chimiste", "en": "chemist" }, { "ch": 8, "fr": "le cinéaste", "en": "filmmaker" }, { "ch": 8, "fr": "le coiffeur (-euse)", "en": "hairdresser" },
+            { "ch": 8, "fr": "le commerçant(e)", "en": "retailer" }, { "ch": 8, "fr": "le comptable", "en": "accountant" }, { "ch": 8, "fr": "le cordonnier", "en": "shoemaker" },
+            { "ch": 8, "fr": "le danseur (-euse)", "en": "dancer" }, { "ch": 8, "fr": "l'écrivain", "en": "writer" }, { "ch": 8, "fr": "l'électricien(ne)", "en": "electrician" },
+            { "ch": 8, "fr": "l'entrepreneur", "en": "entrepreneur" }, { "ch": 8, "fr": "l'épicier (-ière)", "en": "grocer" }, { "ch": 8, "fr": "la femme politique", "en": "politician" },
+            { "ch": 8, "fr": "le fonctionnaire", "en": "civil servant" }, { "ch": 8, "fr": "l'historien(ne)", "en": "historian" }, { "ch": 8, "fr": "l'homme politique", "en": "politician" },
+            { "ch": 8, "fr": "l'hôtesse de l'air", "en": "flight attendant" }, { "ch": 8, "fr": "l'infirmier (-ière)", "en": "nurse" }, { "ch": 8, "fr": "l'informaticien(ne)", "en": "software engineer" },
+            { "ch": 8, "fr": "l'ingénieur", "en": "engineer" }, { "ch": 8, "fr": "l'instituteur (-trice)", "en": "school teacher" }, { "ch": 8, "fr": "l'interprète", "en": "interpreter" },
+            { "ch": 8, "fr": "le jardinier (-ière)", "en": "gardener" }, { "ch": 8, "fr": "le journaliste", "en": "journalist" }, { "ch": 8, "fr": "le magistrat", "en": "judge" },
+            { "ch": 8, "fr": "le maire", "en": "mayor" }, { "ch": 8, "fr": "le marin", "en": "sailor" }, { "ch": 8, "fr": "le médecin", "en": "physician" },
+            { "ch": 8, "fr": "le menuisier", "en": "carpenter" }, { "ch": 8, "fr": "le militaire", "en": "serviceman" }, { "ch": 8, "fr": "le musicien(ne)", "en": "musician" },
+            { "ch": 8, "fr": "l'ouvrier (-ière)", "en": "factory worker" }, { "ch": 8, "fr": "le paléontologue", "en": "paleontologist" }, { "ch": 8, "fr": "le peintre", "en": "painter" },
+            { "ch": 8, "fr": "le philosophe", "en": "philosopher" }, { "ch": 8, "fr": "le photographe", "en": "photographer" }, { "ch": 8, "fr": "le physicien(ne)", "en": "physicist" },
+            { "ch": 8, "fr": "le pilote", "en": "pilot" }, { "ch": 8, "fr": "le plombier", "en": "plumber" }, { "ch": 8, "fr": "le pompier", "en": "firefighter" },
+            { "ch": 8, "fr": "le professeur", "en": "teacher" }, { "ch": 8, "fr": "le psychologue", "en": "psychologist" }, { "ch": 8, "fr": "le publicitaire", "en": "publicist" },
+            { "ch": 8, "fr": "le représentant(e)", "en": "sales rep" }, { "ch": 8, "fr": "le scientifique", "en": "scientist" }, { "ch": 8, "fr": "le serveur (-euse)", "en": "server" },
+            { "ch": 8, "fr": "le soldat", "en": "soldier" }, { "ch": 8, "fr": "le steward", "en": "flight attendant (m.)" }, { "ch": 8, "fr": "le technicien(ne)", "en": "technician" },
+            { "ch": 8, "fr": "le traducteur (-trice)", "en": "translator" }, { "ch": 8, "fr": "le vendeur (-euse)", "en": "salesperson" }, { "ch": 8, "fr": "le vétérinaire", "en": "veterinarian" },
+            // Chapter 9
+            { "ch": 9, "fr": "l'agneau", "en": "lamb" }, { "ch": 9, "fr": "l'aigrette", "en": "egret" }, { "ch": 9, "fr": "l'âne", "en": "donkey" },
+            { "ch": 9, "fr": "le canard", "en": "duck" }, { "ch": 9, "fr": "le cerf", "en": "deer" }, { "ch": 9, "fr": "le chameau", "en": "camel" },
+            { "ch": 9, "fr": "le chat", "en": "cat" }, { "ch": 9, "fr": "le cheval", "en": "horse" }, { "ch": 9, "fr": "la chèvre", "en": "goat" },
+            { "ch": 9, "fr": "le chien", "en": "dog" }, { "ch": 9, "fr": "le chimpanzé", "en": "chimpanzee" }, { "ch": 9, "fr": "le cochon", "en": "pig" },
+            { "ch": 9, "fr": "le colibris", "en": "hummingbird" }, { "ch": 9, "fr": "le coq", "en": "rooster" }, { "ch": 9, "fr": "le corbeau", "en": "crow" },
+            { "ch": 9, "fr": "le crapaud", "en": "toad" }, { "ch": 9, "fr": "le crocodile", "en": "crocodile" }, { "ch": 9, "fr": "le dauphin", "en": "dolphin" },
+            { "ch": 9, "fr": "le dindon", "en": "turkey" }, { "ch": 9, "fr": "l'écureuil", "en": "squirrel" }, { "ch": 9, "fr": "l'éléphant", "en": "elephant" },
+            { "ch": 9, "fr": "le faucon", "en": "falcon" }, { "ch": 9, "fr": "la gazelle", "en": "gazelle" }, { "ch": 9, "fr": "la girafe", "en": "giraffe" },
+            { "ch": 9, "fr": "le gorille", "en": "gorilla" }, { "ch": 9, "fr": "la grenouille", "en": "frog" }, { "ch": 9, "fr": "le hibou", "en": "owl" },
+            { "ch": 9, "fr": "le kangourou", "en": "kangaroo" }, { "ch": 9, "fr": "le lapin", "en": "rabbit" }, { "ch": 9, "fr": "le lion", "en": "lion" },
+            { "ch": 9, "fr": "le loup", "en": "wolf" }, { "ch": 9, "fr": "le moineau", "en": "sparrow" }, { "ch": 9, "fr": "le mouton", "en": "sheep" },
+            { "ch": 9, "fr": "l'oie", "en": "goose" }, { "ch": 9, "fr": "l'oiseau", "en": "bird" }, { "ch": 9, "fr": "l'ours", "en": "bear" },
+            { "ch": 9, "fr": "le perroquet", "en": "parrot" }, { "ch": 9, "fr": "le pigeon", "en": "pigeon" }, { "ch": 9, "fr": "le pingouin", "en": "penguin" },
+            { "ch": 9, "fr": "la poule", "en": "chicken, hen" }, { "ch": 9, "fr": "le rat", "en": "rat" }, { "ch": 9, "fr": "le renard", "en": "fox" },
+            { "ch": 9, "fr": "le requin", "en": "shark" }, { "ch": 9, "fr": "le serpent", "en": "snake" }, { "ch": 9, "fr": "le singe", "en": "monkey" },
+            { "ch": 9, "fr": "la souris", "en": "mouse" }, { "ch": 9, "fr": "le taureau", "en": "bull" }, { "ch": 9, "fr": "le tigre", "en": "tiger" },
+            { "ch": 9, "fr": "la tortue", "en": "turtle" }, { "ch": 9, "fr": "la vache", "en": "cow" }, { "ch": 9, "fr": "la volaille", "en": "poultry" },
+            { "ch": 9, "fr": "le zèbre", "en": "zebra" }, { "ch": 9, "fr": "l'arbre", "en": "tree" }, { "ch": 9, "fr": "l'arbuste", "en": "bush" },
+            { "ch": 9, "fr": "le bois", "en": "wood" }, { "ch": 9, "fr": "la branche", "en": "branch" }, { "ch": 9, "fr": "le cactus", "en": "cactus" },
+            { "ch": 9, "fr": "le champignon", "en": "mushroom" }, { "ch": 9, "fr": "le chêne", "en": "oak tree" }, { "ch": 9, "fr": "le citronnier", "en": "lemon tree" },
+            { "ch": 9, "fr": "l'écorce", "en": "tree bark" }, { "ch": 9, "fr": "la feuille", "en": "leaf" }, { "ch": 9, "fr": "la fleur", "en": "flower" },
+            { "ch": 9, "fr": "la forêt", "en": "forest" }, { "ch": 9, "fr": "le gazon", "en": "lawn" }, { "ch": 9, "fr": "l'herbe", "en": "grass" },
+            { "ch": 9, "fr": "l'iris", "en": "iris" }, { "ch": 9, "fr": "le lilas", "en": "lilac" }, { "ch": 9, "fr": "le lys", "en": "lily" },
+            { "ch": 9, "fr": "la marguerite", "en": "daisy" }, { "ch": 9, "fr": "l'olivier", "en": "olive tree" }, { "ch": 9, "fr": "l'orchidée", "en": "orchid" },
+            { "ch": 9, "fr": "l'orme", "en": "elm tree" }, { "ch": 9, "fr": "la pétale", "en": "petal" }, { "ch": 9, "fr": "le pin", "en": "pine tree" },
+            { "ch": 9, "fr": "le pommier", "en": "apple tree" }, { "ch": 9, "fr": "la racine", "en": "root" }, { "ch": 9, "fr": "le rameau", "en": "twig" },
+            { "ch": 9, "fr": "la rose", "en": "rose" }, { "ch": 9, "fr": "la souche", "en": "tree stump" }, { "ch": 9, "fr": "la tige", "en": "stem" },
+            { "ch": 9, "fr": "le tronc", "en": "tree trunk" }, { "ch": 9, "fr": "la tulipe", "en": "tulip" }, { "ch": 9, "fr": "la vigne", "en": "vine" },
+            { "ch": 9, "fr": "le vignoble", "en": "vineyard" },
+            // Chapter 10
+            { "ch": 10, "fr": "les parents", "en": "parents; relatives" }, { "ch": 10, "fr": "le père", "en": "father" }, { "ch": 10, "fr": "la mère", "en": "mother" },
+            { "ch": 10, "fr": "le beau-père", "en": "stepfather; father-in-law" }, { "ch": 10, "fr": "la belle-mère", "en": "stepmother; mother-in-law" }, { "ch": 10, "fr": "les grands-parents", "en": "grandparents" },
+            { "ch": 10, "fr": "le grand-père", "en": "grandfather" }, { "ch": 10, "fr": "la grand-mère", "en": "grandmother" }, { "ch": 10, "fr": "les arrière-grands-parents", "en": "great-grandparents" },
+            { "ch": 10, "fr": "l'arrière-grand-père", "en": "great-grandfather" }, { "ch": 10, "fr": "l'arrière-grand-mère", "en": "great-grandmother" }, { "ch": 10, "fr": "l'époux ou le mari", "en": "husband" },
+            { "ch": 10, "fr": "l'épouse ou la femme", "en": "wife" }, { "ch": 10, "fr": "le fils", "en": "son" }, { "ch": 10, "fr": "la fille", "en": "daughter" },
+            { "ch": 10, "fr": "le beau-fils", "en": "stepson; son-in-law" }, { "ch": 10, "fr": "la belle-fille", "en": "stepdaughter; daughter-in-law" }, { "ch": 10, "fr": "le petit-fils", "en": "grandson" },
+            { "ch": 10, "fr": "la petite-fille", "en": "granddaughter" }, { "ch": 10, "fr": "le parent", "en": "male relative" }, { "ch": 10, "fr": "la parente", "en": "female relative" },
+            { "ch": 10, "fr": "le frère", "en": "brother" }, { "ch": 10, "fr": "la sœur", "en": "sister" }, { "ch": 10, "fr": "aîné(e)", "en": "older" },
+            { "ch": 10, "fr": "cadet(te)", "en": "younger" }, { "ch": 10, "fr": "le beau-frère", "en": "brother-in-law; stepbrother" }, { "ch": 10, "fr": "la belle-sœur", "en": "sister-in-law; stepsister" },
+            { "ch": 10, "fr": "l'oncle", "en": "uncle" }, { "ch": 10, "fr": "la tante", "en": "aunt" }, { "ch": 10, "fr": "le neveu", "en": "nephew" },
+            { "ch": 10, "fr": "la nièce", "en": "niece" }, { "ch": 10, "fr": "le cousin", "en": "male cousin" }, { "ch": 10, "fr": "la cousine", "en": "female cousin" },
+            { "ch": 10, "fr": "le parrain", "en": "godfather" }, { "ch": 10, "fr": "la marraine", "en": "godmother" }, { "ch": 10, "fr": "le filleul", "en": "godson" },
+            { "ch": 10, "fr": "la filleule", "en": "goddaughter" },
+            // Chapter 11
+            { "ch": 11, "fr": "l'ampoule", "en": "lightbulb" }, { "ch": 11, "fr": "l'arrosoir", "en": "watering can" }, { "ch": 11, "fr": "l'aspirateur", "en": "vacuum" },
+            { "ch": 11, "fr": "la baignoire", "en": "bathtub" }, { "ch": 11, "fr": "le balai", "en": "broom" }, { "ch": 11, "fr": "la bouilloire", "en": "kettle" },
+            { "ch": 11, "fr": "le micro-ondes", "en": "microwave" }, { "ch": 11, "fr": "la brosse", "en": "brush" }, { "ch": 11, "fr": "la brouette", "en": "wheelbarrow" },
+            { "ch": 11, "fr": "la cafetière", "en": "coffeepot" }, { "ch": 11, "fr": "le carrelage", "en": "tile floor" }, { "ch": 11, "fr": "la cave", "en": "cellar" },
+            { "ch": 11, "fr": "le chiffon", "en": "rag" }, { "ch": 11, "fr": "les couverts", "en": "silverware" }, { "ch": 11, "fr": "la couverture", "en": "blanket" },
+            { "ch": 11, "fr": "la cuisinière", "en": "stove" }, { "ch": 11, "fr": "le déplantoir", "en": "trowel" }, { "ch": 11, "fr": "les draps", "en": "sheets" },
+            { "ch": 11, "fr": "l'éponge", "en": "sponge" }, { "ch": 11, "fr": "l'escabeau", "en": "stepstool" }, { "ch": 11, "fr": "l'escalier", "en": "stairs" },
+            { "ch": 11, "fr": "l'évier", "en": "sink" }, { "ch": 11, "fr": "le fer à repasser", "en": "clothes iron" }, { "ch": 11, "fr": "le four", "en": "oven" },
+            { "ch": 11, "fr": "la fourche", "en": "digging fork" }, { "ch": 11, "fr": "le frigo", "en": "refrigerator" }, { "ch": 11, "fr": "le garde-robe", "en": "clothes closet" },
+            { "ch": 11, "fr": "le grenier", "en": "attic" }, { "ch": 11, "fr": "le grille-pain", "en": "toaster" }, { "ch": 11, "fr": "la houe", "en": "hoe" },
+            { "ch": 11, "fr": "le lavabo", "en": "washbasin" }, { "ch": 11, "fr": "le lave-vaisselle", "en": "dishwasher" }, { "ch": 11, "fr": "la lessive", "en": "laundry" },
+            { "ch": 11, "fr": "la literie", "en": "bedding" }, { "ch": 11, "fr": "la machine à coudre", "en": "sewing machine" }, { "ch": 11, "fr": "la machine à laver", "en": "washing machine" },
+            { "ch": 11, "fr": "le mixer", "en": "blender" }, { "ch": 11, "fr": "l'ouvre-boîtes", "en": "can opener" }, { "ch": 11, "fr": "le parquet", "en": "wood floor" },
+            { "ch": 11, "fr": "la pelle", "en": "spade; dustpan" }, { "ch": 11, "fr": "les persiennes", "en": "blinds" }, { "ch": 11, "fr": "le placard", "en": "cupboard" },
+            { "ch": 11, "fr": "la planche à repasser", "en": "ironing board" }, { "ch": 11, "fr": "le plumeau", "en": "feather duster" }, { "ch": 11, "fr": "le pot de fleurs", "en": "flowerpot" },
+            { "ch": 11, "fr": "la poubelle", "en": "garbage, trash can" }, { "ch": 11, "fr": "le râteau", "en": "rake" }, { "ch": 11, "fr": "le seau", "en": "pail, bucket" },
+            { "ch": 11, "fr": "le sécateur", "en": "pruning shears" }, { "ch": 11, "fr": "le sèche-linge", "en": "clothes dryer" }, { "ch": 11, "fr": "la serviette", "en": "towel; napkin" },
+            { "ch": 11, "fr": "le sous-sol", "en": "basement" }, { "ch": 11, "fr": "le store", "en": "window shade" }, { "ch": 11, "fr": "le tablier", "en": "apron" },
+            { "ch": 11, "fr": "la vaisselle", "en": "dishes" }, { "ch": 11, "fr": "la ventouse", "en": "toilet plunger" }, { "ch": 11, "fr": "le W.C.", "en": "toilet" },
+            { "ch": 11, "fr": "le tuyau", "en": "hose; pipe" }, { "ch": 11, "fr": "l'atelier", "en": "workshop" }, { "ch": 11, "fr": "la caisse à outils", "en": "toolbox" },
+            { "ch": 11, "fr": "le chauffage", "en": "heating" }, { "ch": 11, "fr": "le chauffe-eau", "en": "water heater" }, { "ch": 11, "fr": "les ciseaux", "en": "scissors" },
+            { "ch": 11, "fr": "la clé", "en": "key; wrench" }, { "ch": 11, "fr": "la climatisation", "en": "air-conditioning" }, { "ch": 11, "fr": "les clous", "en": "nails" },
+            { "ch": 11, "fr": "l'échelle", "en": "ladder" }, { "ch": 11, "fr": "l'étau", "en": "vise" }, { "ch": 11, "fr": "la fiche", "en": "electric plug" },
+            { "ch": 11, "fr": "la hache", "en": "ax" }, { "ch": 11, "fr": "l'interrupteur", "en": "switch" }, { "ch": 11, "fr": "la lampe de poche", "en": "flashlight" },
+            { "ch": 11, "fr": "le marteau", "en": "hammer" }, { "ch": 11, "fr": "le moteur", "en": "motor" }, { "ch": 11, "fr": "la peinture", "en": "paint" },
+            { "ch": 11, "fr": "la perceuse", "en": "drill" }, { "ch": 11, "fr": "la pince", "en": "pliers" }, { "ch": 11, "fr": "le pinceau", "en": "paintbrush" },
+            { "ch": 11, "fr": "la plomberie", "en": "plumbing" }, { "ch": 11, "fr": "la prise de courant", "en": "electric outlet" }, { "ch": 11, "fr": "le rabot", "en": "plane (tool)" },
+            { "ch": 11, "fr": "le robinet", "en": "faucet" }, { "ch": 11, "fr": "le rouleau", "en": "paint roller" }, { "ch": 11, "fr": "la salopette", "en": "overalls" },
+            { "ch": 11, "fr": "la scie", "en": "saw" }, { "ch": 11, "fr": "le scotch", "en": "tape" }, { "ch": 11, "fr": "la serrure", "en": "lock" },
+            { "ch": 11, "fr": "le tourne-vis", "en": "screwdriver" }, { "ch": 11, "fr": "le ventilateur", "en": "fan" }, { "ch": 11, "fr": "les vis", "en": "screws" },
+            // Chapter 12
+            { "ch": 12, "fr": "s'amuser", "en": "to have a good time, have fun" }, { "ch": 12, "fr": "se baigner", "en": "to take a bath; to go swimming" }, { "ch": 12, "fr": "se brosser", "en": "to brush" },
+            { "ch": 12, "fr": "se coucher", "en": "to go to bed" }, { "ch": 12, "fr": "se déshabiller", "en": "to get undressed" }, { "ch": 12, "fr": "se doucher", "en": "to take a shower" },
+            { "ch": 12, "fr": "s'endormir", "en": "to fall asleep" }, { "ch": 12, "fr": "s'ennuyer", "en": "to become bored" }, { "ch": 12, "fr": "s'entraîner", "en": "to work out; to train" },
+            { "ch": 12, "fr": "s'habiller", "en": "to get dressed" }, { "ch": 12, "fr": "s'installer", "en": "to sit down, get settled" }, { "ch": 12, "fr": "se laver", "en": "to wash oneself" },
+            { "ch": 12, "fr": "se lever", "en": "to stand up, get up" }, { "ch": 12, "fr": "se maquiller", "en": "to put on makeup" }, { "ch": 12, "fr": "se peigner", "en": "to comb" },
+            { "ch": 12, "fr": "se préparer (à)", "en": "to get ready, to prepare" }, { "ch": 12, "fr": "se promener", "en": "to take a walk, a drive" }, { "ch": 12, "fr": "se raser", "en": "to shave (oneself)" },
+            { "ch": 12, "fr": "se regarder", "en": "to look at (oneself)" }, { "ch": 12, "fr": "se reposer", "en": "to rest" }, { "ch": 12, "fr": "se réveiller", "en": "to wake up" },
+            { "ch": 12, "fr": "la bouche", "en": "mouth" }, { "ch": 12, "fr": "le bras", "en": "arm" }, { "ch": 12, "fr": "les cheveux", "en": "hair" },
+            { "ch": 12, "fr": "la cheville", "en": "ankle" }, { "ch": 12, "fr": "le cœur", "en": "heart" }, { "ch": 12, "fr": "les côtes", "en": "ribs" },
+            { "ch": 12, "fr": "le cou", "en": "neck" }, { "ch": 12, "fr": "le coude", "en": "elbow" }, { "ch": 12, "fr": "le crâne", "en": "skull" },
+            { "ch": 12, "fr": "la cuisse", "en": "thigh" }, { "ch": 12, "fr": "les dents", "en": "teeth" }, { "ch": 12, "fr": "le doigt", "en": "finger" },
+            { "ch": 12, "fr": "le dos", "en": "back" }, { "ch": 12, "fr": "l'épaule", "en": "shoulder" }, { "ch": 12, "fr": "l'estomac", "en": "stomach" },
+            { "ch": 12, "fr": "la figure", "en": "face" }, { "ch": 12, "fr": "le front", "en": "forehead" }, { "ch": 12, "fr": "les genoux", "en": "knees" },
+            { "ch": 12, "fr": "la gorge", "en": "throat" }, { "ch": 12, "fr": "la hanche", "en": "hip" }, { "ch": 12, "fr": "la jambe", "en": "leg" },
+            { "ch": 12, "fr": "la joue", "en": "cheek" }, { "ch": 12, "fr": "la langue", "en": "tongue" }, { "ch": 12, "fr": "les lèvres", "en": "lips" },
+            { "ch": 12, "fr": "la main", "en": "hand" }, { "ch": 12, "fr": "le menton", "en": "chin" }, { "ch": 12, "fr": "le nez", "en": "nose" },
+            { "ch": 12, "fr": "le nombril", "en": "navel" }, { "ch": 12, "fr": "l'œil (les yeux)", "en": "eye (eyes)" }, { "ch": 12, "fr": "l'ongle", "en": "nail" },
+            { "ch": 12, "fr": "l'oreille", "en": "ear" }, { "ch": 12, "fr": "l'orteil", "en": "toe" }, { "ch": 12, "fr": "le pied", "en": "foot" },
+            { "ch": 12, "fr": "le poignet", "en": "wrist" }, { "ch": 12, "fr": "la poitrine", "en": "chest, breast" }, { "ch": 12, "fr": "le pouce", "en": "thumb" },
+            { "ch": 12, "fr": "les seins", "en": "breasts" }, { "ch": 12, "fr": "le sourcil", "en": "eyebrow" }, { "ch": 12, "fr": "la taille", "en": "waist; size" },
+            { "ch": 12, "fr": "le talon", "en": "heel" }, { "ch": 12, "fr": "la tête", "en": "head" }, { "ch": 12, "fr": "le ventre", "en": "abdomen" },
+            // Chapter 13
+            { "ch": 13, "fr": "d'abord", "en": "first (of all)" }, { "ch": 13, "fr": "puis", "en": "next" }, { "ch": 13, "fr": "ensuite", "en": "and then" },
+            { "ch": 13, "fr": "après", "en": "after that" }, { "ch": 13, "fr": "enfin / finalement", "en": "finally" }, { "ch": 13, "fr": "hier", "en": "yesterday" },
+            { "ch": 13, "fr": "avant-hier", "en": "day before yesterday" }, { "ch": 13, "fr": "hier matin", "en": "yesterday morning" }, { "ch": 13, "fr": "hier après-midi", "en": "yesterday afternoon" },
+            { "ch": 13, "fr": "hier soir", "en": "yesterday evening / last night" }, { "ch": 13, "fr": "à ce moment-là", "en": "at that moment" }, { "ch": 13, "fr": "l'année passée", "en": "last year" },
+            { "ch": 13, "fr": "la semaine passée", "en": "last week" }, { "ch": 13, "fr": "ce jour-là", "en": "on that day" }, { "ch": 13, "fr": "soudain", "en": "suddenly" },
+            { "ch": 13, "fr": "tout à coup", "en": "suddenly" }, { "ch": 13, "fr": "un jour", "en": "one day" }, { "ch": 13, "fr": "une fois", "en": "once, one time" },
+            { "ch": 13, "fr": "toute la journée", "en": "the whole day" }, { "ch": 13, "fr": "assister à", "en": "to attend" }, { "ch": 13, "fr": "être fana de...", "en": "to be crazy about..." },
+            { "ch": 13, "fr": "être passionné(e) de...", "en": "to be passionate about..." }, { "ch": 13, "fr": "faire du / de la", "en": "to do..." }, { "ch": 13, "fr": "jouer au...", "en": "to play..." },
+            { "ch": 13, "fr": "l'alpinisme (m.)", "en": "mountain climbing" }, { "ch": 13, "fr": "les arts martiaux (m.)", "en": "martial arts" }, { "ch": 13, "fr": "le jujitsu", "en": "jujitsu" },
+            { "ch": 13, "fr": "le karaté", "en": "karate" }, { "ch": 13, "fr": "le tai-chi chuan", "en": "tai chi" }, { "ch": 13, "fr": "le base-ball", "en": "baseball" },
+            { "ch": 13, "fr": "le foot(ball)", "en": "soccer" }, { "ch": 13, "fr": "le football américain", "en": "football" }, { "ch": 13, "fr": "le footing", "en": "jogging" },
+            { "ch": 13, "fr": "le golf", "en": "golf" }, { "ch": 13, "fr": "la gymnastique", "en": "gymnastics" }, { "ch": 13, "fr": "le hockey", "en": "hockey" },
+            { "ch": 13, "fr": "le jogging", "en": "jogging" }, { "ch": 13, "fr": "le marathon", "en": "marathon" }, { "ch": 13, "fr": "la natation", "en": "swimming" },
+            { "ch": 13, "fr": "le patinage", "en": "skating" }, { "ch": 13, "fr": "le ping-pong", "en": "Ping-Pong" }, { "ch": 13, "fr": "la planche à roulettes", "en": "skateboarding" },
+            { "ch": 13, "fr": "le basket(-ball)", "en": "basketball" }, { "ch": 13, "fr": "le bateau", "en": "boating" }, { "ch": 13, "fr": "le canoë-kayak", "en": "kayaking" },
+            { "ch": 13, "fr": "la course", "en": "race" }, { "ch": 13, "fr": "le cyclisme (le vélo)", "en": "biking" }, { "ch": 13, "fr": "le deltaplane", "en": "hang gliding" },
+            { "ch": 13, "fr": "l'équitation (f.)", "en": "horseback riding" }, { "ch": 13, "fr": "l'escrime (f.)", "en": "fencing" }, { "ch": 13, "fr": "la planche à voile", "en": "windsurfing" },
+            { "ch": 13, "fr": "la randonnée", "en": "hiking" }, { "ch": 13, "fr": "le roller", "en": "rollerblading" }, { "ch": 13, "fr": "le rugby", "en": "rugby" },
+            { "ch": 13, "fr": "le saut", "en": "high jump" }, { "ch": 13, "fr": "le ski", "en": "skiing" }, { "ch": 13, "fr": "le snowboard", "en": "snowboarding" },
+            { "ch": 13, "fr": "le surf", "en": "surfing" }, { "ch": 13, "fr": "le tennis", "en": "tennis" }, { "ch": 13, "fr": "la voile", "en": "sailing" },
+            { "ch": 13, "fr": "le volley(-ball)", "en": "volleyball" }, { "ch": 13, "fr": "le yoga", "en": "yoga" }, { "ch": 13, "fr": "l'art (m.)", "en": "art" },
+            { "ch": 13, "fr": "l'aquarelle (f.)", "en": "watercolors" }, { "ch": 13, "fr": "le dessin", "en": "drawing" }, { "ch": 13, "fr": "la peinture à l'huile", "en": "oil painting" },
+            { "ch": 13, "fr": "la sculpture", "en": "sculpture" }, { "ch": 13, "fr": "l'artisanat (m.)", "en": "crafts" }, { "ch": 13, "fr": "la céramique", "en": "ceramics" },
+            { "ch": 13, "fr": "la menuiserie", "en": "woodworking" }, { "ch": 13, "fr": "la poterie", "en": "pottery" }, { "ch": 13, "fr": "le vitrail", "en": "stained glass" },
+            { "ch": 13, "fr": "le bricolage", "en": "do-it-yourself" }, { "ch": 13, "fr": "les cartes (f.)", "en": "cards" }, { "ch": 13, "fr": "le bridge", "en": "bridge" },
+            { "ch": 13, "fr": "le poker", "en": "poker" }, { "ch": 13, "fr": "le cirque", "en": "circus" }, { "ch": 13, "fr": "la danse", "en": "dance" },
+            { "ch": 13, "fr": "le ballet", "en": "ballet" }, { "ch": 13, "fr": "le drame", "en": "drama" }, { "ch": 13, "fr": "le film d'amour", "en": "love story" },
+            { "ch": 13, "fr": "le film d'aventures", "en": "adventure film" }, { "ch": 13, "fr": "le film d'horreur", "en": "horror film" }, { "ch": 13, "fr": "la séance", "en": "showing" },
+            { "ch": 13, "fr": "la cassette", "en": "cassette" }, { "ch": 13, "fr": "la chanson", "en": "song" }, { "ch": 13, "fr": "le chœur", "en": "choir" },
+            { "ch": 13, "fr": "le concert", "en": "concert" }, { "ch": 13, "fr": "le lecteur de DVD/CD", "en": "DVD/CD player" }, { "ch": 13, "fr": "le lecteur MP3", "en": "MP3 player" },
+            { "ch": 13, "fr": "la musique classique", "en": "classical music" }, { "ch": 13, "fr": "la musique de chambre", "en": "chamber music" }, { "ch": 13, "fr": "l'opéra (m.)", "en": "opera" },
+            { "ch": 13, "fr": "l'orchestre (m.)", "en": "orchestra; band" }, { "ch": 13, "fr": "le pop/rap/rock/jazz", "en": "pop/rap/rock/jazz" }, { "ch": 13, "fr": "le quatuor", "en": "string quartet" },
+            { "ch": 13, "fr": "la danse de salon", "en": "ballroom" }, { "ch": 13, "fr": "la danse folklorique", "en": "folk dance" }, { "ch": 13, "fr": "le tango", "en": "tango" },
+            { "ch": 13, "fr": "la danse moderne", "en": "modern dance" }, { "ch": 13, "fr": "le jardinage", "en": "gardening" }, { "ch": 13, "fr": "les jeux de hasard (m.)", "en": "gaming" },
+            { "ch": 13, "fr": "les jeux de société", "en": "board games" }, { "ch": 13, "fr": "les échecs (m.)", "en": "chess" }, { "ch": 13, "fr": "les dames (f.)", "en": "checkers" },
+            { "ch": 13, "fr": "les jeux électroniques", "en": "electronic games" }, { "ch": 13, "fr": "la lecture", "en": "reading" }, { "ch": 13, "fr": "la bande dessinée", "en": "comics" },
+            { "ch": 13, "fr": "la biographie", "en": "biography" }, { "ch": 13, "fr": "l'essai (m.)", "en": "nonfiction" }, { "ch": 13, "fr": "les magazines (m.)", "en": "magazines" },
+            { "ch": 13, "fr": "le roman", "en": "novel" }, { "ch": 13, "fr": "le roman d'amour", "en": "romance novel" }, { "ch": 13, "fr": "le roman d'aventures", "en": "adventure novel" },
+            { "ch": 13, "fr": "le roman illustré", "en": "graphic novel" }, { "ch": 13, "fr": "le roman policier", "en": "mystery" }, { "ch": 13, "fr": "les mots croisés (m.)", "en": "crossword" },
+            { "ch": 13, "fr": "le musée", "en": "museum" }, { "ch": 13, "fr": "l'exposition (f.)", "en": "exhibition" }, { "ch": 13, "fr": "la musique", "en": "music" },
+            { "ch": 13, "fr": "le cinéma", "en": "film, movies" }, { "ch": 13, "fr": "le billet", "en": "ticket" }, { "ch": 13, "fr": "le dessin animé", "en": "animated film" },
+            { "ch": 13, "fr": "le documentaire", "en": "documentary" }, { "ch": 13, "fr": "la symphonie", "en": "symphony" }, { "ch": 13, "fr": "l'observation (f.) des oiseaux", "en": "bird-watching" },
+            { "ch": 13, "fr": "la photographie", "en": "photography" }, { "ch": 13, "fr": "un appareil-photo", "en": "[still] camera" }, { "ch": 13, "fr": "un caméra", "en": "movie camera" },
+            { "ch": 13, "fr": "un caméscope", "en": "video camera" }, { "ch": 13, "fr": "la télévision", "en": "television" }, { "ch": 13, "fr": "le podcast", "en": "podcast" },
+            { "ch": 13, "fr": "la radio", "en": "radio" }, { "ch": 13, "fr": "la chaîne", "en": "channel" }, { "ch": 13, "fr": "l'émission (f.)", "en": "program" },
+            { "ch": 13, "fr": "le théâtre", "en": "theater" }, { "ch": 13, "fr": "les spectateurs (m.)", "en": "audience members" }, { "ch": 13, "fr": "la salle de théâtre", "en": "theater" },
+            { "ch": 13, "fr": "la pièce", "en": "play" }, { "ch": 13, "fr": "le spectacle", "en": "show" }, { "ch": 13, "fr": "le drame", "en": "drama" },
+            { "ch": 13, "fr": "la comédie (musicale)", "en": "[musical] comedy" }, { "ch": 13, "fr": "la tragédie", "en": "tragedy" }, { "ch": 13, "fr": "le sudoku", "en": "sudoku" },
+            { "ch": 13, "fr": "les travaux d'aiguille (m.)", "en": "needlework" }, { "ch": 13, "fr": "la broderie", "en": "embroidery" }, { "ch": 13, "fr": "la couture", "en": "sewing" },
+            { "ch": 13, "fr": "le crochet", "en": "crocheting" }, { "ch": 13, "fr": "la tapisserie", "en": "needlepoint" }, { "ch": 13, "fr": "le tissage", "en": "weaving" },
+            { "ch": 13, "fr": "le tricot", "en": "knitting" },
+            // Chapter 14
+            { "ch": 14, "fr": "à ce moment-là", "en": "at that time" }, { "ch": 14, "fr": "à cette époque-là", "en": "at that time" }, { "ch": 14, "fr": "auparavant", "en": "previously" },
+            { "ch": 14, "fr": "autrefois", "en": "in the past" }, { "ch": 14, "fr": "désormais", "en": "from then on" }, { "ch": 14, "fr": "de temps à autre", "en": "from time to time" },
+            { "ch": 14, "fr": "de temps en temps", "en": "from time to time" }, { "ch": 14, "fr": "d'habitude", "en": "usually" }, { "ch": 14, "fr": "il y a (+ time)", "en": "ago" },
+            { "ch": 14, "fr": "le lundi", "en": "on Mondays" }, { "ch": 14, "fr": "le week-end", "en": "every weekend" }, { "ch": 14, "fr": "ne... jamais", "en": "never" },
+            { "ch": 14, "fr": "normalement", "en": "normally" }, { "ch": 14, "fr": "parfois", "en": "sometimes" }, { "ch": 14, "fr": "par moments", "en": "occasionally" },
+            { "ch": 14, "fr": "pendant que", "en": "while" }, { "ch": 14, "fr": "quelquefois", "en": "sometimes" }, { "ch": 14, "fr": "souvent", "en": "often" },
+            { "ch": 14, "fr": "toujours", "en": "always" }, { "ch": 14, "fr": "tous les jours", "en": "every day" }, { "ch": 14, "fr": "l'aéroport (m.)", "en": "airport" },
+            { "ch": 14, "fr": "aller-retour", "en": "round-trip" }, { "ch": 14, "fr": "l'arrêt d'autobus (m.)", "en": "bus stop" }, { "ch": 14, "fr": "l'autocar (m.) / le car", "en": "inter-city bus" },
+            { "ch": 14, "fr": "l'avion (m.)", "en": "plane" }, { "ch": 14, "fr": "le billet", "en": "ticket" }, { "ch": 14, "fr": "la carte d'embarquement", "en": "boarding pass" },
+            { "ch": 14, "fr": "la carte d'identité", "en": "I.D. card" }, { "ch": 14, "fr": "une carte routière", "en": "road map" }, { "ch": 14, "fr": "la ceinture de sécurité", "en": "seat belt" },
+            { "ch": 14, "fr": "un chariot (à bagages)", "en": "[luggage] cart" }, { "ch": 14, "fr": "un charter", "en": "charter flight" }, { "ch": 14, "fr": "le compartiment", "en": "compartment" },
+            { "ch": 14, "fr": "composter le billet", "en": "to punch the ticket" }, { "ch": 14, "fr": "la consigne", "en": "checkroom, lockers" }, { "ch": 14, "fr": "la douane", "en": "customs" },
+            { "ch": 14, "fr": "un horaire", "en": "schedule" }, { "ch": 14, "fr": "la location de voitures", "en": "car rental" }, { "ch": 14, "fr": "le passeport", "en": "passport" },
+            { "ch": 14, "fr": "un plan", "en": "city map" }, { "ch": 14, "fr": "première/deuxième classe", "en": "first/second class" }, { "ch": 14, "fr": "la porte", "en": "gate [airport]" },
+            { "ch": 14, "fr": "le quai", "en": "train platform" }, { "ch": 14, "fr": "la salle d'attente", "en": "waiting room" }, { "ch": 14, "fr": "le siège", "en": "seat [plane, train]" },
+            { "ch": 14, "fr": "le syndicat d'initiative", "en": "tourist office" }, { "ch": 14, "fr": "le tarif", "en": "price, fare" }, { "ch": 14, "fr": "le TGV", "en": "high-speed train" },
+            { "ch": 14, "fr": "le train", "en": "train" }, { "ch": 14, "fr": "un voyage d'affaires", "en": "business trip" }, { "ch": 14, "fr": "l'addition (f.)", "en": "bill" },
+            { "ch": 14, "fr": "l'ampoule (f.)", "en": "lightbulb" }, { "ch": 14, "fr": "l'annuaire (m.)", "en": "phone book" }, { "ch": 14, "fr": "l'ascenseur (m.)", "en": "elevator" },
+            { "ch": 14, "fr": "une auberge de jeunesse", "en": "youth hostel" }, { "ch": 14, "fr": "une chambre", "en": "room" }, { "ch": 14, "fr": "à un (deux) lit(s)", "en": "with one (two) bed(s)" },
+            { "ch": 14, "fr": "un grand lit", "en": "double bed" }, { "ch": 14, "fr": "qui donne sur...", "en": "that looks out on..." }, { "ch": 14, "fr": "un chasseur", "en": "bellboy" },
+            { "ch": 14, "fr": "le chauffage", "en": "heat" }, { "ch": 14, "fr": "... ne marche pas.", "en": "... doesn't work." }, { "ch": 14, "fr": "des cintres (m.)", "en": "coat hangers" },
+            { "ch": 14, "fr": "les clés (f.)", "en": "keys" }, { "ch": 14, "fr": "le coffre-fort", "en": "safe" }, { "ch": 14, "fr": "le couloir", "en": "hallway" },
+            { "ch": 14, "fr": "une couverture", "en": "blanket" }, { "ch": 14, "fr": "l'escalier (m.)", "en": "stairs" }, { "ch": 14, "fr": "des draps (m.)", "en": "sheets" },
+            { "ch": 14, "fr": "l'étage (m.)", "en": "floor [building]" }, { "ch": 14, "fr": "la femme de chambre", "en": "chambermaid" }, { "ch": 14, "fr": "la climatisation", "en": "air-conditioning" },
+            { "ch": 14, "fr": "la lampe", "en": "lamp" }, { "ch": 14, "fr": "le loyer", "en": "rent" }, { "ch": 14, "fr": "un oreiller", "en": "pillow" },
+            { "ch": 14, "fr": "la note / l'addition (f.)", "en": "the bill" }, { "ch": 14, "fr": "la demi-pension", "en": "half-pension [with dinner]" }, { "ch": 14, "fr": "tout compris", "en": "all included" },
+            { "ch": 14, "fr": "le petit déjeuner compris", "en": "breakfast included" }, { "ch": 14, "fr": "la pension complète", "en": "full pension [three meals]" }, { "ch": 14, "fr": "une lumière (pour lire)", "en": "reading lamp" },
+            { "ch": 14, "fr": "le/la réceptionniste", "en": "desk clerk" }, { "ch": 14, "fr": "une salle de bain privée", "en": "private bath" }, { "ch": 14, "fr": "avec une baignoire", "en": "with a tub" },
+            { "ch": 14, "fr": "avec douche", "en": "with a shower" }, { "ch": 14, "fr": "du savon", "en": "soap" }, { "ch": 14, "fr": "le ventilateur", "en": "fan" },
+            { "ch": 14, "fr": "un verre", "en": "drinking glass" },
+            // Chapter 15
+            { "ch": 15, "fr": "un acompte", "en": "down payment" }, { "ch": 15, "fr": "la banque", "en": "bank" }, { "ch": 15, "fr": "le/la banquier (-ière)", "en": "banker" },
+            { "ch": 15, "fr": "des billets (de 10€) (m.)", "en": "10€ bills" }, { "ch": 15, "fr": "un bureau de change", "en": "currency exchange" }, { "ch": 15, "fr": "la caisse", "en": "cashier's desk" },
+            { "ch": 15, "fr": "le carnet de chèques", "en": "checkbook" }, { "ch": 15, "fr": "la carte de crédit", "en": "credit card" }, { "ch": 15, "fr": "la carte de paiement", "en": "ATM/debit card" },
+            { "ch": 15, "fr": "le/la caissier (-ière)", "en": "teller, cashier" }, { "ch": 15, "fr": "changer de l'argent", "en": "to exchange currency" }, { "ch": 15, "fr": "le chèque", "en": "check" },
+            { "ch": 15, "fr": "le chèque sans provision", "en": "bad check" }, { "ch": 15, "fr": "les chèques de voyage", "en": "traveler's checks" }, { "ch": 15, "fr": "le coffre-fort", "en": "safe" },
+            { "ch": 15, "fr": "le coffre de sureté", "en": "safe-deposit box" }, { "ch": 15, "fr": "le compte en banque", "en": "bank account" }, { "ch": 15, "fr": "le compte courant", "en": "checking account" },
+            { "ch": 15, "fr": "le compte d'épargne", "en": "savings account" }, { "ch": 15, "fr": "le cours / le taux du change", "en": "rate of exchange" }, { "ch": 15, "fr": "déposer / verser de l'argent", "en": "to deposit money" },
+            { "ch": 15, "fr": "un dépôt en banque", "en": "bank deposit" }, { "ch": 15, "fr": "le dépôt de garantie", "en": "security deposit" }, { "ch": 15, "fr": "le distributeur (de billets) (DAB)", "en": "ATM" },
+            { "ch": 15, "fr": "emprunter", "en": "to borrow" }, { "ch": 15, "fr": "prêter", "en": "to lend" }, { "ch": 15, "fr": "endosser un chèque", "en": "to sign a check" },
+            { "ch": 15, "fr": "des espèces (f.)", "en": "cash" }, { "ch": 15, "fr": "faire de la monnaie", "en": "to make change" }, { "ch": 15, "fr": "la fiche / le bordereau", "en": "deposit slip" },
+            { "ch": 15, "fr": "les frais (m.)", "en": "costs" }, { "ch": 15, "fr": "les grosses coupures (f.)", "en": "large bills" }, { "ch": 15, "fr": "le guichet", "en": "teller's window" },
+            { "ch": 15, "fr": "les heures d'ouverture (f.)", "en": "opening hours" }, { "ch": 15, "fr": "l'hypothèque (f.)", "en": "mortgage" }, { "ch": 15, "fr": "les impôts (m.)", "en": "taxes" },
+            { "ch": 15, "fr": "un livret", "en": "bankbook" }, { "ch": 15, "fr": "le mandat", "en": "money order" }, { "ch": 15, "fr": "la monnaie", "en": "currency; change" },
+            { "ch": 15, "fr": "la petite monnaie", "en": "small change" }, { "ch": 15, "fr": "le montant", "en": "sum, total" }, { "ch": 15, "fr": "ouvrir un compte", "en": "to open an account" },
+            { "ch": 15, "fr": "le paiement", "en": "payment" }, { "ch": 15, "fr": "payer les factures", "en": "to pay the bills" }, { "ch": 15, "fr": "la poste (la PTT)", "en": "post office" },
+            { "ch": 15, "fr": "retirer de l'argent", "en": "to withdraw money" }, { "ch": 15, "fr": "le retrait", "en": "withdrawal" }, { "ch": 15, "fr": "le taux d'intérêt", "en": "interest rate" },
+            { "ch": 15, "fr": "toucher un chèque", "en": "to cash a check" }, { "ch": 15, "fr": "transférer", "en": "to transfer" }, { "ch": 15, "fr": "le transfert de fonds", "en": "funds transfer" },
+            // Chapter 16
+            { "ch": 16, "fr": "Je voudrais vous (te) présenter...", "en": "I'd like to present..." }, { "ch": 16, "fr": "Voici mon ami(e)...", "en": "This is my friend..." }, { "ch": 16, "fr": "Je m'appelle...", "en": "My name is..." },
+            { "ch": 16, "fr": "Enchanté(e) (d'avoir fait votre connaissance).", "en": "Delighted to meet you." }, { "ch": 16, "fr": "Moi de même.", "en": "Likewise." }, { "ch": 16, "fr": "D'où venez-vous? (D'où êtes-vous?)", "en": "Where are you from?" },
+            { "ch": 16, "fr": "Depuis quand êtes-vous à...?", "en": "How long have you been in...?" }, { "ch": 16, "fr": "Combien de temps allez-vous rester ici?", "en": "How long are you going to stay here?" }, { "ch": 16, "fr": "Où habitez-vous?", "en": "Where do you live (are you staying)?" },
+            { "ch": 16, "fr": "Que faites-vous dans la vie?", "en": "What do you do?" }, { "ch": 16, "fr": "Vous avez une famille? des enfants?", "en": "Do you have a family? Children?" }, { "ch": 16, "fr": "À quoi vous intéressez-vous?", "en": "What are your interests?" },
+            { "ch": 16, "fr": "Vous aimez les sports?", "en": "Do you like sports?" }, { "ch": 16, "fr": "Êtes-vous libre de...?", "en": "Are you free to...?" }, { "ch": 16, "fr": "Voudriez-vous y aller ensemble?", "en": "Would you like to go there together?" },
+            { "ch": 16, "fr": "Oui, d'accord. Avec plaisir.", "en": "Yes, fine. With pleasure." }, { "ch": 16, "fr": "Volontiers.", "en": "Gladly." }, { "ch": 16, "fr": "Oui, j'aimerais bien.", "en": "Yes, I'd like to." },
+            { "ch": 16, "fr": "Désolé(e), je suis occupé(e).", "en": "Sorry, I'm busy." }, { "ch": 16, "fr": "C'est dommage. Je suis pris(e) ce soir-là.", "en": "What a shame. I'm busy that evening." }, { "ch": 16, "fr": "Pourriez-vous venir nous (me) voir...?", "en": "Can you come see us (me)...?" },
+            { "ch": 16, "fr": "Je pourrais venir vous chercher.", "en": "I can come pick you up." }, { "ch": 16, "fr": "Je peux vous téléphoner?", "en": "May I call you?" }, { "ch": 16, "fr": "Quel est votre numéro de téléphone?", "en": "What's your phone number?" },
+            { "ch": 16, "fr": "Quelle est votre adresse courrielle?", "en": "What's your e-mail?" }, { "ch": 16, "fr": "Nous vous attendrons à...", "en": "We'll wait for you at..." }
+        ];
+
+        let currentCards = [...vocabData];
+        let currentIndex = 0;
+
+        function updateCounter() {
+            const counterEl = document.getElementById('cardCounter');
+            const progressEl = document.getElementById('progressBar');
+            if (currentCards.length === 0) {
+                counterEl.innerText = "0 / 0";
+                progressEl.style.width = '0%';
+            } else {
+                counterEl.innerText = `Card ${currentIndex + 1} of ${currentCards.length}`;
+                const percent = ((currentIndex + 1) / currentCards.length) * 100;
+                progressEl.style.width = `${percent}%`;
+            }
+        }
+
+        // COMPARTMENTALIZED GRID RENDERING FOR LIST VIEW
+        function renderList() {
+            const listContainer = document.getElementById('mode-list');
+            listContainer.innerHTML = '<div class="vocab-grid" id="vocab-grid"></div>';
+            const grid = document.getElementById('vocab-grid');
+            const selectedCh = document.getElementById('chapterFilter').value;
+            let chaptersToRender = selectedCh === 'all' ? [...new Set(vocabData.map(item => item.ch))] : [parseInt(selectedCh)];
+            
+            chaptersToRender.forEach(chNum => {
+                const chapterWords = vocabData.filter(v => v.ch === chNum);
+                if(chapterWords.length === 0) return;
+                const block = document.createElement('div');
+                block.className = 'chapter-table-container';
+                let html = `<h3>Chapter ${chNum}</h3><table class="vocab-table"><thead><tr><th>French</th><th>English</th></tr></thead><tbody>`;
+                chapterWords.forEach(card => html += `<tr><td class="fr">${card.fr}</td><td class="en">${card.en}</td></tr>`);
+                html += `</tbody></table>`;
+                block.innerHTML = html;
+                grid.appendChild(block);
+            });
+        }
+
+        function loadCard() {
+            if (currentCards.length === 0) {
+                document.getElementById('word-fr').innerText = 'No cards';
+                document.getElementById('word-en').innerText = 'No cards';
+                return;
+            }
+            const card = currentCards[currentIndex];
+            document.getElementById('word-fr').innerText = card.fr;
+            document.getElementById('word-en').innerText = card.en;
+            document.getElementById('flashcard').classList.remove('is-flipped');
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === currentCards.length - 1;
+            updateCounter();
+        }
+
+        function flipCard() { if (currentCards.length > 0) document.getElementById('flashcard').classList.toggle('is-flipped'); }
+        function nextCard() { if (currentIndex < currentCards.length - 1) { currentIndex++; loadCard(); } }
+        function prevCard() { if (currentIndex > 0) { currentIndex--; loadCard(); } }
+        function filterChapter() {
+            const selected = document.getElementById('chapterFilter').value;
+            currentCards = selected === "all" ? [...vocabData] : vocabData.filter(v => v.ch == selected);
+            currentIndex = 0;
+            loadCard();
+            if (document.getElementById('mode-list').style.display === 'block') renderList();
+        }
+
+        // FULL UNCUT EXERCISE DATA
+        const exerciseData = [
+            // --- CHAPTER 1 ---
+            { ch: 1, ex: "1.1", instruction: "Write the appropriate singular definite article (le, la, l').", questions: [ { q: "_____ ami", a: "l'" }, { q: "_____ homme", a: "l'" }, { q: "_____ lampe", a: "la" }, { q: "_____ fenêtre", a: "la" }, { q: "_____ hôtel", a: "l'" }, { q: "_____ réalisme", a: "le" }, { q: "_____ ingénieur", a: "l'" }, { q: "_____ publicité", a: "la" }, { q: "_____ comédie", a: "la" }, { q: "_____ différence", a: "la" }, { q: "_____ médecin", a: "le" }, { q: "_____ sculpture", a: "la" }, { q: "_____ prononciation", a: "la" }, { q: "_____ gâteau", a: "le" } ] },
+            { ch: 1, ex: "1.2", instruction: "Write the plural form of each singular noun/phrase.", questions: [ { q: "une artiste", a: "des artistes" }, { q: "un hors-d'œuvre", a: "des hors-d'œuvre" }, { q: "le milieu", a: "les milieux" }, { q: "l'étudiante", a: "les étudiantes" }, { q: "un Français", a: "des Français" }, { q: "un café", a: "des cafés" }, { q: "le chapeau", a: "les chapeaux" }, { q: "l'eau", a: "les eaux" }, { q: "la fenêtre", a: "les fenêtres" }, { q: "un choix", a: "des choix" }, { q: "une préférence", a: "des préférences" }, { q: "le travail", a: "les travaux" }, { q: "le nez", a: "les nez" }, { q: "un cours", a: "des cours" } ] },
+            { ch: 1, ex: "1.4", instruction: "Write the feminine singular form of the adjectives given.", questions: [ { q: "intéressant", a: "intéressante" }, { q: "naïf", a: "naïve" }, { q: "agréable", a: "agréable" }, { q: "sérieux", a: "sérieuse" }, { q: "jaune", a: "jaune" }, { q: "marron", a: "marron" }, { q: "bleu", a: "bleue" }, { q: "costaud", a: "costaude" }, { q: "fier", a: "fière" }, { q: "chic", a: "chic" }, { q: "cher", a: "chère" }, { q: "conservateur", a: "conservatrice" }, { q: "beau", a: "belle" }, { q: "gros", a: "grosse" }, { q: "actif", a: "active" }, { q: "gentil", a: "gentille" }, { q: "travailleur", a: "travailleuse" }, { q: "drôle", a: "drôle" }, { q: "vieux", a: "vieille" }, { q: "heureux", a: "heureuse" } ] },
+            { ch: 1, ex: "1.5", instruction: "Provide the correct adjective that agrees in gender and number.", questions: [ { q: "le _____ (old) homme", a: "vieil" }, { q: "la situation _____ (difficult)", a: "difficile" }, { q: "la _____ (beautiful) maison", a: "belle" }, { q: "la personne _____ (nice)", a: "gentille" }, { q: "les fleurs _____ (yellow)", a: "jaunes" }, { q: "des amis _____ (sincere)", a: "sincères" }, { q: "un _____ (great) homme", a: "grand" }, { q: "une voiture _____ (ancient)", a: "ancienne" }, { q: "d' _____ (former) professeurs", a: "anciens" }, { q: "des appartements _____ (inexpensive)", a: "bon marché/pas chers" }, { q: "une comédie _____ (funny)", a: "drôle" }, { q: "un livre _____ (interesting)", a: "intéressant" } ] },
+            
+            // --- CHAPTER 2 ---
+            { ch: 2, ex: "2.1", instruction: "Complete the sentences, translating the subject pronouns.", questions: [ { q: "(You, pl.) _____ êtes en ville?", a: "Vous" }, { q: "(I) _____ suis à la maison.", a: "Je" }, { q: "(They, f.) _____ sont au travail.", a: "Elles" }, { q: "(We) _____ sommes très sympathiques!", a: "Nous" }, { q: "(You, sing.) _____ es architecte?", a: "Tu" }, { q: "(I) _____ suis grand et beau.", a: "Je" }, { q: "(They, m.) _____ sont français.", a: "Ils" }, { q: "(They) _____ sont dans le train.", a: "Ils" }, { q: "(Georges and Marilyn, you) _____ êtes drôles!", a: "Vous" }, { q: "(He) _____ est en vacances.", a: "Il" } ] },
+            { ch: 2, ex: "2.2", instruction: "Complete each sentence with the correct form of être.", questions: [ { q: "Le parfum _____ de France.", a: "est" }, { q: "Ils _____ médecins.", a: "sont" }, { q: "Elle _____ dentiste.", a: "est" }, { q: "Les touristes _____ du Portugal?", a: "sont" }, { q: "Les frères de Paul _____ riches!", a: "sont" }, { q: "Le vieil hôtel _____ excellent.", a: "est" }, { q: "Nous _____ les amis de Robert.", a: "sommes" }, { q: "Les chaussures _____ en cuir.", a: "sont" }, { q: "La dame et le monsieur _____ suédois.", a: "sont" }, { q: "L'appartement des étudiants _____ bien situé.", a: "est" } ] },
+            { ch: 2, ex: "2.4", instruction: "Complete using il/elle est or c'est/ce sont.", questions: [ { q: "Jeanne est architecte. _____ une voisine sociable.", a: "Elle est" }, { q: "Mes parents sont canadiens. _____ des Québécois fiers.", a: "Ce sont" }, { q: "Loïc est de Bretagne. _____ breton.", a: "Il est" }, { q: "Mon voisin est gentil. _____ un voisin super sympathique.", a: "C'est" }, { q: "La Nouvelle-Orléans. _____ une ville américaine.", a: "C'est" }, { q: "Claude? _____ très intelligent.", a: "Il est" } ] },
+            { ch: 2, ex: "2.7", instruction: "Translate the adverbs in parentheses to complete the sentences.", questions: [ { q: "(sometimes) Je suis _____ heureuse.", a: "quelquefois/parfois" }, { q: "(here) Il est _____?", a: "ici" }, { q: "(now) Tu es au travail _____?", a: "maintenant" }, { q: "(today) _____ nous sommes en retard.", a: "Aujourd'hui" }, { q: "(rather) Les livres sont _____ chers.", a: "assez/plutôt" }, { q: "(often) Elles sont _____ au café.", a: "souvent" }, { q: "(always) Nous sommes _____ à l'heure.", a: "toujours" }, { q: "(very) Sylvain est _____ grand.", a: "très" }, { q: "(much) Le dessert est _____ riche.", a: "beaucoup/trop" }, { q: "(a little) Les enfants sont _____ fatigués.", a: "un peu" }, { q: "(over there) Marc est _____ devant la pharmacie.", a: "là-bas" } ] },
+            { ch: 2, ex: "2.8", instruction: "Answer each question in the negative (e.g. 'elle n'est pas vieille').", questions: [ { q: "Arlette est vieille? Non, _____.", a: "elle n'est pas vieille" }, { q: "Vous êtes acteur? Non, _____.", a: "je ne suis pas acteur/actrice" }, { q: "Nous sommes en retard? Non, _____.", a: "nous ne sommes pas en retard" }, { q: "Tu es à la maison? Non, _____.", a: "je ne suis pas à la maison" }, { q: "Léon et Chantal sont de retour? Non, _____.", a: "ils ne sont pas de retour" }, { q: "Tes sœurs sont d'accord? Non, _____.", a: "elles ne sont pas d'accord" }, { q: "Georges est en train de danser? Non, _____.", a: "Georges n'est pas en train de danser" }, { q: "Je suis trop fière? Non, _____.", a: "tu n'es pas trop fière/vous n'êtes pas trop fière" } ] },
+            
+            // --- CHAPTER 3 ---
+            { ch: 3, ex: "3.2", instruction: "Translate the present tense -er verb forms into French.", questions: [ { q: "we speak", a: "nous parlons" }, { q: "she listens", a: "elle écoute" }, { q: "I like", a: "j'aime" }, { q: "they (f.) rent", a: "elles louent" }, { q: "you (pol.) use", a: "vous utilisez" }, { q: "we live", a: "nous habitons" }, { q: "I arrive", a: "j'arrive" }, { q: "he hates", a: "il déteste" }, { q: "you (fam.) dream", a: "tu rêves" }, { q: "she finds", a: "elle trouve" } ] },
+            { ch: 3, ex: "3.3", instruction: "Change the verb forms from singular to plural, or plural to singular.", questions: [ { q: "j'adore", a: "nous adorons" }, { q: "nous dansons", a: "je danse" }, { q: "vous regardez", a: "tu regardes" }, { q: "tu expliques", a: "vous expliquez" }, { q: "il cherche", a: "ils cherchent" }, { q: "elles ferment", a: "elle ferme" }, { q: "vous parlez", a: "tu parles" }, { q: "nous expliquons", a: "j'explique" }, { q: "elle utilise", a: "elles utilisent" }, { q: "tu détestes", a: "vous détestez" } ] },
+            { ch: 3, ex: "3.5", instruction: "Provide the correct conjugated form of the indicated verb.", questions: [ { q: "Je _____ la radio. (écouter)", a: "J'écoute" }, { q: "Nous _____ après les cours. (étudier)", a: "étudions" }, { q: "On _____ travailler le samedi. (ne pas aimer)", a: "n'aime pas" }, { q: "Vous _____ un ordinateur? (utiliser)", a: "utilisez" }, { q: "Tu _____ au prof. (parler)", a: "parles" }, { q: "Mes parents _____ de prêter la voiture. (refuser)", a: "refusent" }, { q: "Marc et Josiane _____ le film. (adorer regarder)", a: "adorent regarder" }, { q: "Tu _____ le vendredi soir? (ne pas danser)", a: "ne danses pas" }, { q: "Nous _____ regarder un film. (aimer mieux)", a: "aimons mieux" }, { q: "Amélie _____ de bonnes carottes. (trouver)", a: "trouve" } ] },
+            { ch: 3, ex: "3.9", instruction: "Translate the questions into yes/no French questions using inversion.", questions: [ { q: "Do you (fam.) have a cat?", a: "As-tu un chat?" }, { q: "Does Sylvie play the piano?", a: "Sylvie joue-t-elle du piano?" }, { q: "Are you (pol.) American (m.)?", a: "Êtes-vous américain?" }, { q: "Do you (fam.) like tennis or golf better?", a: "Aimes-tu mieux le tennis ou le golf?" }, { q: "Are we playing Scrabble this evening?", a: "Jouons-nous au Scrabble ce soir?" }, { q: "Are the children hungry?", a: "Les enfants ont-ils faim?" }, { q: "Isn't Jacques a teacher?", a: "Jacques n'est-il pas professeur?" }, { q: "Don't you (fam.) work in a bookstore?", a: "Ne travailles-tu pas dans une librairie?" } ] },
+            
+            // --- CHAPTER 4 ---
+            { ch: 4, ex: "4.1", instruction: "Continue the series by typing out the next three numbers in French (separated by commas).", questions: [ { q: "un, deux, trois, _____ ", a: "quatre, cinq, six" }, { q: "deux, quatre, six, _____ ", a: "huit, dix, douze" }, { q: "vingt, trente, quarante, _____ ", a: "cinquante, soixante, soixante-dix" }, { q: "sept, quatorze, vingt et un, _____ ", a: "vingt-huit, trente-cinq, quarante-deux" }, { q: "soixante-sept, soixante-huit, soixante-neuf, _____ ", a: "soixante-dix, soixante et onze, soixante-douze" }, { q: "quatre-vingt-huit, soixante-dix-sept, soixante-six, _____ ", a: "cinquante-cinq, quarante-quatre, trente-trois" } ] },
+            { ch: 4, ex: "4.2", instruction: "Solve the arithmetic and write the answer in French.", questions: [ { q: "quatre-vingts / quatre = _____ ", a: "vingt" }, { q: "quarante-cinq + quarante-cinq = _____ ", a: "quatre-vingt-dix" }, { q: "vingt et un * trois = _____ ", a: "soixante-trois" }, { q: "soixante et onze - vingt-six = _____ ", a: "quarante-cinq" }, { q: "quatre-vingt-huit - trente-quatre = _____ ", a: "cinquante-quatre" }, { q: "quarante-huit * deux = _____ ", a: "quatre-vingt-seize" } ] },
+            { ch: 4, ex: "4.9", instruction: "Translate the short sentences with -ir verbs into French.", questions: [ { q: "We choose.", a: "Nous choisissons." }, { q: "You (fam.) act (behave) well.", a: "Tu agis bien." }, { q: "They (f.) blush.", a: "Elles rougissent." }, { q: "I'm succeeding.", a: "Je réussis." }, { q: "The children grow.", a: "Les enfants grandissent." }, { q: "They (On) widen the street.", a: "On élargit la rue." }, { q: "You're (pol.) losing weight.", a: "Vous maigrissez." }, { q: "I slow down at night.", a: "Je ralentis la nuit." }, { q: "The leaves are turning yellow.", a: "Les feuilles jaunissent." }, { q: "We finish working.", a: "Nous finissons de travailler." } ] },
+            
+            // --- CHAPTER 5 ---
+            { ch: 5, ex: "5.1", instruction: "Translate into French using present tense regular -re verbs.", questions: [ { q: "Are you (fam.) coming down?", a: "Tu descends?" }, { q: "I'm losing.", a: "Je perds." }, { q: "We're answering.", a: "Nous répondons." }, { q: "Xavier is selling a truck.", a: "Xavier vend un camion." }, { q: "They (f.) visit Grandfather.", a: "Elles rendent visite à Grand-père." }, { q: "You (pol.) don't answer.", a: "Vous ne répondez pas." }, { q: "We're waiting for Charles.", a: "Nous attendons Charles." }, { q: "They (m.) defend their clients.", a: "Ils défendent leurs clients." }, { q: "The student (m.) isn't wasting time.", a: "L'étudiant ne perd pas de temps." }, { q: "Do you (pol.) hear?", a: "Entendez-vous?" }, { q: "Is she returning the book?", a: "Rend-elle le livre?" }, { q: "I'm answering the phone.", a: "Je réponds au téléphone." } ] },
+            { ch: 5, ex: "5.9", instruction: "Provide the correct conjugated form for the spelling-change verbs.", questions: [ { q: "Tu _____ (acheter) les provisions?", a: "Achètes" }, { q: "Ils _____ (préférer) la cuisine thaïlandaise.", a: "préfèrent" }, { q: "On _____ (projeter) le film ce soir.", a: "projette" }, { q: "Elle _____ (envoyer) un gros paquet.", a: "envoie" }, { q: "Nous _____ (partager) le plat.", a: "partageons" }, { q: "Je _____ (essayer) de finir les devoirs.", a: "essaie" }, { q: "Quand _____ (commencer)-nous à dîner?", a: "commençons" }, { q: "Nous _____ (prononcer) bien les mots.", a: "prononçons" }, { q: "Je _____ (jeter) toujours les vieux journaux.", a: "jette" }, { q: "Le professeur _____ (annoncer) un examen.", a: "annonce" }, { q: "Monique _____ (lever) toujours la main.", a: "lève" }, { q: "Les enfants adorent _____ (manger) des bonbons.", a: "manger" }, { q: "Ils _____ (voyager) beaucoup en Europe.", a: "voyagent" }, { q: "Tu _____ (payer) les factures?", a: "paies" }, { q: "Comment vous _____ (appeler)-vous?", a: "appelez" }, { q: "Le prof _____ (répéter)-t-il les phrases?", a: "répète" } ] },
+
+            // --- CHAPTER 6 ---
+            { ch: 6, ex: "6.1", instruction: "Complete the sentences with the correct forms of the verb aller.", questions: [ { q: "Tu _____ en Suisse cet été?", a: "vas" }, { q: "Philippe _____ bientôt au travail.", a: "va" }, { q: "Nous _____ au théâtre samedi soir.", a: "allons" }, { q: "Régine _____ -t-elle à La Nouvelle-Orléans?", a: "va" }, { q: "Comment _____ -vous?", a: "allez" }, { q: "Comment _____ les enfants?", a: "vont" } ] },
+            { ch: 6, ex: "6.12", instruction: "Insert the correct French preposition for geographical names (en, au, à, de, du, etc.).", questions: [ { q: "Nous allons _____ Bretagne cet été.", a: "en" }, { q: "Moi, je préfère aller _____ Paris.", a: "à" }, { q: "Les Dubois projettent de voyager _____ Turquie.", a: "en" }, { q: "Vas-tu _____ Hawaï?", a: "à" }, { q: "J'aime mieux passer les vacances _____ Mexique.", a: "au" }, { q: "Robert va travailler _____ Afrique.", a: "en" }, { q: "_____ Québec (province), tout le monde parle français.", a: "Au" }, { q: "Bangkok est _____ Thaïlande.", a: "en Thaïlande" }, { q: "Ils arrivent _____ Canada.", a: "du" }, { q: "Mes parents sont originaires _____ France.", a: "de" }, { q: "Les soldats sont de retour _____ Irak.", a: "d'" }, { q: "Ce sont des oranges _____ Afrique du Nord.", a: "d'" }, { q: "Cet avion arrive _____ États-Unis.", a: "des" }, { q: "La touriste téléphone _____ La Havane.", a: "de" } ] },
+
+            // --- CHAPTER 7 ---
+            { ch: 7, ex: "7.1", instruction: "Translate using verbs conjugated like partir.", questions: [ { q: "I serve the coffee.", a: "Je sers le café." }, { q: "The cats sleep a lot.", a: "Les chats dorment beaucoup." }, { q: "You're (pol.) not leaving soon?", a: "Vous ne partez pas bientôt?/Ne partez-vous pas bientôt?" }, { q: "Éliane is leaving for New York.", a: "Éliane part pour New York." }, { q: "Are you (fam.) sleeping?", a: "Dors-tu?" }, { q: "We're going out Friday.", a: "Nous sortons/On sort vendredi." }, { q: "Dad serves dinner.", a: "Papa sert le dîner." }, { q: "Is the witness lying?", a: "Le témoin ment-il?" }, { q: "I sense some difficulties here.", a: "Je sens des difficultés ici." }, { q: "Do you (pol.) smell the soup?", a: "Sentez-vous la soupe?" } ] },
+            { ch: 7, ex: "7.5", instruction: "Provide the correct form of the suggested irregular verb.", questions: [ { q: "Je _____ bientôt chercher un emploi. (devoir)", a: "dois" }, { q: "Nous _____ venir à l'heure aujourd'hui. (pouvoir)", a: "pouvons" }, { q: "Tu ne _____ pas accompagner Papa? (vouloir)", a: "veux" }, { q: "Iris et Marie-Jo _____ voyager avec vous. (pouvoir)", a: "peuvent" }, { q: "J' _____ quelqu'un au loin. (apercevoir)", a: "aperçois" }, { q: "Les notes de Monique _____ . (décevoir)", a: "déçoivent" }, { q: "Les jeunes élèves _____ rentrer tout de suite. (devoir)", a: "doivent" }, { q: "Arnaud ne _____ pas payer son déjeuner. (pouvoir)", a: "peut" }, { q: "_____ -tu de l'argent à tes amis? (devoir)", a: "Dois" }, { q: "_____ -vous mettre votre nom ici? (vouloir)", a: "Voulez" } ] },
+
+            // --- CHAPTER 8 ---
+            { ch: 8, ex: "8.4", instruction: "Translate into French using present tense voir or croire.", questions: [ { q: "We believe. (We're believers.)", a: "Nous croyons." }, { q: "Does she see well?", a: "Voit-elle bien?" }, { q: "Sophie and Bernard believe that we're coming.", a: "Sophie et Bernard croient que nous venons." }, { q: "Do you (fam.) see Nicole sometimes?", a: "Vois-tu Nicole quelquefois?" }, { q: "I don't think so.", a: "Je crois que non." }, { q: "They (f.) believe in Einstein!", a: "Elles croient en Einstein!" }, { q: "They (m.) see the sun again in the spring.", a: "Ils revoient le soleil au printemps." }, { q: "We don't see Jo very often.", a: "Nous ne voyons pas/On ne voit pas Jo très souvent." }, { q: "He believes that it's true.", a: "Il croit que c'est vrai." }, { q: "Whom do you (fam.) see?", a: "Qui vois-tu?/Qui est-ce que tu vois?" } ] },
+            { ch: 8, ex: "8.9", instruction: "Provide the correct relative pronoun (qui, que, où).", questions: [ { q: "Tu vois une place _____ on peut laisser la voiture?", a: "où" }, { q: "Margot attend les amis _____ doivent bientôt arriver.", a: "qui" }, { q: "On va à pied au café _____ Jeanne-Marie préfère.", a: "que" }, { q: "Aimes-tu les boissons _____ sont gazéifiées?", a: "qui" }, { q: "C'est une rue _____ ils peuvent faire une belle promenade.", a: "où" }, { q: "Je descends à un hôtel _____ a une bonne réputation.", a: "qui" }, { q: "L'hôtel a un restaurant _____ nous aimons dîner.", a: "où" }, { q: "Le serveur, _____ apporte la carte, est aimable.", a: "qui" }, { q: "Je n'aime pas les plats _____ vous choisissez.", a: "que" }, { q: "Je préfère les salades _____ Sylvie recommande.", a: "que" }, { q: "Tu veux une table dans la salle _____ Georges dîne?", a: "où" }, { q: "Nous allons payer l'addition _____ le serveur prépare.", a: "que" } ] },
+
+            // --- CHAPTER 9 ---
+            { ch: 9, ex: "9.5", instruction: "Answer with a direct object pronoun preceding voici or voilà.", questions: [ { q: "Où sont les livres de français?", a: "Les voici/Les voilà" }, { q: "Je cherche le numéro de téléphone.", a: "Le voici/Le voilà" }, { q: "Où est la confiture?", a: "La voici/La voilà" }, { q: "Marie et Richard, où êtes-vous?", a: "Nous voici/Nous voilà" }, { q: "Nous ne voyons pas les valises.", a: "Les voici/Les voilà" }, { q: "Tu es là?", a: "Me voici/Me voilà" } ] },
+            { ch: 9, ex: "9.10", instruction: "Answer the questions affirmatively, replacing the italicized phrase with 'en'.", questions: [ { q: "Vous allez acheter des provisions?", a: "Oui, nous allons en acheter./Oui, je vais en acheter." }, { q: "Sébastien a-t-il de l'argent?", a: "Oui, il en a." }, { q: "Est-ce que tu bois du lait?", a: "Oui, j'en bois." }, { q: "Les étudiants ont-ils beaucoup de devoirs?", a: "Oui, ils en ont beaucoup." }, { q: "Madonna possède-t-elle trois maisons?", a: "Oui, elle en possède trois." }, { q: "Nous avons assez de légumes?", a: "Oui, nous en avons assez./Oui, on en a assez." }, { q: "On va chercher une douzaine d'œufs?", a: "Oui, on va en chercher une douzaine." }, { q: "As-tu besoin de logement?", a: "Oui, j'en ai besoin." }, { q: "Claudie prend deux kilos de pommes de terre?", a: "Oui, elle en prend deux." }, { q: "On utilise trop d'énergie?", a: "Oui, on en utilise trop." }, { q: "Tu as un euro à me prêter?", a: "Oui, j'en ai un." } ] },
+
+            // --- CHAPTER 10 ---
+            { ch: 10, ex: "10.4", instruction: "Complete the phrases with the correct demonstrative adjective (ce, cet, cette, ces).", questions: [ { q: "_____ belles fleurs", a: "ces" }, { q: "_____ nouvel appartement", a: "ce" }, { q: "_____ gentil chat", a: "ce" }, { q: "_____ repas délicieux", a: "ce/ces" }, { q: "_____ arbre ancien", a: "cet" }, { q: "_____ grosse valise", a: "cette" }, { q: "_____ soldats courageux", a: "ces" }, { q: "_____ article important", a: "cet" } ] },
+            { ch: 10, ex: "10.9", instruction: "Write the adverb that corresponds to each adjective.", questions: [ { q: "amical", a: "amicalement" }, { q: "vrai", a: "vraiment" }, { q: "faux", a: "faussement" }, { q: "gentil", a: "gentiment" }, { q: "évident", a: "évidemment" }, { q: "vif", a: "vivement" }, { q: "franc", a: "franchement" }, { q: "différent", a: "différemment" }, { q: "bref", a: "brièvement" }, { q: "terrible", a: "terriblement" }, { q: "lent", a: "lentement" }, { q: "intelligent", a: "intelligemment" }, { q: "cruel", a: "cruellement" }, { q: "constant", a: "constamment" }, { q: "doux", a: "doucement" } ] },
+
+            // --- CHAPTER 11 ---
+            { ch: 11, ex: "11.10", instruction: "Change the instructions/advice to the 'vous' imperative form.", questions: [ { q: "Il faut faire de l'exercice.", a: "Faites de l'exercice." }, { q: "Il faut boire assez d'eau.", a: "Buvez assez d'eau." }, { q: "Il faut essayer de rester calme.", a: "Essayez de rester calme." }, { q: "Il ne faut pas fumer.", a: "Ne fumez pas." }, { q: "Il faut réfléchir à la vie.", a: "Réfléchissez à la vie." }, { q: "Il faut être sociable.", a: "Soyez sociable(s)." }, { q: "Il ne faut pas manger trop de viande.", a: "Ne mangez pas trop de viande." }, { q: "Il ne faut pas prendre l'ascenseur.", a: "Ne prenez pas l'ascenseur." } ] },
+            { ch: 11, ex: "11.11", instruction: "Change these instructions/advice to the 'tu' imperative form.", questions: [ { q: "Tu dois finir tes devoirs.", a: "Finis tes devoirs!" }, { q: "Tu ne dois pas manger de bonbons.", a: "Ne mange pas de bonbons!" }, { q: "Tu dois mettre tes lunettes quand tu lis.", a: "Mets tes lunettes quand tu lis!" }, { q: "Il faut aller au lit à dix heures.", a: "Va au lit à dix heures!" }, { q: "Il ne faut pas regarder la télé le soir.", a: "Ne regarde pas la télé le soir!" }, { q: "Tu ne dois pas trop parler au téléphone.", a: "Ne parle pas trop au téléphone!" }, { q: "Tu dois écrire à ta grand-mère.", a: "Écris à ta grand-mère!" }, { q: "Tu ne dois pas perdre ton parapluie.", a: "Ne perds pas ton parapluie!" } ] },
+
+            // --- CHAPTER 12 ---
+            { ch: 12, ex: "12.3", instruction: "Complete the sentences with the correct form of the reflexive verb.", questions: [ { q: "Après le petit déjeuner, je _____ (se brosser) les dents.", a: "me brosse" }, { q: "Les garçons commencent à _____ (se raser) vers 15 ans.", a: "se raser" }, { q: "Les serveurs _____ (se laver) les mains souvent.", a: "se lavent" }, { q: "Nous _____ (se lever) chercher de l'eau.", a: "nous levons" }, { q: "Tu _____ (s'entraîner) avant de courir.", a: "t'entraînes" }, { q: "Ils vont _____ (s'installer) dans leur nouvelle maison.", a: "s'installer" } ] },
+            { ch: 12, ex: "12.5", instruction: "Translate the commands into French.", questions: [ { q: "Don't get up. (polite)", a: "Ne vous levez pas." }, { q: "Wake up! (polite)", a: "Réveillez-vous!" }, { q: "Brush your teeth. (polite)", a: "Brossez-vous les dents." }, { q: "Don't sit down here. (polite)", a: "Ne vous installez pas ici." }, { q: "Go to bed. (familiar)", a: "Couche-toi./Va au lit." }, { q: "Get dressed. (familiar)", a: "Habille-toi." }, { q: "Don't go swimming now. (familiar)", a: "Ne te baigne pas maintenant." }, { q: "Have a good time! (familiar)", a: "Amuse-toi!" } ] },
+
+            // --- CHAPTER 13 ---
+            { ch: 13, ex: "13.1", instruction: "Change the verbs from the present to the passé composé.", questions: [ { q: "nous écoutons -> nous _____ ", a: "avons écouté" }, { q: "tu réfléchis -> tu _____ ", a: "as réfléchi" }, { q: "on attend -> on _____ ", a: "a attendu" }, { q: "vous choisissez -> vous _____ ", a: "avez choisi" }, { q: "elles parlent -> elles _____ ", a: "ont parlé" }, { q: "nous commençons -> nous _____ ", a: "avons commencé" }, { q: "ils entendent -> ils _____ ", a: "ont entendu" }, { q: "tu achètes -> tu _____ ", a: "as acheté" }, { q: "nous mangeons -> nous _____ ", a: "avons mangé" }, { q: "j'envoie -> j' _____ ", a: "ai envoyé" } ] },
+            { ch: 13, ex: "13.4", instruction: "Provide the correct past participle for the verbs in passé composé.", questions: [ { q: "Les enfants ont _____ tard. (dormir)", a: "dormi" }, { q: "Tu as _____ de bonnes notes? (obtenir)", a: "obtenu" }, { q: "On a _____ devant le spectacle. (rire)", a: "ri" }, { q: "Vous avez _____ le train. (prendre)", a: "pris" }, { q: "J'ai _____ le dessert. (servir)", a: "servi" }, { q: "Nous avons _____ au Québec. (vivre)", a: "vécu" }, { q: "J'ai _____ téléphoner. (devoir)", a: "dû" }, { q: "Les agents ont _____ le suspect. (poursuivre)", a: "poursuivi" } ] },
+
+            // --- CHAPTER 14 ---
+            { ch: 14, ex: "14.1", instruction: "Identify the correct PC or Imparfait conjugation for the context.", questions: [ { q: "Samedi nous _____ (décider) de faire un pique-nique.", a: "avons décidé" }, { q: "On _____ (préparer) des tas de choses.", a: "a préparé" }, { q: "Antoine _____ (ne rien oublier).", a: "n'a rien oublié" }, { q: "Il _____ (mettre) des serviettes.", a: "a mis" }, { q: "Nous _____ (quitter) la maison.", a: "avons quitté" }, { q: "Et nous _____ (partir).", a: "sommes partis" }, { q: "Dans la voiture nous _____ (se mettre à) chanter.", a: "nous sommes mis à" }, { q: "Papa nous _____ (dire) de regarder le paysage.", a: "a dit" } ] },
+            { ch: 14, ex: "14.8", instruction: "Translate the commands with double object pronouns (Give both familiar and polite forms separated by a slash).", questions: [ { q: "Ces cahiers? (Give them to me.)", a: "Donne-les-moi./Donnez-les-moi." }, { q: "De l'argent? (Offer him some.)", a: "Offre-lui-en./Offrez-lui-en." }, { q: "Des fruits? (Don't eat any.)", a: "N'en mange pas./N'en mangez pas." }, { q: "La voiture? (Don't sell it to her.)", a: "Ne la lui vends pas./Ne la lui vendez pas." }, { q: "Ce restaurant? (Go there.)", a: "Vas-y./Allez-y." } ] },
+
+            // --- CHAPTER 15 ---
+            { ch: 15, ex: "15.1", instruction: "Conjugate the verb in the future tense.", questions: [ { q: "Renée _____ (partir).", a: "partira" }, { q: "Olivier _____ (acheter) ses billets.", a: "achètera" }, { q: "Nous _____ (prendre) le train.", a: "prendrons" }, { q: "Mon amie _____ (venir) me voir.", a: "viendra" }, { q: "Vous _____ (être) déjà à Boston.", a: "serez" }, { q: "Il _____ (falloir) remettre ce devoir.", a: "faudra" }, { q: "Ils _____ (avoir) besoin de faire le marché.", a: "auront" }, { q: "Tu _____ (pouvoir) me prêter la voiture.", a: "pourras" } ] },
+            { ch: 15, ex: "15.4", instruction: "Conjugate the verb in the conditional.", questions: [ { q: "Je _____ (aimer) sortir.", a: "aimerais" }, { q: "Ils _____ (vouloir) voyager.", a: "voudraient" }, { q: "Mathieu _____ (aller) en Europe.", a: "irait" }, { q: "Nous _____ (venir) volontiers.", a: "viendrions" }, { q: "Je _____ (prendre) deux verres.", a: "prendrais" }, { q: "Elles _____ (être) heureuses.", a: "seraient" }, { q: "_____ (faire)-tu ce voyage?", a: "Ferais" }, { q: "Est-ce que vous _____ (revoir) ce film?", a: "reverriez" } ] },
+
+            // --- CHAPTER 16 ---
+            { ch: 16, ex: "16.1", instruction: "Change these subjunctive verb forms from singular to plural.", questions: [ { q: "que je choisisse -> que nous _____ ", a: "choisissions" }, { q: "que tu achètes -> que vous _____ ", a: "achetiez" }, { q: "que tu dormes -> que vous _____ ", a: "dormiez" }, { q: "que je parle -> que nous _____ ", a: "parlions" }, { q: "qu'il finisse -> qu'ils _____ ", a: "finissent" }, { q: "qu'elle vende -> qu'elles _____ ", a: "vendent" }, { q: "que j'entende -> que nous _____ ", a: "entendions" }, { q: "que tu partes -> que vous _____ ", a: "partiez" } ] },
+            { ch: 16, ex: "16.2", instruction: "Complete the sentences with the present subjunctive.", questions: [ { q: "Il faut que tu _____ à l'heure. (être)", a: "sois" }, { q: "Il est essentiel qu'il _____ de son mieux. (faire)", a: "fasse" }, { q: "Il est important que nous _____ au bureau. (aller)", a: "allions" }, { q: "Il ne faut pas que vous y _____ trop tard. (rester)", a: "restiez" }, { q: "Il n'est pas essentiel que je _____ tout aujourd'hui. (faire)", a: "fasse" }, { q: "Il faut que nous _____ contents. (être)", a: "soyons" }, { q: "Il est nécessaire qu'elle _____ réussir. (vouloir)", a: "veuille" }, { q: "Il n'est pas important qu'ils _____ toujours raison. (avoir)", a: "aient" }, { q: "Il est important que tu _____ l'adresse. (savoir)", a: "saches" }, { q: "Il faut que vous _____ me comprendre. (pouvoir)", a: "puissiez" } ] }
+        ];
+
+        let currentExercise = null;
+
+        function populateExerciseList() {
+            const ch = parseInt(document.getElementById('exChapterFilter').value);
+            const exSelect = document.getElementById('exerciseSelect');
+            exSelect.innerHTML = '';
+            
+            const filteredEx = exerciseData.filter(e => e.ch === ch);
+            if (filteredEx.length === 0) {
+                exSelect.innerHTML = '<option value="">No exercises available</option>';
+                document.getElementById('ex-instruction').innerText = "No exercises loaded for this chapter.";
+                document.getElementById('ex-questions-container').innerHTML = '';
+                document.getElementById('score-display').innerText = 'Score: --';
+                return;
+            }
+
+            filteredEx.forEach(ex => {
+                const opt = document.createElement('option');
+                opt.value = ex.ex;
+                opt.innerText = `Exercise ${ex.ex}`;
+                exSelect.appendChild(opt);
+            });
+            renderExercise();
+        }
+
+        function renderExercise() {
+            const selectedExNum = document.getElementById('exerciseSelect').value;
+            currentExercise = exerciseData.find(e => e.ex === selectedExNum);
+            
+            if (!currentExercise) return;
+
+            document.getElementById('ex-instruction').innerText = currentExercise.instruction;
+            document.getElementById('score-display').innerText = 'Score: --';
+            
+            const container = document.getElementById('ex-questions-container');
+            container.innerHTML = '';
+
+            currentExercise.questions.forEach((q, index) => {
+                const row = document.createElement('div');
+                row.className = 'question-row';
+                
+                let questionText = q.q;
+                let inputHTML = `<input type="text" class="inline-input" id="input-${index}" autocomplete="off">`;
+                
+                // If there's a blank line, replace it. Otherwise, append the input box to the end.
+                if (questionText.includes('_____')) {
+                    questionText = questionText.replace('_____', inputHTML);
+                } else {
+                    questionText = `${questionText} ${inputHTML}`;
+                }
+
+                row.innerHTML = `
+                    <div class="question-text"><span class="fr-num">${index + 1}. </span>${questionText}</div>
+                    <div class="feedback" id="feedback-${index}"></div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function checkAnswers() {
+            if (!currentExercise) return;
+            
+            const inputs = document.querySelectorAll('.inline-input');
+            let correctCount = 0;
+
+            inputs.forEach((input, index) => {
+                const correctAnswer = currentExercise.questions[index].a;
+                const userAnswer = input.value.trim().toLowerCase().replace(/[.,!?]/g, '');
+                const possibleAnswers = correctAnswer.toLowerCase().split('/').map(s => s.trim().replace(/[.,!?]/g, ''));
+                const feedbackEl = document.getElementById(`feedback-${index}`);
+                
+                if (userAnswer === "") {
+                    input.className = 'inline-input';
+                    feedbackEl.innerHTML = '';
+                } else if (possibleAnswers.includes(userAnswer)) {
+                    input.className = 'inline-input correct';
+                    feedbackEl.innerHTML = '&#10003; Correct';
+                    feedbackEl.className = 'feedback text-green';
+                    correctCount++;
+                } else {
+                    input.className = 'inline-input incorrect';
+                    feedbackEl.innerHTML = `&#10007; Incorrect. Correct answer: <strong>${correctAnswer}</strong>`;
+                    feedbackEl.className = 'feedback text-red';
+                }
+            });
+            
+            document.getElementById('score-display').innerText = `Score: ${correctCount} / ${inputs.length}`;
+        }
+
+        // Initialize App
+        populateExerciseList();
+        loadCard();
+    </script>
+</body>
+</html>
