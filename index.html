@@ -85,13 +85,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .nav-btn { 
-            background: transparent; color: var(--text-muted); border: none; padding: 12px 24px; font-size: 15px; 
-            font-weight: 600; cursor: pointer; border-radius: 100px; transition: var(--transition); display: flex; align-items: center; gap: 8px;
-        }
-        .nav-btn:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
-        .nav-btn.active { color: #fff; background-color: var(--primary-color); box-shadow: var(--shadow-glow); }
-        .nav-icon { font-size: 18px; }
 
         /* --- View Containers --- */
         .app-main {
@@ -243,6 +236,129 @@
         .exercise-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-top: 1px solid var(--glass-border); padding-top: 30px;}
         .score-display { font-size: 24px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);}
 /* --- Mobile Responsive Rules --- */
+        /* --- Menu Tab Button --- */
+        .menu-tab-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid var(--glass-border);
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .menu-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        .menu-tab-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* --- Drawer & Overlay (Desktop & Mobile) --- */
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 998;
+        }
+        .menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            max-width: 85vw;
+            height: 100vh;
+            background: #111827;
+            border-left: 1px solid var(--glass-border);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 20px;
+            box-sizing: border-box;
+        }
+        .menu-drawer.open {
+            transform: translateX(0);
+        }
+
+        .menu-drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+        .menu-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 28px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.2s ease;
+        }
+        .menu-close-btn:hover {
+            color: #fff;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .menu-items .nav-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            text-align: left;
+        }
+        .menu-items .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: translateX(4px);
+        }
+        .menu-items .nav-btn.active {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-glow);
+        }
+        .menu-items .nav-icon {
+            font-size: 20px;
+        }
 @media screen and (max-width: 768px) {
     /* Allow natural scrolling on mobile instead of locking screen height */
     body {
@@ -272,19 +388,6 @@
         margin-right: 0;
         padding: 4px 0 8px 0;
         font-size: 20px;
-    }
-
-    .nav-btn {
-        flex: 1 1 calc(33.33% - 8px);
-        min-width: 90px;
-        padding: 8px 10px;
-        font-size: 13px;
-        justify-content: center;
-        border-radius: 8px;
-    }
-
-    .nav-btn .nav-icon {
-        font-size: 15px;
     }
 
     /* Container Spacing */
@@ -447,13 +550,37 @@
 </head>
 <body>
 
-    <!-- Floating Navbar -->
+   <!-- Floating Navbar with Slide-Out Menu Tab -->
     <div class="navbar-container">
         <div class="navbar">
             <h1>Easy<span>French</span></h1>
-            <button class="nav-btn active" id="btn-vocab" onclick="switchView('vocab-view')"><span class="nav-icon">📚</span> Vocabulary</button>
-            <button class="nav-btn" id="btn-grammar" onclick="switchView('grammar-view')"><span class="nav-icon">📖</span> Grammar Library</button>
-            <button class="nav-btn" id="btn-exercises" onclick="switchView('exercises-view')"><span class="nav-icon">✍️</span> Exercises</button>
+            
+            <button id="menu-btn" class="menu-tab-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
+                <span class="menu-tab-icon">☰</span>
+                <span class="menu-tab-label">Menu</span>
+            </button>
+
+            <!-- Dimmed Backdrop -->
+            <div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
+
+            <!-- Slide-out Drawer Panel -->
+            <nav id="menu-drawer" class="menu-drawer">
+                <div class="menu-drawer-header">
+                    <span>Navigation</span>
+                    <button class="menu-close-btn" onclick="closeMenu()" aria-label="Close menu">&times;</button>
+                </div>
+                <div class="menu-items">
+                    <button class="nav-btn active" id="btn-vocab" onclick="switchView('vocab-view')">
+                        <span class="nav-icon">📚</span> Vocabulary
+                    </button>
+                    <button class="nav-btn" id="btn-grammar" onclick="switchView('grammar-view')">
+                        <span class="nav-icon">📖</span> Grammar Library
+                    </button>
+                    <button class="nav-btn" id="btn-exercises" onclick="switchView('exercises-view')">
+                        <span class="nav-icon">✍️</span> Exercises
+                    </button>
+                </div>
+            </nav>
         </div>
     </div>
 
@@ -959,6 +1086,23 @@
 
     <!-- Application Logic -->
     <script>
+        function toggleMenu() {
+            const drawer = document.getElementById('menu-drawer');
+            drawer.classList.contains('open') ? closeMenu() : openMenu();
+        }
+
+        function openMenu() {
+            document.getElementById('menu-drawer').classList.add('open');
+            document.getElementById('menu-overlay').classList.add('open');
+            document.getElementById('menu-btn').setAttribute('aria-expanded', 'true');
+        }
+
+        function closeMenu() {
+            document.getElementById('menu-drawer').classList.remove('open');
+            document.getElementById('menu-overlay').classList.remove('open');
+            document.getElementById('menu-btn').setAttribute('aria-expanded', 'false');
+        }
+
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active-view'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -967,7 +1111,14 @@
             if (viewId === 'vocab-view') document.getElementById('btn-vocab').classList.add('active');
             else if (viewId === 'grammar-view') document.getElementById('btn-grammar').classList.add('active');
             else if (viewId === 'exercises-view') document.getElementById('btn-exercises').classList.add('active');
+
+            closeMenu();
         }
+
+        // Close drawer with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMenu();
+        });
 
         function switchVocabMode(mode) {
             const flashcardView = document.getElementById('mode-flashcards');
