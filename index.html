@@ -184,23 +184,54 @@
         .card-front .word-display { color: var(--french-text); font-weight: 800; }
         .card-back .word-display { color: #fff; font-weight: 500; font-style: italic; }
         .hint { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; position: absolute; bottom: 30px; opacity: 0.7; }
-        .audio-btn {
+       .card-audio-controls {
     position: absolute;
     top: 18px;
     right: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.accent-toggle-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--glass-border);
     color: #fff;
-    font-size: 20px;
-    width: 44px;
-    height: 44px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: var(--transition);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.accent-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: scale(1.04);
+}
+
+.accent-toggle-btn:active {
+    transform: scale(0.96);
+}
+
+.audio-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: var(--transition);
-    z-index: 10;
 }
 
 .audio-btn:hover {
@@ -704,8 +735,11 @@ body {
                 <div class="card-stack">
                     <div class="flashcard-container" onclick="flipCard()">
                         <div class="flashcard" id="flashcard">
-                           <div class="card-face card-front">
-    <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen to pronunciation">🔊</button>
+                          <div class="card-face card-front">
+    <div class="card-audio-controls">
+        <button class="accent-toggle-btn" id="accentToggleBtn" onclick="toggleAccent(event)" title="Switch Accent">🇫🇷 FR</button>
+        <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen">🔊</button>
+    </div>
     <div class="word-display" id="word-fr">Loading...</div>
     <span class="hint">Click deck to flip</span>
 </div>
@@ -1782,47 +1816,61 @@ body {
             loadCard();
             if (document.getElementById('mode-list').style.display === 'block') renderList();
         }
-        function speakCurrentWord(event) {
-    if (event) {
-        event.stopPropagation(); // Prevents flipping the card when pressing audio
+   // --- Pronunciation & Accent Switcher Logic ---
+let currentAccent = 'fr-FR';
+
+function toggleAccent(event) {
+    if (event) event.stopPropagation();
+    const btn = document.getElementById('accentToggleBtn');
+    if (currentAccent === 'fr-FR') {
+        currentAccent = 'fr-CA';
+        btn.innerText = '🇨🇦 QC';
+    } else {
+        currentAccent = 'fr-FR';
+        btn.innerText = '🇫🇷 FR';
     }
+}
+
+function speakCurrentWord(event) {
+    if (event) event.stopPropagation();
 
     if (!('speechSynthesis' in window)) {
-        alert('Text-to-speech is not supported on this device/browser.');
+        alert('Text-to-speech is not supported on this browser.');
         return;
     }
 
     if (currentCards.length === 0) return;
 
-    // Clean out metadata tags like (m.), (f.), or slashes so French sounds natural
     let cleanText = currentCards[currentIndex].fr
         .replace(/\(.*?\)/g, '')
         .replace(/\//g, ' ')
         .trim();
 
-    window.speechSynthesis.cancel(); // Stop any overlapping sound
+    window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 0.85; // Slightly slower tempo for easy listening
+    utterance.lang = currentAccent;
+    utterance.rate = 0.85;
 
-    // Select installed French voice on the phone/browser
     const voices = window.speechSynthesis.getVoices();
-    const frVoice = voices.find(v => v.lang && (v.lang === 'fr-FR' || v.lang.startsWith('fr')));
-    if (frVoice) {
-        utterance.voice = frVoice;
+    let voice = voices.find(v => v.lang === currentAccent || v.lang === currentAccent.replace('-', '_'));
+
+    if (!voice) {
+        voice = voices.find(v => v.lang && v.lang.startsWith('fr'));
+    }
+
+    if (voice) {
+        utterance.voice = voice;
     }
 
     window.speechSynthesis.speak(utterance);
 }
 
-// Pre-warm synthesizer voices
 if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = () => {
         window.speechSynthesis.getVoices();
     };
 }
-
         // FULL UNCUT EXERCISE DATA
         const exerciseData = [
             // --- CHAPTER 1 ---
