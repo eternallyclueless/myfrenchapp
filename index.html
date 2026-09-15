@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- Match Phone Status Bar & Enable Native App Mode -->
 <meta name="theme-color" content="#0f172a">
 <meta name="mobile-web-app-capable" content="yes">
@@ -43,6 +43,10 @@
             flex-direction: column; 
             height: 100vh; 
             overflow: hidden; 
+            overflow-x: hidden;
+            position: relative;
+            width: 100%;
+            max-width: 100vw;
         }
 
         /* Subtle Background Dot Grid */
@@ -350,27 +354,31 @@
             visibility: visible;
         }
 
-        .menu-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 320px;
-            max-width: 85vw;
-            height: 100vh;
-            background: #111827;
-            border-left: 1px solid var(--glass-border);
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            padding: 24px 20px;
-            box-sizing: border-box;
-        }
-        .menu-drawer.open {
-            transform: translateX(0);
-        }
+       .menu-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100vh;
+    background: #111827;
+    border-left: 1px solid var(--glass-border);
+    padding: 24px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transform: translateX(100%);
+    visibility: hidden; /* Stops Android from expanding canvas width when closed */
+    pointer-events: none; /* Prevents tapping invisible off-screen elements */
+    transition: transform 0.3s ease, visibility 0.3s ease;
+}
+
+.menu-drawer.open,
+.menu-drawer.active {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+}
 
         .menu-drawer-header {
             display: flex;
