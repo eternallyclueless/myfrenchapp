@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Match Phone Status Bar & Enable Native App Mode -->
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>freefrenchlearningresource</title>
     <style>
         /* --- Core Variables & Reset --- */
@@ -555,6 +560,28 @@
         overflow-x: auto;
         white-space: nowrap;
     }
+    /* Disable accidental text selection across UI elements */
+body, button, select, .card-stack {
+    -webkit-touch-callout: none; /* Disables iOS callout menu on long-press */
+    -webkit-user-select: none;   /* Safari */
+    user-select: none;           /* Standard */
+}
+
+/* Allow text selection only inside question inputs & exercise text if needed */
+.question-text, .inline-input, .grammar-content {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+/* Remove tap highlight boxes on Android */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent accidental pull-to-refresh reload while swiping flashcards */
+body {
+    overscroll-behavior-y: contain;
+}
 }
     </style>
     <!-- PWA Manifest & Service Worker -->
