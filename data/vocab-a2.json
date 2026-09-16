@@ -1,3 +1,4 @@
+ [
   { "id": "a2-0001", "catId": 1, "category": "Daily Routine & Household", "fr": "se réveiller", "en": "to wake up" },
   { "id": "a2-0002", "catId": 1, "category": "Daily Routine & Household", "fr": "le réveil", "en": "alarm clock" },
   { "id": "a2-0003", "catId": 1, "category": "Daily Routine & Household", "fr": "sonner", "en": "to ring (alarm)" },
@@ -1198,3 +1199,4 @@
   { "id": "a2-1198", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "soutenir un proche", "en": "to support a loved one" },
   { "id": "a2-1199", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "apporter du réconfort", "en": "to bring comfort" },
   { "id": "a2-1200", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "partager le bonheur", "en": "to share happiness" }
+ ]
