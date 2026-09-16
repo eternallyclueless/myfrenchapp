@@ -154,7 +154,21 @@
         .secondary-btn { padding: 15px 35px; font-size: 16px; font-weight: 600; cursor: pointer; border: 1px solid var(--glass-border); background-color: rgba(255,255,255,0.05); color: var(--text-main); border-radius: var(--radius-md); transition: var(--transition); }
         .secondary-btn:hover:not(:disabled) { background-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
 
-        /* --- View 1: Vocabulary --- */
+       /* --- View 1: Vocabulary --- */
+        .filter-controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .filter-controls-row select {
+            margin-bottom: 0;
+            max-width: 100%;
+        }
+
         .vocab-toggles { display: flex; background: rgba(0,0,0,0.2); border-radius: 100px; padding: 6px; width: 100%; max-width: 400px; border: 1px solid var(--glass-border); margin-bottom: 40px; }
         .vocab-toggles button { flex: 1; padding: 12px 20px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; border-radius: 100px; font-weight: 600; transition: var(--transition); }
         .vocab-toggles button.active { background: var(--surface-hover); color: #fff; box-shadow: var(--shadow-soft); }
@@ -594,12 +608,17 @@
         text-align: center;
     }
 
-    /* Vocab & Exercise Filters */
+   /* Vocab & Exercise Filters */
     .vocab-header {
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+
+    .filter-controls-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     select {
@@ -786,26 +805,29 @@ body {
                 <p>Master high-frequency French words from Chapters 1 through 16</p>
             </div>
 
-            <div class="vocab-header">
-                <select id="chapterFilter" onchange="filterChapter()">
-                    <option value="all">🌐 All Chapters Vocabulary</option>
-                    <option value="1">📘 Ch 1: Adjectives, Colors, Nationalities</option>
-                    <option value="2">📘 Ch 2: The House & Adverbs</option>
-                    <option value="3">📘 Ch 3: Days, Months, Seasons</option>
-                    <option value="4">📘 Ch 4: Stores & Food</option>
-                    <option value="5">📘 Ch 5: Clothing & Toiletries</option>
-                    <option value="6">📘 Ch 6: Weather & Environment</option>
-                    <option value="7">📘 Ch 7: Reading & Writing</option>
-                    <option value="8">📘 Ch 8: Jobs & Professions</option>
-                    <option value="9">📘 Ch 9: Animals & Plants</option>
-                    <option value="10">📘 Ch 10: Family & Adverbs</option>
-                    <option value="11">📘 Ch 11: House, Garden & DIY</option>
-                    <option value="12">📘 Ch 12: Daily Routine & Body Parts</option>
-                    <option value="13">📘 Ch 13: Transition Words, Sports & Leisure</option>
-                    <option value="14">📘 Ch 14: Time in the Past, Travel & Lodgings</option>
-                    <option value="15">📘 Ch 15: Banking & Business</option>
-                    <option value="16">📘 Ch 16: Friendship & Meeting People</option>
-                </select>
+           <div class="vocab-header">
+                <div class="filter-controls-row">
+                    <!-- CEFR Level Picker -->
+                    <select id="levelFilter" onchange="switchProficiencyLevel(this.value)">
+                        <option value="a1" selected>🟢 A1: Beginner</option>
+                        <option value="a2">🟢 A2: Elementary</option>
+                        <option value="b1">🟡 B1: Intermediate</option>
+                        <option value="b2">🟡 B2: Upper-Intermediate</option>
+                        <option value="c1">🔴 C1: Advanced</option>
+                        <option value="c2">🟣 C2: Mastery</option>
+                    </select>
+
+                    <!-- Dynamic Topic/Chapter Picker -->
+                    <select id="chapterFilter" onchange="filterChapter()">
+                        <option value="all">🌐 All Topics in Level</option>
+                    </select>
+                </div>
+
+                <div class="vocab-toggles">
+                    <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
+                    <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
+                </div>
+            </div>
 
                 <div class="vocab-toggles">
                     <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
@@ -1335,511 +1357,181 @@ body {
             }
         }
 
-        // FULL UNCUT VOCABULARY ARRAY
-        const vocabData = [
-            // Chapter 1
-            { "ch": 1, "fr": "le chat", "en": "the cat" }, { "ch": 1, "fr": "le chien", "en": "the dog" }, { "ch": 1, "fr": "le cinéma", "en": "the cinema, film, movies" },
-            { "ch": 1, "fr": "le cours", "en": "the course, class" }, { "ch": 1, "fr": "le football", "en": "soccer" }, { "ch": 1, "fr": "le frère", "en": "the brother" },
-            { "ch": 1, "fr": "le garçon", "en": "the boy" }, { "ch": 1, "fr": "le livre", "en": "the book" }, { "ch": 1, "fr": "le téléphone", "en": "the telephone" },
-            { "ch": 1, "fr": "le vin", "en": "the wine" }, { "ch": 1, "fr": "la banque", "en": "the bank" }, { "ch": 1, "fr": "la boutique", "en": "the store, shop" },
-            { "ch": 1, "fr": "la chemise", "en": "the shirt" }, { "ch": 1, "fr": "la femme", "en": "the woman, wife" }, { "ch": 1, "fr": "la jeune fille", "en": "the girl" },
-            { "ch": 1, "fr": "la lampe", "en": "the lamp" }, { "ch": 1, "fr": "la langue", "en": "the language" }, { "ch": 1, "fr": "la sœur", "en": "the sister" },
-            { "ch": 1, "fr": "la table", "en": "the table" }, { "ch": 1, "fr": "la voiture", "en": "the car" }, { "ch": 1, "fr": "la chaleur", "en": "heat, warmth" },
-            { "ch": 1, "fr": "la croix", "en": "the cross" }, { "ch": 1, "fr": "la distraction", "en": "the amusement" }, { "ch": 1, "fr": "la fleur", "en": "the flower" },
-            { "ch": 1, "fr": "la fois", "en": "the time (occasion)" }, { "ch": 1, "fr": "la forêt", "en": "the forest" }, { "ch": 1, "fr": "la fourmi", "en": "the ant" },
-            { "ch": 1, "fr": "la main", "en": "the hand" }, { "ch": 1, "fr": "la nuit", "en": "the night" }, { "ch": 1, "fr": "la radio", "en": "the radio" },
-            { "ch": 1, "fr": "l'ami (m.)", "en": "the friend (m.)" }, { "ch": 1, "fr": "l'amie (f.)", "en": "the friend (f.)" }, { "ch": 1, "fr": "l'anglais", "en": "English (language)" },
-            { "ch": 1, "fr": "l'architecte", "en": "the architect" }, { "ch": 1, "fr": "l'emploi", "en": "the job" }, { "ch": 1, "fr": "l'énergie", "en": "energy" },
-            { "ch": 1, "fr": "l'enfant", "en": "the child" }, { "ch": 1, "fr": "l'histoire", "en": "the story, history" }, { "ch": 1, "fr": "l'homme", "en": "the man" },
-            { "ch": 1, "fr": "l'hôtel", "en": "the hotel" }, { "ch": 1, "fr": "l'île", "en": "the island" }, { "ch": 1, "fr": "l'orange", "en": "the orange (fruit)" },
-            { "ch": 1, "fr": "l'université", "en": "the university" }, { "ch": 1, "fr": "l'usine", "en": "the factory" }, { "ch": 1, "fr": "la harpe", "en": "the harp" },
-            { "ch": 1, "fr": "le héros", "en": "the hero" }, { "ch": 1, "fr": "la honte", "en": "shame" }, { "ch": 1, "fr": "le hors-d'œuvre", "en": "the appetizer" },
-            { "ch": 1, "fr": "un autobus", "en": "a bus" }, { "ch": 1, "fr": "un billet", "en": "a ticket" }, { "ch": 1, "fr": "un dictionnaire", "en": "a dictionary" },
-            { "ch": 1, "fr": "un fauteuil", "en": "an easy chair" }, { "ch": 1, "fr": "un jardin", "en": "a garden" }, { "ch": 1, "fr": "un musée", "en": "a museum" },
-            { "ch": 1, "fr": "un pianiste", "en": "a pianist" }, { "ch": 1, "fr": "un salon", "en": "a living room" }, { "ch": 1, "fr": "une bibliothèque", "en": "a library" },
-            { "ch": 1, "fr": "une héroïne", "en": "a heroine" }, { "ch": 1, "fr": "une Hollandaise", "en": "a Dutchwoman" }, { "ch": 1, "fr": "une leçon", "en": "a lesson" },
-            { "ch": 1, "fr": "une librairie", "en": "a bookstore" }, { "ch": 1, "fr": "une mère", "en": "a mother" }, { "ch": 1, "fr": "une page", "en": "a (book) page" },
-            { "ch": 1, "fr": "une valise", "en": "a suitcase" }, { "ch": 1, "fr": "une ville", "en": "a city" }, { "ch": 1, "fr": "un choix", "en": "a choice" },
-            { "ch": 1, "fr": "le nez", "en": "the nose" }, { "ch": 1, "fr": "le bureau", "en": "the desk (or office)" }, { "ch": 1, "fr": "un hôpital", "en": "a hospital" },
-            { "ch": 1, "fr": "le lieu", "en": "the place" }, { "ch": 1, "fr": "le travail", "en": "the work, the task" }, { "ch": 1, "fr": "agréable", "en": "pleasant" },
-            { "ch": 1, "fr": "avare", "en": "stingy" }, { "ch": 1, "fr": "beau (bel, belle)", "en": "beautiful/handsome" }, { "ch": 1, "fr": "bon (bonne)", "en": "good" },
-            { "ch": 1, "fr": "bon marché", "en": "inexpensive" }, { "ch": 1, "fr": "cher (chère)", "en": "expensive; dear" }, { "ch": 1, "fr": "chic", "en": "stylish, chic" },
-            { "ch": 1, "fr": "content(e)", "en": "happy, pleased" }, { "ch": 1, "fr": "costaud(e)", "en": "sturdy (person)" }, { "ch": 1, "fr": "dernier (-ière)", "en": "last, final" },
-            { "ch": 1, "fr": "désolé(e)", "en": "sorry" }, { "ch": 1, "fr": "difficile", "en": "difficult" }, { "ch": 1, "fr": "drôle", "en": "funny" },
-            { "ch": 1, "fr": "excellent(e)", "en": "excellent" }, { "ch": 1, "fr": "facile", "en": "easy" }, { "ch": 1, "fr": "fantastique", "en": "wonderful" },
-            { "ch": 1, "fr": "fatigué(e)", "en": "tired" }, { "ch": 1, "fr": "formidable", "en": "fabulous" }, { "ch": 1, "fr": "fort(e)", "en": "strong" },
-            { "ch": 1, "fr": "grand(e)", "en": "big, tall; great" }, { "ch": 1, "fr": "gros(se)", "en": "fat" }, { "ch": 1, "fr": "heureux (-euse)", "en": "happy" },
-            { "ch": 1, "fr": "idéaliste", "en": "idealistic" }, { "ch": 1, "fr": "intelligent(e)", "en": "intelligent" }, { "ch": 1, "fr": "intéressant(e)", "en": "interesting" },
-            { "ch": 1, "fr": "jeune", "en": "young" }, { "ch": 1, "fr": "joli(e)", "en": "pretty" }, { "ch": 1, "fr": "laid(e)", "en": "ugly" },
-            { "ch": 1, "fr": "mauvais(e)", "en": "bad" }, { "ch": 1, "fr": "mince", "en": "thin" }, { "ch": 1, "fr": "nouveau/nouvel/nouvelle", "en": "new" },
-            { "ch": 1, "fr": "pauvre", "en": "poor" }, { "ch": 1, "fr": "petit(e)", "en": "small; short" }, { "ch": 1, "fr": "premier (-ière)", "en": "first" },
-            { "ch": 1, "fr": "riche", "en": "rich" }, { "ch": 1, "fr": "sincère", "en": "sincere" }, { "ch": 1, "fr": "sociable", "en": "friendly" },
-            { "ch": 1, "fr": "sympathique", "en": "nice" }, { "ch": 1, "fr": "timide", "en": "shy, timid" }, { "ch": 1, "fr": "triste", "en": "sad" },
-            { "ch": 1, "fr": "typique", "en": "typical" }, { "ch": 1, "fr": "vieux/vieil/vieille", "en": "old" }, { "ch": 1, "fr": "blanc(he)", "en": "white" },
-            { "ch": 1, "fr": "blond(e)", "en": "blond(e)" }, { "ch": 1, "fr": "bleu(e)", "en": "blue" }, { "ch": 1, "fr": "brun(e)", "en": "dark-haired" },
-            { "ch": 1, "fr": "gris(e)", "en": "gray" }, { "ch": 1, "fr": "rose", "en": "pink" }, { "ch": 1, "fr": "jaune", "en": "yellow" },
-            { "ch": 1, "fr": "rouge", "en": "red" }, { "ch": 1, "fr": "marron", "en": "brown" }, { "ch": 1, "fr": "vert(e)", "en": "green" },
-            { "ch": 1, "fr": "noir(e)", "en": "black" }, { "ch": 1, "fr": "violet(te)", "en": "purple" }, { "ch": 1, "fr": "orange", "en": "orange" },
-            { "ch": 1, "fr": "allemand(e)", "en": "German" }, { "ch": 1, "fr": "américain(e)", "en": "American" }, { "ch": 1, "fr": "anglais(e)", "en": "English" },
-            { "ch": 1, "fr": "belge", "en": "Belgian" }, { "ch": 1, "fr": "canadien(ne)", "en": "Canadian" }, { "ch": 1, "fr": "chinois(e)", "en": "Chinese" },
-            { "ch": 1, "fr": "espagnol(e)", "en": "Spanish" }, { "ch": 1, "fr": "français(e)", "en": "French" }, { "ch": 1, "fr": "haïtien(ne)", "en": "Haitian" },
-            { "ch": 1, "fr": "israélien(ne)", "en": "Israeli" }, { "ch": 1, "fr": "italien(ne)", "en": "Italian" }, { "ch": 1, "fr": "japonais(e)", "en": "Japanese" },
-            { "ch": 1, "fr": "libanais(e)", "en": "Lebanese" }, { "ch": 1, "fr": "marocain(e)", "en": "Moroccan" }, { "ch": 1, "fr": "mexicain(e)", "en": "Mexican" },
-            { "ch": 1, "fr": "russe", "en": "Russian" }, { "ch": 1, "fr": "sénégalais(e)", "en": "Senegalese" }, { "ch": 1, "fr": "suisse", "en": "Swiss" },
-            { "ch": 1, "fr": "vietnamien(ne)", "en": "Vietnamese" },
-            // Chapter 2
-            { "ch": 2, "fr": "assez", "en": "fairly, rather" }, { "ch": 2, "fr": "assez de", "en": "enough" }, { "ch": 2, "fr": "aujourd'hui", "en": "today" },
-            { "ch": 2, "fr": "aussi", "en": "also" }, { "ch": 2, "fr": "beaucoup (de)", "en": "much, many, a lot" }, { "ch": 2, "fr": "bien", "en": "very, well" },
-            { "ch": 2, "fr": "donc", "en": "therefore, so" }, { "ch": 2, "fr": "et", "en": "and" }, { "ch": 2, "fr": "ici", "en": "here" },
-            { "ch": 2, "fr": "là-bas", "en": "over there" }, { "ch": 2, "fr": "maintenant", "en": "now" }, { "ch": 2, "fr": "mais", "en": "but" },
-            { "ch": 2, "fr": "ou", "en": "or" }, { "ch": 2, "fr": "parfois", "en": "sometimes" }, { "ch": 2, "fr": "peu", "en": "hardly, not very" },
-            { "ch": 2, "fr": "plutôt", "en": "rather" }, { "ch": 2, "fr": "quelquefois", "en": "sometimes" }, { "ch": 2, "fr": "rarement", "en": "rarely" },
-            { "ch": 2, "fr": "si", "en": "if" }, { "ch": 2, "fr": "souvent", "en": "often" }, { "ch": 2, "fr": "toujours", "en": "always" },
-            { "ch": 2, "fr": "très", "en": "very" }, { "ch": 2, "fr": "trop (de)", "en": "too, too much (many)" }, { "ch": 2, "fr": "un peu (de)", "en": "a little" },
-            { "ch": 2, "fr": "la bibliothèque", "en": "library, study" }, { "ch": 2, "fr": "le bois", "en": "wood" }, { "ch": 2, "fr": "le cahier", "en": "notebook" },
-            { "ch": 2, "fr": "le canapé", "en": "sofa" }, { "ch": 2, "fr": "la glace", "en": "mirror" }, { "ch": 2, "fr": "le jardin", "en": "garden, yard" },
-            { "ch": 2, "fr": "la lampe", "en": "lamp, light" }, { "ch": 2, "fr": "la chaise", "en": "chair" }, { "ch": 2, "fr": "la chambre", "en": "bedroom" },
-            { "ch": 2, "fr": "le lit", "en": "bed" }, { "ch": 2, "fr": "la maison", "en": "house" }, { "ch": 2, "fr": "le mur", "en": "wall" },
-            { "ch": 2, "fr": "la cheminée", "en": "fireplace; chimney" }, { "ch": 2, "fr": "l'ordinateur", "en": "computer" }, { "ch": 2, "fr": "le piano", "en": "piano" },
-            { "ch": 2, "fr": "la clé", "en": "key" }, { "ch": 2, "fr": "le crayon", "en": "pencil" }, { "ch": 2, "fr": "la cuisine", "en": "kitchen" },
-            { "ch": 2, "fr": "la cuisinière", "en": "stove" }, { "ch": 2, "fr": "le placard", "en": "cupboard; closet" }, { "ch": 2, "fr": "le plafond", "en": "ceiling" },
-            { "ch": 2, "fr": "le plancher", "en": "floor" }, { "ch": 2, "fr": "la porte", "en": "door" }, { "ch": 2, "fr": "le fauteuil", "en": "armchair, easy chair" },
-            { "ch": 2, "fr": "la fenêtre", "en": "window" }, { "ch": 2, "fr": "le réveil", "en": "alarm clock" }, { "ch": 2, "fr": "les rideaux", "en": "curtains" },
-            { "ch": 2, "fr": "le four", "en": "oven" }, { "ch": 2, "fr": "la salle à manger", "en": "dining room" }, { "ch": 2, "fr": "le foyer", "en": "entryway, hearth" },
-            { "ch": 2, "fr": "la salle de bains", "en": "bathroom" }, { "ch": 2, "fr": "le frigo", "en": "refrigerator" }, { "ch": 2, "fr": "le salon", "en": "living room" },
-            { "ch": 2, "fr": "le stylo", "en": "pen" }, { "ch": 2, "fr": "le tableau", "en": "picture, painting" }, { "ch": 2, "fr": "le tapis", "en": "rug, carpet" },
-            { "ch": 2, "fr": "la terrasse", "en": "patio, terrace" }, { "ch": 2, "fr": "la vidéo", "en": "video (DVD)" }, { "ch": 2, "fr": "ancien(ne)", "en": "old; former" },
-            { "ch": 2, "fr": "bleu marine", "en": "navy blue" }, { "ch": 2, "fr": "confortable", "en": "comfortable" }, { "ch": 2, "fr": "extérieur(e)", "en": "outside" },
-            { "ch": 2, "fr": "fin(e)", "en": "fine, delicate" }, { "ch": 2, "fr": "intérieur(e)", "en": "inside, interior" }, { "ch": 2, "fr": "long(ue)", "en": "long" },
-            { "ch": 2, "fr": "privé(e)", "en": "private" }, { "ch": 2, "fr": "propre", "en": "clean" }, { "ch": 2, "fr": "spacieux (-euse)", "en": "spacious" },
-            // Chapter 3
-            { "ch": 3, "fr": "lundi", "en": "Monday" }, { "ch": 3, "fr": "mardi", "en": "Tuesday" }, { "ch": 3, "fr": "mercredi", "en": "Wednesday" },
-            { "ch": 3, "fr": "jeudi", "en": "Thursday" }, { "ch": 3, "fr": "vendredi", "en": "Friday" }, { "ch": 3, "fr": "samedi", "en": "Saturday" },
-            { "ch": 3, "fr": "dimanche", "en": "Sunday" }, { "ch": 3, "fr": "janvier", "en": "January" }, { "ch": 3, "fr": "février", "en": "February" },
-            { "ch": 3, "fr": "mars", "en": "March" }, { "ch": 3, "fr": "avril", "en": "April" }, { "ch": 3, "fr": "mai", "en": "May" },
-            { "ch": 3, "fr": "juin", "en": "June" }, { "ch": 3, "fr": "juillet", "en": "July" }, { "ch": 3, "fr": "août", "en": "August" },
-            { "ch": 3, "fr": "septembre", "en": "September" }, { "ch": 3, "fr": "octobre", "en": "October" }, { "ch": 3, "fr": "novembre", "en": "November" },
-            { "ch": 3, "fr": "décembre", "en": "December" }, { "ch": 3, "fr": "l'été", "en": "summer" }, { "ch": 3, "fr": "l'hiver", "en": "winter" },
-            { "ch": 3, "fr": "l'automne", "en": "autumn, fall" }, { "ch": 3, "fr": "le printemps", "en": "spring" }, { "ch": 3, "fr": "le matin", "en": "morning" },
-            { "ch": 3, "fr": "l'après-midi", "en": "afternoon" }, { "ch": 3, "fr": "le soir", "en": "evening" }, { "ch": 3, "fr": "la nuit", "en": "night" },
-            { "ch": 3, "fr": "adorer", "en": "to love, to adore" }, { "ch": 3, "fr": "aimer mieux", "en": "to prefer, to like better" }, { "ch": 3, "fr": "arriver", "en": "to arrive" },
-            { "ch": 3, "fr": "chercher", "en": "to look for" }, { "ch": 3, "fr": "danser", "en": "to dance" }, { "ch": 3, "fr": "détester", "en": "to hate, to detest" },
-            { "ch": 3, "fr": "étudier", "en": "to study" }, { "ch": 3, "fr": "expliquer", "en": "to explain" }, { "ch": 3, "fr": "fermer", "en": "to close" },
-            { "ch": 3, "fr": "habiter", "en": "to live" }, { "ch": 3, "fr": "jouer", "en": "to play" }, { "ch": 3, "fr": "louer", "en": "to rent" },
-            { "ch": 3, "fr": "regarder", "en": "to look at, to watch" }, { "ch": 3, "fr": "rêver", "en": "to dream" }, { "ch": 3, "fr": "travailler", "en": "to work" },
-            { "ch": 3, "fr": "trouver", "en": "to find" }, { "ch": 3, "fr": "utiliser", "en": "to use" }, { "ch": 3, "fr": "visiter", "en": "to visit (a place)" },
-            { "ch": 3, "fr": "l'an", "en": "year" }, { "ch": 3, "fr": "le jour", "en": "day" }, { "ch": 3, "fr": "l'anniversaire", "en": "birthday; anniversary" },
-            { "ch": 3, "fr": "le journal", "en": "newspaper" }, { "ch": 3, "fr": "l'arbre", "en": "tree" }, { "ch": 3, "fr": "le lieu", "en": "place" },
-            { "ch": 3, "fr": "l'argent", "en": "money" }, { "ch": 3, "fr": "le magasin", "en": "store" }, { "ch": 3, "fr": "l'ascenseur", "en": "elevator" },
-            { "ch": 3, "fr": "le mail", "en": "e-mail" }, { "ch": 3, "fr": "l'autobus", "en": "bus" }, { "ch": 3, "fr": "le médicament", "en": "medicine" },
-            { "ch": 3, "fr": "l'avion", "en": "airplane" }, { "ch": 3, "fr": "le message", "en": "message" }, { "ch": 3, "fr": "les bagages", "en": "luggage" },
-            { "ch": 3, "fr": "le mois", "en": "month" }, { "ch": 3, "fr": "le bâtiment", "en": "building" }, { "ch": 3, "fr": "le mot", "en": "word" },
-            { "ch": 3, "fr": "le bruit", "en": "noise" }, { "ch": 3, "fr": "le mur", "en": "wall" }, { "ch": 3, "fr": "les cheveux", "en": "hair" },
-            { "ch": 3, "fr": "le musée", "en": "museum" }, { "ch": 3, "fr": "les devoirs", "en": "homework" }, { "ch": 3, "fr": "le papier", "en": "paper" },
-            { "ch": 3, "fr": "l'enfant", "en": "child" }, { "ch": 3, "fr": "le parc", "en": "park" }, { "ch": 3, "fr": "l'escalier", "en": "stairway" },
-            { "ch": 3, "fr": "le pays", "en": "country" }, { "ch": 3, "fr": "l'étage", "en": "floor (building)" }, { "ch": 3, "fr": "le prix", "en": "price" },
-            { "ch": 3, "fr": "le feutre", "en": "felt-tip pen" }, { "ch": 3, "fr": "le rêve", "en": "dream" }, { "ch": 3, "fr": "les gens", "en": "people" },
-            { "ch": 3, "fr": "le théâtre", "en": "theater" }, { "ch": 3, "fr": "le thème", "en": "theme" }, { "ch": 3, "fr": "le voyage", "en": "trip" },
-            { "ch": 3, "fr": "l'addition", "en": "check, bill" }, { "ch": 3, "fr": "l'avenue", "en": "avenue" }, { "ch": 3, "fr": "la campagne", "en": "country" },
-            { "ch": 3, "fr": "la carte postale", "en": "postcard" }, { "ch": 3, "fr": "la douche", "en": "shower, bath" }, { "ch": 3, "fr": "l'école", "en": "school" },
-            { "ch": 3, "fr": "l'église", "en": "church" }, { "ch": 3, "fr": "l'entrée", "en": "entry; first course" }, { "ch": 3, "fr": "la fête", "en": "party; holiday" },
-            { "ch": 3, "fr": "la feuille", "en": "leaf; sheet (paper)" }, { "ch": 3, "fr": "la guerre", "en": "war" }, { "ch": 3, "fr": "la lettre", "en": "letter" },
-            { "ch": 3, "fr": "la musique", "en": "music" }, { "ch": 3, "fr": "la page", "en": "page" }, { "ch": 3, "fr": "la phrase", "en": "sentence" },
-            { "ch": 3, "fr": "la pièce", "en": "room; play (theater)" }, { "ch": 3, "fr": "la plage", "en": "beach" }, { "ch": 3, "fr": "la question", "en": "question" },
-            { "ch": 3, "fr": "la rue", "en": "street" }, { "ch": 3, "fr": "la salle de classe", "en": "classroom" }, { "ch": 3, "fr": "la santé", "en": "health" },
-            { "ch": 3, "fr": "la semaine", "en": "week" }, { "ch": 3, "fr": "la soirée", "en": "evening; party" }, { "ch": 3, "fr": "la sortie", "en": "exit" },
-            { "ch": 3, "fr": "affectueux (-euse)", "en": "affectionate" }, { "ch": 3, "fr": "aimable", "en": "nice, kind" }, { "ch": 3, "fr": "amical(e)", "en": "friendly" },
-            { "ch": 3, "fr": "aveugle", "en": "blind" }, { "ch": 3, "fr": "bas(se)", "en": "low, short" }, { "ch": 3, "fr": "court(e)", "en": "short (in length)" },
-            { "ch": 3, "fr": "curieux (-euse)", "en": "curious; odd" }, { "ch": 3, "fr": "dangereux (-euse)", "en": "dangerous" }, { "ch": 3, "fr": "doux (-ce)", "en": "sweet; mild; soft" },
-            { "ch": 3, "fr": "dur(e)", "en": "hard" }, { "ch": 3, "fr": "élégant(e)", "en": "elegant" }, { "ch": 3, "fr": "étrange", "en": "strange" },
-            { "ch": 3, "fr": "étroit(e)", "en": "narrow" }, { "ch": 3, "fr": "faible", "en": "weak" }, { "ch": 3, "fr": "fidèle", "en": "faithful" },
-            { "ch": 3, "fr": "fier (-ère)", "en": "proud" }, { "ch": 3, "fr": "large", "en": "wide" }, { "ch": 3, "fr": "lent(e)", "en": "slow" },
-            { "ch": 3, "fr": "libre", "en": "free" }, { "ch": 3, "fr": "lourd(e)", "en": "heavy" }, { "ch": 3, "fr": "paresseux (-euse)", "en": "lazy" },
-            { "ch": 3, "fr": "particulier (-ière)", "en": "special" }, { "ch": 3, "fr": "passionnant(e)", "en": "exciting" }, { "ch": 3, "fr": "profond(e)", "en": "deep" },
-            { "ch": 3, "fr": "rapide", "en": "fast" }, { "ch": 3, "fr": "sourd(e)", "en": "deaf" }, { "ch": 3, "fr": "spécial(e)", "en": "special" },
-            { "ch": 3, "fr": "tranquille (calme)", "en": "quiet, calm" },
-            // Chapter 4
-            { "ch": 4, "fr": "agir", "en": "to act" }, { "ch": 4, "fr": "finir (de)", "en": "to finish" }, { "ch": 4, "fr": "réfléchir (à)", "en": "to reflect (on), consider" },
-            { "ch": 4, "fr": "remplir", "en": "to fill" }, { "ch": 4, "fr": "réussir (à)", "en": "to succeed (in)" }, { "ch": 4, "fr": "blanchir", "en": "to bleach, whiten" },
-            { "ch": 4, "fr": "brunir", "en": "to tan; to brown" }, { "ch": 4, "fr": "élargir", "en": "to widen, broaden" }, { "ch": 4, "fr": "grandir", "en": "to grow up" },
-            { "ch": 4, "fr": "grossir", "en": "to gain weight" }, { "ch": 4, "fr": "jaunir", "en": "to yellow" }, { "ch": 4, "fr": "maigrir", "en": "to lose weight" },
-            { "ch": 4, "fr": "pâlir", "en": "to grow pale" }, { "ch": 4, "fr": "ralentir", "en": "to slow down" }, { "ch": 4, "fr": "rétrécir", "en": "to shrink, grow smaller" },
-            { "ch": 4, "fr": "rougir", "en": "to blush, grow red" }, { "ch": 4, "fr": "salir", "en": "to get dirty" }, { "ch": 4, "fr": "vieillir", "en": "to grow old, age" },
-            { "ch": 4, "fr": "l'agence de voyages", "en": "travel agency" }, { "ch": 4, "fr": "la blanchisserie", "en": "laundry" }, { "ch": 4, "fr": "la boucherie", "en": "butcher shop" },
-            { "ch": 4, "fr": "la boulangerie", "en": "bakery" }, { "ch": 4, "fr": "la charcuterie", "en": "delicatessen" }, { "ch": 4, "fr": "le coiffeur", "en": "hairdresser" },
-            { "ch": 4, "fr": "la confiserie", "en": "candy store" }, { "ch": 4, "fr": "le cordonnier", "en": "shoemaker" }, { "ch": 4, "fr": "la droguerie", "en": "paint store, cleaning products" },
-            { "ch": 4, "fr": "l'épicerie", "en": "grocery" }, { "ch": 4, "fr": "le fleuriste", "en": "florist's shop" }, { "ch": 4, "fr": "le grand magasin", "en": "department store" },
-            { "ch": 4, "fr": "l'hypermarché", "en": "big box store" }, { "ch": 4, "fr": "le magasin de chaussures", "en": "shoe store" }, { "ch": 4, "fr": "le magasin de fruits et légumes", "en": "produce market" },
-            { "ch": 4, "fr": "le magasin d'informatique", "en": "computers and software" }, { "ch": 4, "fr": "le magasin de vêtements", "en": "clothing store" }, { "ch": 4, "fr": "le marchand de vins", "en": "wine merchant" },
-            { "ch": 4, "fr": "l'opticien", "en": "optician" }, { "ch": 4, "fr": "la papeterie", "en": "stationery store" }, { "ch": 4, "fr": "la pâtisserie", "en": "pastry shop" },
-            { "ch": 4, "fr": "la pharmacie", "en": "drugstore, pharmacy" }, { "ch": 4, "fr": "la poste", "en": "post office" }, { "ch": 4, "fr": "un rabais", "en": "a discount" },
-            { "ch": 4, "fr": "la quincaillerie", "en": "hardware store" }, { "ch": 4, "fr": "des soldes", "en": "a sale" }, { "ch": 4, "fr": "le supermarché", "en": "supermarket" },
-            { "ch": 4, "fr": "le tailleur", "en": "tailor" }, { "ch": 4, "fr": "la teinturerie", "en": "dry cleaner's" }, { "ch": 4, "fr": "l'abricot", "en": "apricot" },
-            { "ch": 4, "fr": "l'ananas", "en": "pineapple" }, { "ch": 4, "fr": "l'apéritif", "en": "before-dinner drink" }, { "ch": 4, "fr": "l'assiette", "en": "plate; bowl" },
-            { "ch": 4, "fr": "la baguette", "en": "baguette" }, { "ch": 4, "fr": "la banane", "en": "banana" }, { "ch": 4, "fr": "le beurre", "en": "butter" },
-            { "ch": 4, "fr": "la bière", "en": "beer" }, { "ch": 4, "fr": "le bifteck", "en": "steak" }, { "ch": 4, "fr": "le bœuf", "en": "beef" },
-            { "ch": 4, "fr": "la boisson", "en": "drink" }, { "ch": 4, "fr": "la bouteille", "en": "bottle" }, { "ch": 4, "fr": "le café", "en": "coffee" },
-            { "ch": 4, "fr": "la carotte", "en": "carrot" }, { "ch": 4, "fr": "la carte", "en": "menu" }, { "ch": 4, "fr": "le céleri", "en": "celery" },
-            { "ch": 4, "fr": "les céréales", "en": "cereal" }, { "ch": 4, "fr": "les cerises", "en": "cherries" }, { "ch": 4, "fr": "les champignons", "en": "mushrooms" },
-            { "ch": 4, "fr": "le chocolat", "en": "chocolate" }, { "ch": 4, "fr": "le client", "en": "customer" }, { "ch": 4, "fr": "la confiture", "en": "jam, preserves" },
-            { "ch": 4, "fr": "le couteau", "en": "knife" }, { "ch": 4, "fr": "la crème", "en": "cream" }, { "ch": 4, "fr": "les crevettes", "en": "shrimp" },
-            { "ch": 4, "fr": "le croissant", "en": "croissant" }, { "ch": 4, "fr": "la cuillère", "en": "spoon" }, { "ch": 4, "fr": "le déjeuner", "en": "lunch" },
-            { "ch": 4, "fr": "le dessert", "en": "dessert" }, { "ch": 4, "fr": "le dîner", "en": "dinner" }, { "ch": 4, "fr": "l'eau", "en": "water" },
-            { "ch": 4, "fr": "l'entrée", "en": "first course" }, { "ch": 4, "fr": "les épices", "en": "spices" }, { "ch": 4, "fr": "la farine", "en": "flour" },
-            { "ch": 4, "fr": "la fourchette", "en": "fork" }, { "ch": 4, "fr": "les fraises", "en": "strawberries" }, { "ch": 4, "fr": "les framboises", "en": "raspberries" },
-            { "ch": 4, "fr": "les frites", "en": "French fries" }, { "ch": 4, "fr": "le fromage", "en": "cheese" }, { "ch": 4, "fr": "le fruit", "en": "fruit" },
-            { "ch": 4, "fr": "le gâteau", "en": "cake; cookie" }, { "ch": 4, "fr": "la glace", "en": "ice cream" }, { "ch": 4, "fr": "le goûter", "en": "afternoon snack" },
-            { "ch": 4, "fr": "les haricots verts", "en": "green beans" }, { "ch": 4, "fr": "les herbes", "en": "herbs" }, { "ch": 4, "fr": "le homard", "en": "lobster" },
-            { "ch": 4, "fr": "les hors-d'œuvre", "en": "appetizers" }, { "ch": 4, "fr": "l'huile d'olive", "en": "olive oil" }, { "ch": 4, "fr": "le jambon", "en": "ham" },
-            { "ch": 4, "fr": "le lait", "en": "milk" }, { "ch": 4, "fr": "le lard", "en": "bacon" }, { "ch": 4, "fr": "le légume", "en": "vegetable" },
-            { "ch": 4, "fr": "la limonade", "en": "carbonated soft drink" }, { "ch": 4, "fr": "le melon", "en": "melon" }, { "ch": 4, "fr": "le menu du jour", "en": "daily special" },
-            { "ch": 4, "fr": "la moutarde", "en": "mustard" }, { "ch": 4, "fr": "la noix", "en": "nut, walnut" }, { "ch": 4, "fr": "l'œuf", "en": "egg" },
-            { "ch": 4, "fr": "les olives", "en": "olives" }, { "ch": 4, "fr": "l'orange", "en": "orange" }, { "ch": 4, "fr": "le pain", "en": "bread" },
-            { "ch": 4, "fr": "le pain au chocolat", "en": "chocolate croissant" }, { "ch": 4, "fr": "le pamplemousse", "en": "grapefruit" }, { "ch": 4, "fr": "la pêche", "en": "peach" },
-            { "ch": 4, "fr": "la petite cuillère", "en": "teaspoon" }, { "ch": 4, "fr": "le petit déjeuner", "en": "breakfast" }, { "ch": 4, "fr": "les petits pains", "en": "rolls" },
-            { "ch": 4, "fr": "les petits pois", "en": "peas" }, { "ch": 4, "fr": "le plat", "en": "dish; course" }, { "ch": 4, "fr": "le plat principal", "en": "main course" },
-            { "ch": 4, "fr": "la poire", "en": "pear" }, { "ch": 4, "fr": "le poisson", "en": "fish" }, { "ch": 4, "fr": "le poivre", "en": "pepper" },
-            { "ch": 4, "fr": "le poivron", "en": "green pepper" }, { "ch": 4, "fr": "la pomme", "en": "apple" }, { "ch": 4, "fr": "la pomme de terre", "en": "potato" },
-            { "ch": 4, "fr": "le porc", "en": "pork" }, { "ch": 4, "fr": "le potage", "en": "vegetable soup" }, { "ch": 4, "fr": "le poulet", "en": "chicken" },
-            { "ch": 4, "fr": "le pourboire", "en": "tip" }, { "ch": 4, "fr": "le raisin", "en": "grapes" }, { "ch": 4, "fr": "le riz", "en": "rice" },
-            { "ch": 4, "fr": "la salade", "en": "salad; lettuce" }, { "ch": 4, "fr": "le sandwich", "en": "sandwich" }, { "ch": 4, "fr": "les saucisses", "en": "sausages" },
-            { "ch": 4, "fr": "le sel", "en": "salt" }, { "ch": 4, "fr": "le serveur", "en": "server" }, { "ch": 4, "fr": "service compris", "en": "tip included" },
-            { "ch": 4, "fr": "la serviette", "en": "napkin; towel" }, { "ch": 4, "fr": "la soupe", "en": "soup" }, { "ch": 4, "fr": "le sucre", "en": "sugar" },
-            { "ch": 4, "fr": "la tartine", "en": "buttered bread" }, { "ch": 4, "fr": "la tasse", "en": "cup" }, { "ch": 4, "fr": "la tarte", "en": "tart, pie" },
-            { "ch": 4, "fr": "le thé", "en": "tea" }, { "ch": 4, "fr": "la tomato", "en": "tomato" }, { "ch": 4, "fr": "le veau", "en": "veal" },
-            { "ch": 4, "fr": "le verre", "en": "glass" }, { "ch": 4, "fr": "la viande", "en": "meat" }, { "ch": 4, "fr": "le vin", "en": "wine" },
-            { "ch": 4, "fr": "le yaourt", "en": "yogurt" },
-            // Chapter 5
-            { "ch": 5, "fr": "attendre", "en": "to wait for" }, { "ch": 5, "fr": "défendre", "en": "to defend; to forbid" }, { "ch": 5, "fr": "descendre", "en": "to go down; to get off" },
-            { "ch": 5, "fr": "entendre", "en": "to hear" }, { "ch": 5, "fr": "perdre", "en": "to lose" }, { "ch": 5, "fr": "rendre", "en": "to give back, to return" },
-            { "ch": 5, "fr": "répondre (à)", "en": "to answer" }, { "ch": 5, "fr": "rendre visite à", "en": "to visit (a person)" }, { "ch": 5, "fr": "tendre", "en": "to stretch out; to offer" },
-            { "ch": 5, "fr": "vendre", "en": "to sell" }, { "ch": 5, "fr": "actuellement", "en": "presently, currently, nowadays" }, { "ch": 5, "fr": "bientôt", "en": "soon" },
-            { "ch": 5, "fr": "en ce moment", "en": "right now" }, { "ch": 5, "fr": "plus tard", "en": "later" }, { "ch": 5, "fr": "prochain(e)", "en": "next" },
-            { "ch": 5, "fr": "tout à l'heure", "en": "in a little while" }, { "ch": 5, "fr": "annoncer", "en": "to announce" }, { "ch": 5, "fr": "avancer", "en": "to advance" },
-            { "ch": 5, "fr": "dénoncer", "en": "to denounce" }, { "ch": 5, "fr": "divorcer", "en": "to divorce" }, { "ch": 5, "fr": "forcer (à)", "en": "to force" },
-            { "ch": 5, "fr": "menacer", "en": "to threaten" }, { "ch": 5, "fr": "percer", "en": "to pierce" }, { "ch": 5, "fr": "placer", "en": "to place" },
-            { "ch": 5, "fr": "prononcer", "en": "to pronounce" }, { "ch": 5, "fr": "remplacer", "en": "to replace" }, { "ch": 5, "fr": "tracer", "en": "to trace" },
-            { "ch": 5, "fr": "arranger", "en": "to arrange" }, { "ch": 5, "fr": "bouger", "en": "to move" }, { "ch": 5, "fr": "changer", "en": "to change" },
-            { "ch": 5, "fr": "corriger", "en": "to correct" }, { "ch": 5, "fr": "dégager", "en": "to free, release" }, { "ch": 5, "fr": "diriger", "en": "to direct" },
-            { "ch": 5, "fr": "échanger", "en": "to exchange" }, { "ch": 5, "fr": "engager", "en": "to hire" }, { "ch": 5, "fr": "interroger", "en": "to question" },
-            { "ch": 5, "fr": "juger", "en": "to judge" }, { "ch": 5, "fr": "loger", "en": "to live; to house" }, { "ch": 5, "fr": "mélanger", "en": "to mix" },
-            { "ch": 5, "fr": "nager", "en": "to swim" }, { "ch": 5, "fr": "neiger", "en": "to snow" }, { "ch": 5, "fr": "obliger (à)", "en": "to oblige; to force" },
-            { "ch": 5, "fr": "partager", "en": "to share" }, { "ch": 5, "fr": "songer (à)", "en": "to dream; to think of" }, { "ch": 5, "fr": "voyager", "en": "to travel" },
-            { "ch": 5, "fr": "achever (de)", "en": "to finish" }, { "ch": 5, "fr": "amener", "en": "to bring (someone)" }, { "ch": 5, "fr": "élever", "en": "to erect; to raise" },
-            { "ch": 5, "fr": "emmener", "en": "to lead away" }, { "ch": 5, "fr": "enlever", "en": "to remove" }, { "ch": 5, "fr": "geler", "en": "to freeze" },
-            { "ch": 5, "fr": "se lever", "en": "to get up, stand up" }, { "ch": 5, "fr": "mener", "en": "to lead, guide" }, { "ch": 5, "fr": "peser", "en": "to weigh" },
-            { "ch": 5, "fr": "promener", "en": "to walk" }, { "ch": 5, "fr": "soulever", "en": "to lift (up)" }, { "ch": 5, "fr": "célébrer", "en": "to celebrate" },
-            { "ch": 5, "fr": "compléter", "en": "to complete" }, { "ch": 5, "fr": "considérer", "en": "to consider" }, { "ch": 5, "fr": "espérer", "en": "to hope to" },
-            { "ch": 5, "fr": "exagérer", "en": "to exaggerate" }, { "ch": 5, "fr": "s'inquiéter", "en": "to worry" }, { "ch": 5, "fr": "pénétrer", "en": "to penetrate" },
-            { "ch": 5, "fr": "posséder", "en": "to own, possess" }, { "ch": 5, "fr": "répéter", "en": "to repeat" }, { "ch": 5, "fr": "révéler", "en": "to show, reveal" },
-            { "ch": 5, "fr": "suggérer", "en": "to suggest" }, { "ch": 5, "fr": "s'appeler", "en": "to be named, be called" }, { "ch": 5, "fr": "épeler", "en": "to spell" },
-            { "ch": 5, "fr": "projeter", "en": "to plan; to project" }, { "ch": 5, "fr": "rappeler", "en": "to recall; to call again" }, { "ch": 5, "fr": "se rappeler", "en": "to remember" },
-            { "ch": 5, "fr": "rejeter", "en": "to reject" }, { "ch": 5, "fr": "renouveler", "en": "to renew; to renovate" }, { "ch": 5, "fr": "aboyer", "en": "to bark" },
-            { "ch": 5, "fr": "appuyer (sur)", "en": "to lean on; to press on" }, { "ch": 5, "fr": "employer", "en": "to use" }, { "ch": 5, "fr": "ennuyer", "en": "to bore; to annoy" },
-            { "ch": 5, "fr": "essuyer", "en": "to wipe; to suffer" }, { "ch": 5, "fr": "nettoyer", "en": "to clean" }, { "ch": 5, "fr": "payer", "en": "to pay" },
-            { "ch": 5, "fr": "un appareil-photo", "en": "camera" }, { "ch": 5, "fr": "des bas", "en": "stockings" }, { "ch": 5, "fr": "des boucles d'oreille", "en": "earrings" },
-            { "ch": 5, "fr": "un bracelet", "en": "bracelet" }, { "ch": 5, "fr": "un caleçon", "en": "men's briefs" }, { "ch": 5, "fr": "une ceinture", "en": "belt" },
-            { "ch": 5, "fr": "un chapeau", "en": "hat" }, { "ch": 5, "fr": "des chaussettes", "en": "socks" }, { "ch": 5, "fr": "des chaussures", "en": "shoes" },
-            { "ch": 5, "fr": "une chemise", "en": "shirt" }, { "ch": 5, "fr": "un chemisier", "en": "blouse" }, { "ch": 5, "fr": "un collier", "en": "necklace" },
-            { "ch": 5, "fr": "une écharpe", "en": "scarf (knit)" }, { "ch": 5, "fr": "un foulard", "en": "scarf (silk)" }, { "ch": 5, "fr": "des gants", "en": "gloves" },
-            { "ch": 5, "fr": "un gilet", "en": "vest" }, { "ch": 5, "fr": "un jean", "en": "jeans" }, { "ch": 5, "fr": "une jupe", "en": "skirt" },
-            { "ch": 5, "fr": "des lunettes (de soleil)", "en": "sunglasses" }, { "ch": 5, "fr": "un maillot de bain", "en": "swimsuit" }, { "ch": 5, "fr": "un manteau", "en": "coat, overcoat" },
-            { "ch": 5, "fr": "une montre", "en": "wristwatch" }, { "ch": 5, "fr": "un pantalon", "en": "pants, trousers" }, { "ch": 5, "fr": "des pantoufles", "en": "slippers" },
-            { "ch": 5, "fr": "un parapluie", "en": "umbrella" }, { "ch": 5, "fr": "un portable", "en": "cell phone" }, { "ch": 5, "fr": "un portefeuille", "en": "wallet" },
-            { "ch": 5, "fr": "un pull", "en": "sweater" }, { "ch": 5, "fr": "un pyjama", "en": "pyjamas" }, { "ch": 5, "fr": "une robe", "en": "dress" },
-            { "ch": 5, "fr": "une robe de nuit", "en": "nightgown" }, { "ch": 5, "fr": "un sac", "en": "handbag" }, { "ch": 5, "fr": "des sandales", "en": "sandals" },
-            { "ch": 5, "fr": "un short", "en": "shorts" }, { "ch": 5, "fr": "un slip", "en": "underpants" }, { "ch": 5, "fr": "un sweat-shirt", "en": "sweatshirt" },
-            { "ch": 5, "fr": "un T-shirt", "en": "T-shirt" }, { "ch": 5, "fr": "un soutien-gorge", "en": "bra" }, { "ch": 5, "fr": "une veste", "en": "jacket" },
-            { "ch": 5, "fr": "une brosse à cheveux", "en": "hairbrush" }, { "ch": 5, "fr": "une brosse à dents", "en": "toothbrush" }, { "ch": 5, "fr": "des couches", "en": "disposable diapers" },
-            { "ch": 5, "fr": "une crème démaquillante", "en": "cleansing cream, cold cream" }, { "ch": 5, "fr": "une crème solaire", "en": "sunscreen" }, { "ch": 5, "fr": "du démêlant", "en": "conditioner" },
-            { "ch": 5, "fr": "du dentifrice", "en": "toothpaste" }, { "ch": 5, "fr": "du déodorant", "en": "deodorant" }, { "ch": 5, "fr": "une éponge", "en": "sponge" },
-            { "ch": 5, "fr": "du fil et une aiguille", "en": "thread and a needle" }, { "ch": 5, "fr": "une lotion", "en": "lotion" }, { "ch": 5, "fr": "du maquillage", "en": "makeup" },
-            { "ch": 5, "fr": "un miroir", "en": "mirror" }, { "ch": 5, "fr": "des mouchoirs", "en": "tissues" }, { "ch": 5, "fr": "une lime à ongles", "en": "nail file" },
-            { "ch": 5, "fr": "du vernis à ongles", "en": "nail polish" }, { "ch": 5, "fr": "du papier hygiénique", "en": "toilet paper" }, { "ch": 5, "fr": "du parfum", "en": "perfume" },
-            { "ch": 5, "fr": "un peigne", "en": "comb" }, { "ch": 5, "fr": "des lames de rasoir", "en": "razor blades" }, { "ch": 5, "fr": "un rouge à lèvres", "en": "lipstick" },
-            { "ch": 5, "fr": "un rasoir", "en": "razor" }, { "ch": 5, "fr": "un savon", "en": "soap" }, { "ch": 5, "fr": "un sèche-cheveux", "en": "hair dryer" },
-            { "ch": 5, "fr": "des serviettes hygiéniques", "en": "sanitary napkins" }, { "ch": 5, "fr": "du shampooing", "en": "shampoo" }, { "ch": 5, "fr": "des tampons périodiques", "en": "tampons" },
-            // Chapter 6
-            { "ch": 6, "fr": "l'année prochaine", "en": "next year" }, { "ch": 6, "fr": "après-demain", "en": "the day after tomorrow" }, { "ch": 6, "fr": "cet après-midi", "en": "this afternoon" },
-            { "ch": 6, "fr": "demain", "en": "tomorrow" }, { "ch": 6, "fr": "dans huit/quinze jours", "en": "in a week/two weeks" }, { "ch": 6, "fr": "ce matin", "en": "this morning" },
-            { "ch": 6, "fr": "la semaine prochaine", "en": "next week" }, { "ch": 6, "fr": "ce soir", "en": "this evening, tonight" }, { "ch": 6, "fr": "tout à l'heure", "en": "in a little while, soon" },
-            { "ch": 6, "fr": "tout de suite", "en": "right away, immediately" }, { "ch": 6, "fr": "plus tard", "en": "later" }, { "ch": 6, "fr": "ce week-end", "en": "this weekend" },
-            { "ch": 6, "fr": "l'atmosphère", "en": "atmosphere" }, { "ch": 6, "fr": "l'aube", "en": "dawn" }, { "ch": 6, "fr": "la baie", "en": "bay" },
-            { "ch": 6, "fr": "le brouillard", "en": "fog" }, { "ch": 6, "fr": "la brume", "en": "mist" }, { "ch": 6, "fr": "le canyon", "en": "canyon" },
-            { "ch": 6, "fr": "le ciel", "en": "sky" }, { "ch": 6, "fr": "la colline", "en": "hill" }, { "ch": 6, "fr": "la comète", "en": "comet" },
-            { "ch": 6, "fr": "le continent", "en": "continent" }, { "ch": 6, "fr": "la côte", "en": "coast" }, { "ch": 6, "fr": "le coucher du soleil", "en": "sunset" },
-            { "ch": 6, "fr": "le désert", "en": "desert" }, { "ch": 6, "fr": "la dune", "en": "sand dune" }, { "ch": 6, "fr": "l'étoile", "en": "star" },
-            { "ch": 6, "fr": "la falaise", "en": "cliff" }, { "ch": 6, "fr": "le fleuve", "en": "river" }, { "ch": 6, "fr": "la foudre", "en": "lightning" },
-            { "ch": 6, "fr": "la grotte", "en": "cave" }, { "ch": 6, "fr": "l'incendie", "en": "accidental fire" }, { "ch": 6, "fr": "l'inondation", "en": "flood" },
-            { "ch": 6, "fr": "le lac", "en": "lake" }, { "ch": 6, "fr": "le lever du soleil", "en": "sunrise" }, { "ch": 6, "fr": "la lune", "en": "moon" },
-            { "ch": 6, "fr": "le marais", "en": "swamp, marsh" }, { "ch": 6, "fr": "la mer", "en": "sea" }, { "ch": 6, "fr": "la montagne", "en": "mountain" },
-            { "ch": 6, "fr": "la neige", "en": "snow" }, { "ch": 6, "fr": "les nuages", "en": "clouds" }, { "ch": 6, "fr": "l'océan", "en": "ocean" },
-            { "ch": 6, "fr": "l'orage", "en": "storm" }, { "ch": 6, "fr": "l'ouragan", "en": "hurricane" }, { "ch": 6, "fr": "la plage", "en": "beach" },
-            { "ch": 6, "fr": "la plaine", "en": "plain" }, { "ch": 6, "fr": "la pluie", "en": "rain" }, { "ch": 6, "fr": "la pollution", "en": "pollution" },
-            { "ch": 6, "fr": "la poussière", "en": "dust" }, { "ch": 6, "fr": "le réchauffement de la planète", "en": "global warming" }, { "ch": 6, "fr": "la rivière", "en": "river (tributary)" },
-            { "ch": 6, "fr": "la roche", "en": "rock" }, { "ch": 6, "fr": "le ruisseau", "en": "stream" }, { "ch": 6, "fr": "le sable", "en": "sand" },
-            { "ch": 6, "fr": "le soleil", "en": "sun" }, { "ch": 6, "fr": "la tempête", "en": "storm" }, { "ch": 6, "fr": "la terre", "en": "the Earth; soil, land" },
-            { "ch": 6, "fr": "le tonnerre", "en": "thunder" }, { "ch": 6, "fr": "le tremblement de terre", "en": "earthquake" }, { "ch": 6, "fr": "la vague", "en": "ocean wave" },
-            { "ch": 6, "fr": "la vallée", "en": "valley" }, { "ch": 6, "fr": "le vent", "en": "wind" }, { "ch": 6, "fr": "le volcan", "en": "volcano" },
-            // Chapter 7
-            { "ch": 7, "fr": "l'article", "en": "article" }, { "ch": 7, "fr": "l'auteur", "en": "author" }, { "ch": 7, "fr": "la bibliothèque", "en": "library; shelf" },
-            { "ch": 7, "fr": "la biographie", "en": "biography" }, { "ch": 7, "fr": "le bloc-notes", "en": "notepad" }, { "ch": 7, "fr": "le cahier", "en": "notebook" },
-            { "ch": 7, "fr": "la carte", "en": "map; menu" }, { "ch": 7, "fr": "la carte postale", "en": "postcard" }, { "ch": 7, "fr": "le chapitre", "en": "chapter" },
-            { "ch": 7, "fr": "le clavier", "en": "keyboard" }, { "ch": 7, "fr": "le compte rendu", "en": "review" }, { "ch": 7, "fr": "le conte", "en": "story, fairy tale" },
-            { "ch": 7, "fr": "le crayon", "en": "pencil" }, { "ch": 7, "fr": "le critique", "en": "critic" }, { "ch": 7, "fr": "le dictionnaire", "en": "dictionary" },
-            { "ch": 7, "fr": "la dissertation", "en": "term paper" }, { "ch": 7, "fr": "l'écran", "en": "screen" }, { "ch": 7, "fr": "les écrits", "en": "writings" },
-            { "ch": 7, "fr": "l'écrivain", "en": "writer" }, { "ch": 7, "fr": "l'éditeur", "en": "publisher" }, { "ch": 7, "fr": "l'édition", "en": "publishing" },
-            { "ch": 7, "fr": "l'encyclopédie", "en": "encyclopedia" }, { "ch": 7, "fr": "l'enveloppe", "en": "envelope" }, { "ch": 7, "fr": "l'essai", "en": "nonfiction" },
-            { "ch": 7, "fr": "l'étude", "en": "research study" }, { "ch": 7, "fr": "l'examen", "en": "exam, test" }, { "ch": 7, "fr": "une feuille de papier", "en": "a sheet of paper" },
-            { "ch": 7, "fr": "le fichier", "en": "computer file" }, { "ch": 7, "fr": "hebdomadaire", "en": "weekly" }, { "ch": 7, "fr": "imprimer", "en": "to print" },
-            { "ch": 7, "fr": "l'imprimante", "en": "printer" }, { "ch": 7, "fr": "sur Internet", "en": "on the Internet" }, { "ch": 7, "fr": "le journal", "en": "newspaper" },
-            { "ch": 7, "fr": "la librairie", "en": "bookstore" }, { "ch": 7, "fr": "la littérature", "en": "literature" }, { "ch": 7, "fr": "le lien", "en": "link, Web link" },
-            { "ch": 7, "fr": "le livre", "en": "book" }, { "ch": 7, "fr": "le logiciel", "en": "software" }, { "ch": 7, "fr": "le magazine", "en": "magazine" },
-            { "ch": 7, "fr": "le manuel", "en": "textbook" }, { "ch": 7, "fr": "mensuel(le)", "en": "monthly" }, { "ch": 7, "fr": "le mot", "en": "word" },
-            { "ch": 7, "fr": "le moteur de recherche", "en": "search engine" }, { "ch": 7, "fr": "la nouvelle", "en": "novella; news" }, { "ch": 7, "fr": "l'ordinateur", "en": "computer" },
-            { "ch": 7, "fr": "du papier", "en": "paper" }, { "ch": 7, "fr": "les paroles", "en": "words (poem, song)" }, { "ch": 7, "fr": "le paragraphe", "en": "paragraph" },
-            { "ch": 7, "fr": "les petites annonces", "en": "classified ads" }, { "ch": 7, "fr": "la phrase", "en": "sentence" }, { "ch": 7, "fr": "la pièce (de théâtre)", "en": "play" },
-            { "ch": 7, "fr": "le poème", "en": "poem" }, { "ch": 7, "fr": "la poésie", "en": "poetry" }, { "ch": 7, "fr": "le portable", "en": "laptop; cell phone" },
-            { "ch": 7, "fr": "le programme", "en": "program" }, { "ch": 7, "fr": "la publicité", "en": "advertising" }, { "ch": 7, "fr": "les recherches", "en": "research" },
-            { "ch": 7, "fr": "le rédacteur (-trice)", "en": "copyeditor" }, { "ch": 7, "fr": "la revue", "en": "journal, review" }, { "ch": 7, "fr": "le roman", "en": "novel" },
-            { "ch": 7, "fr": "le roman policier", "en": "mystery" }, { "ch": 7, "fr": "le site Web", "en": "website" }, { "ch": 7, "fr": "la souris", "en": "mouse" },
-            { "ch": 7, "fr": "le stylo", "en": "pen" }, { "ch": 7, "fr": "le traitement de texte", "en": "word processing" }, { "ch": 7, "fr": "les touches", "en": "keys (keyboard)" },
-            { "ch": 7, "fr": "le traducteur", "en": "translator" }, { "ch": 7, "fr": "la traduction", "en": "translation" },
-            // Chapter 8
-            { "ch": 8, "fr": "l'acteur (-trice)", "en": "actor" }, { "ch": 8, "fr": "l'agent de change", "en": "stockbroker" }, { "ch": 8, "fr": "l'agent de police", "en": "police officer" },
-            { "ch": 8, "fr": "l'agent de voyages", "en": "travel agent" }, { "ch": 8, "fr": "l'agriculteur (-trice)", "en": "farmer" }, { "ch": 8, "fr": "l'archéologue", "en": "archeologist" },
-            { "ch": 8, "fr": "l'architecte", "en": "architect" }, { "ch": 8, "fr": "l'artisan(e)", "en": "artisan" }, { "ch": 8, "fr": "l'artiste", "en": "artist" },
-            { "ch": 8, "fr": "l'assistant(e) social(e)", "en": "social worker" }, { "ch": 8, "fr": "l'astronome", "en": "astronomer" }, { "ch": 8, "fr": "l'athlète", "en": "athlete" },
-            { "ch": 8, "fr": "l'auteur", "en": "author" }, { "ch": 8, "fr": "l'avocat(e)", "en": "lawyer" }, { "ch": 8, "fr": "le banquier (-ière)", "en": "banker" },
-            { "ch": 8, "fr": "le biologiste", "en": "biologist" }, { "ch": 8, "fr": "le boulanger (-ère)", "en": "baker" }, { "ch": 8, "fr": "le cadre", "en": "manager" },
-            { "ch": 8, "fr": "le chanteur (-euse)", "en": "singer" }, { "ch": 8, "fr": "le chauffeur de taxi", "en": "taxi driver" }, { "ch": 8, "fr": "le chercheur (-euse)", "en": "researcher" },
-            { "ch": 8, "fr": "le chimiste", "en": "chemist" }, { "ch": 8, "fr": "le cinéaste", "en": "filmmaker" }, { "ch": 8, "fr": "le coiffeur (-euse)", "en": "hairdresser" },
-            { "ch": 8, "fr": "le commerçant(e)", "en": "retailer" }, { "ch": 8, "fr": "le comptable", "en": "accountant" }, { "ch": 8, "fr": "le cordonnier", "en": "shoemaker" },
-            { "ch": 8, "fr": "le danseur (-euse)", "en": "dancer" }, { "ch": 8, "fr": "l'écrivain", "en": "writer" }, { "ch": 8, "fr": "l'électricien(ne)", "en": "electrician" },
-            { "ch": 8, "fr": "l'entrepreneur", "en": "entrepreneur" }, { "ch": 8, "fr": "l'épicier (-ière)", "en": "grocer" }, { "ch": 8, "fr": "la femme politique", "en": "politician" },
-            { "ch": 8, "fr": "le fonctionnaire", "en": "civil servant" }, { "ch": 8, "fr": "l'historien(ne)", "en": "historian" }, { "ch": 8, "fr": "l'homme politique", "en": "politician" },
-            { "ch": 8, "fr": "l'hôtesse de l'air", "en": "flight attendant" }, { "ch": 8, "fr": "l'infirmier (-ière)", "en": "nurse" }, { "ch": 8, "fr": "l'informaticien(ne)", "en": "software engineer" },
-            { "ch": 8, "fr": "l'ingénieur", "en": "engineer" }, { "ch": 8, "fr": "l'instituteur (-trice)", "en": "school teacher" }, { "ch": 8, "fr": "l'interprète", "en": "interpreter" },
-            { "ch": 8, "fr": "le jardinier (-ière)", "en": "gardener" }, { "ch": 8, "fr": "le journaliste", "en": "journalist" }, { "ch": 8, "fr": "le magistrat", "en": "judge" },
-            { "ch": 8, "fr": "le maire", "en": "mayor" }, { "ch": 8, "fr": "le marin", "en": "sailor" }, { "ch": 8, "fr": "le médecin", "en": "physician" },
-            { "ch": 8, "fr": "le menuisier", "en": "carpenter" }, { "ch": 8, "fr": "le militaire", "en": "serviceman" }, { "ch": 8, "fr": "le musicien(ne)", "en": "musician" },
-            { "ch": 8, "fr": "l'ouvrier (-ière)", "en": "factory worker" }, { "ch": 8, "fr": "le paléontologue", "en": "paleontologist" }, { "ch": 8, "fr": "le peintre", "en": "painter" },
-            { "ch": 8, "fr": "le philosophe", "en": "philosopher" }, { "ch": 8, "fr": "le photographe", "en": "photographer" }, { "ch": 8, "fr": "le physicien(ne)", "en": "physicist" },
-            { "ch": 8, "fr": "le pilote", "en": "pilot" }, { "ch": 8, "fr": "le plombier", "en": "plumber" }, { "ch": 8, "fr": "le pompier", "en": "firefighter" },
-            { "ch": 8, "fr": "le professeur", "en": "teacher" }, { "ch": 8, "fr": "le psychologue", "en": "psychologist" }, { "ch": 8, "fr": "le publicitaire", "en": "publicist" },
-            { "ch": 8, "fr": "le représentant(e)", "en": "sales rep" }, { "ch": 8, "fr": "le scientifique", "en": "scientist" }, { "ch": 8, "fr": "le serveur (-euse)", "en": "server" },
-            { "ch": 8, "fr": "le soldat", "en": "soldier" }, { "ch": 8, "fr": "le steward", "en": "flight attendant (m.)" }, { "ch": 8, "fr": "le technicien(ne)", "en": "technician" },
-            { "ch": 8, "fr": "le traducteur (-trice)", "en": "translator" }, { "ch": 8, "fr": "le vendeur (-euse)", "en": "salesperson" }, { "ch": 8, "fr": "le vétérinaire", "en": "veterinarian" },
-            // Chapter 9
-            { "ch": 9, "fr": "l'agneau", "en": "lamb" }, { "ch": 9, "fr": "l'aigrette", "en": "egret" }, { "ch": 9, "fr": "l'âne", "en": "donkey" },
-            { "ch": 9, "fr": "le canard", "en": "duck" }, { "ch": 9, "fr": "le cerf", "en": "deer" }, { "ch": 9, "fr": "le chameau", "en": "camel" },
-            { "ch": 9, "fr": "le chat", "en": "cat" }, { "ch": 9, "fr": "le cheval", "en": "horse" }, { "ch": 9, "fr": "la chèvre", "en": "goat" },
-            { "ch": 9, "fr": "le chien", "en": "dog" }, { "ch": 9, "fr": "le chimpanzé", "en": "chimpanzee" }, { "ch": 9, "fr": "le cochon", "en": "pig" },
-            { "ch": 9, "fr": "le colibris", "en": "hummingbird" }, { "ch": 9, "fr": "le coq", "en": "rooster" }, { "ch": 9, "fr": "le corbeau", "en": "crow" },
-            { "ch": 9, "fr": "le crapaud", "en": "toad" }, { "ch": 9, "fr": "le crocodile", "en": "crocodile" }, { "ch": 9, "fr": "le dauphin", "en": "dolphin" },
-            { "ch": 9, "fr": "le dindon", "en": "turkey" }, { "ch": 9, "fr": "l'écureuil", "en": "squirrel" }, { "ch": 9, "fr": "l'éléphant", "en": "elephant" },
-            { "ch": 9, "fr": "le faucon", "en": "falcon" }, { "ch": 9, "fr": "la gazelle", "en": "gazelle" }, { "ch": 9, "fr": "la girafe", "en": "giraffe" },
-            { "ch": 9, "fr": "le gorille", "en": "gorilla" }, { "ch": 9, "fr": "la grenouille", "en": "frog" }, { "ch": 9, "fr": "le hibou", "en": "owl" },
-            { "ch": 9, "fr": "le kangourou", "en": "kangaroo" }, { "ch": 9, "fr": "le lapin", "en": "rabbit" }, { "ch": 9, "fr": "le lion", "en": "lion" },
-            { "ch": 9, "fr": "le loup", "en": "wolf" }, { "ch": 9, "fr": "le moineau", "en": "sparrow" }, { "ch": 9, "fr": "le mouton", "en": "sheep" },
-            { "ch": 9, "fr": "l'oie", "en": "goose" }, { "ch": 9, "fr": "l'oiseau", "en": "bird" }, { "ch": 9, "fr": "l'ours", "en": "bear" },
-            { "ch": 9, "fr": "le perroquet", "en": "parrot" }, { "ch": 9, "fr": "le pigeon", "en": "pigeon" }, { "ch": 9, "fr": "le pingouin", "en": "penguin" },
-            { "ch": 9, "fr": "la poule", "en": "chicken, hen" }, { "ch": 9, "fr": "le rat", "en": "rat" }, { "ch": 9, "fr": "le renard", "en": "fox" },
-            { "ch": 9, "fr": "le requin", "en": "shark" }, { "ch": 9, "fr": "le serpent", "en": "snake" }, { "ch": 9, "fr": "le singe", "en": "monkey" },
-            { "ch": 9, "fr": "la souris", "en": "mouse" }, { "ch": 9, "fr": "le taureau", "en": "bull" }, { "ch": 9, "fr": "le tigre", "en": "tiger" },
-            { "ch": 9, "fr": "la tortue", "en": "turtle" }, { "ch": 9, "fr": "la vache", "en": "cow" }, { "ch": 9, "fr": "la volaille", "en": "poultry" },
-            { "ch": 9, "fr": "le zèbre", "en": "zebra" }, { "ch": 9, "fr": "l'arbre", "en": "tree" }, { "ch": 9, "fr": "l'arbuste", "en": "bush" },
-            { "ch": 9, "fr": "le bois", "en": "wood" }, { "ch": 9, "fr": "la branche", "en": "branch" }, { "ch": 9, "fr": "le cactus", "en": "cactus" },
-            { "ch": 9, "fr": "le champignon", "en": "mushroom" }, { "ch": 9, "fr": "le chêne", "en": "oak tree" }, { "ch": 9, "fr": "le citronnier", "en": "lemon tree" },
-            { "ch": 9, "fr": "l'écorce", "en": "tree bark" }, { "ch": 9, "fr": "la feuille", "en": "leaf" }, { "ch": 9, "fr": "la fleur", "en": "flower" },
-            { "ch": 9, "fr": "la forêt", "en": "forest" }, { "ch": 9, "fr": "le gazon", "en": "lawn" }, { "ch": 9, "fr": "l'herbe", "en": "grass" },
-            { "ch": 9, "fr": "l'iris", "en": "iris" }, { "ch": 9, "fr": "le lilas", "en": "lilac" }, { "ch": 9, "fr": "le lys", "en": "lily" },
-            { "ch": 9, "fr": "la marguerite", "en": "daisy" }, { "ch": 9, "fr": "l'olivier", "en": "olive tree" }, { "ch": 9, "fr": "l'orchidée", "en": "orchid" },
-            { "ch": 9, "fr": "l'orme", "en": "elm tree" }, { "ch": 9, "fr": "la pétale", "en": "petal" }, { "ch": 9, "fr": "le pin", "en": "pine tree" },
-            { "ch": 9, "fr": "le pommier", "en": "apple tree" }, { "ch": 9, "fr": "la racine", "en": "root" }, { "ch": 9, "fr": "le rameau", "en": "twig" },
-            { "ch": 9, "fr": "la rose", "en": "rose" }, { "ch": 9, "fr": "la souche", "en": "tree stump" }, { "ch": 9, "fr": "la tige", "en": "stem" },
-            { "ch": 9, "fr": "le tronc", "en": "tree trunk" }, { "ch": 9, "fr": "la tulipe", "en": "tulip" }, { "ch": 9, "fr": "la vigne", "en": "vine" },
-            { "ch": 9, "fr": "le vignoble", "en": "vineyard" },
-            // Chapter 10
-            { "ch": 10, "fr": "les parents", "en": "parents; relatives" }, { "ch": 10, "fr": "le père", "en": "father" }, { "ch": 10, "fr": "la mère", "en": "mother" },
-            { "ch": 10, "fr": "le beau-père", "en": "stepfather; father-in-law" }, { "ch": 10, "fr": "la belle-mère", "en": "stepmother; mother-in-law" }, { "ch": 10, "fr": "les grands-parents", "en": "grandparents" },
-            { "ch": 10, "fr": "le grand-père", "en": "grandfather" }, { "ch": 10, "fr": "la grand-mère", "en": "grandmother" }, { "ch": 10, "fr": "les arrière-grands-parents", "en": "great-grandparents" },
-            { "ch": 10, "fr": "l'arrière-grand-père", "en": "great-grandfather" }, { "ch": 10, "fr": "l'arrière-grand-mère", "en": "great-grandmother" }, { "ch": 10, "fr": "l'époux ou le mari", "en": "husband" },
-            { "ch": 10, "fr": "l'épouse ou la femme", "en": "wife" }, { "ch": 10, "fr": "le fils", "en": "son" }, { "ch": 10, "fr": "la fille", "en": "daughter" },
-            { "ch": 10, "fr": "le beau-fils", "en": "stepson; son-in-law" }, { "ch": 10, "fr": "la belle-fille", "en": "stepdaughter; daughter-in-law" }, { "ch": 10, "fr": "le petit-fils", "en": "grandson" },
-            { "ch": 10, "fr": "la petite-fille", "en": "granddaughter" }, { "ch": 10, "fr": "le parent", "en": "male relative" }, { "ch": 10, "fr": "la parente", "en": "female relative" },
-            { "ch": 10, "fr": "le frère", "en": "brother" }, { "ch": 10, "fr": "la sœur", "en": "sister" }, { "ch": 10, "fr": "aîné(e)", "en": "older" },
-            { "ch": 10, "fr": "cadet(te)", "en": "younger" }, { "ch": 10, "fr": "le beau-frère", "en": "brother-in-law; stepbrother" }, { "ch": 10, "fr": "la belle-sœur", "en": "sister-in-law; stepsister" },
-            { "ch": 10, "fr": "l'oncle", "en": "uncle" }, { "ch": 10, "fr": "la tante", "en": "aunt" }, { "ch": 10, "fr": "le neveu", "en": "nephew" },
-            { "ch": 10, "fr": "la nièce", "en": "niece" }, { "ch": 10, "fr": "le cousin", "en": "male cousin" }, { "ch": 10, "fr": "la cousine", "en": "female cousin" },
-            { "ch": 10, "fr": "le parrain", "en": "godfather" }, { "ch": 10, "fr": "la marraine", "en": "godmother" }, { "ch": 10, "fr": "le filleul", "en": "godson" },
-            { "ch": 10, "fr": "la filleule", "en": "goddaughter" },
-            // Chapter 11
-            { "ch": 11, "fr": "l'ampoule", "en": "lightbulb" }, { "ch": 11, "fr": "l'arrosoir", "en": "watering can" }, { "ch": 11, "fr": "l'aspirateur", "en": "vacuum" },
-            { "ch": 11, "fr": "la baignoire", "en": "bathtub" }, { "ch": 11, "fr": "le balai", "en": "broom" }, { "ch": 11, "fr": "la bouilloire", "en": "kettle" },
-            { "ch": 11, "fr": "le micro-ondes", "en": "microwave" }, { "ch": 11, "fr": "la brosse", "en": "brush" }, { "ch": 11, "fr": "la brouette", "en": "wheelbarrow" },
-            { "ch": 11, "fr": "la cafetière", "en": "coffeepot" }, { "ch": 11, "fr": "le carrelage", "en": "tile floor" }, { "ch": 11, "fr": "la cave", "en": "cellar" },
-            { "ch": 11, "fr": "le chiffon", "en": "rag" }, { "ch": 11, "fr": "les couverts", "en": "silverware" }, { "ch": 11, "fr": "la couverture", "en": "blanket" },
-            { "ch": 11, "fr": "la cuisinière", "en": "stove" }, { "ch": 11, "fr": "le déplantoir", "en": "trowel" }, { "ch": 11, "fr": "les draps", "en": "sheets" },
-            { "ch": 11, "fr": "l'éponge", "en": "sponge" }, { "ch": 11, "fr": "l'escabeau", "en": "stepstool" }, { "ch": 11, "fr": "l'escalier", "en": "stairs" },
-            { "ch": 11, "fr": "l'évier", "en": "sink" }, { "ch": 11, "fr": "le fer à repasser", "en": "clothes iron" }, { "ch": 11, "fr": "le four", "en": "oven" },
-            { "ch": 11, "fr": "la fourche", "en": "digging fork" }, { "ch": 11, "fr": "le frigo", "en": "refrigerator" }, { "ch": 11, "fr": "le garde-robe", "en": "clothes closet" },
-            { "ch": 11, "fr": "le grenier", "en": "attic" }, { "ch": 11, "fr": "le grille-pain", "en": "toaster" }, { "ch": 11, "fr": "la houe", "en": "hoe" },
-            { "ch": 11, "fr": "le lavabo", "en": "washbasin" }, { "ch": 11, "fr": "le lave-vaisselle", "en": "dishwasher" }, { "ch": 11, "fr": "la lessive", "en": "laundry" },
-            { "ch": 11, "fr": "la literie", "en": "bedding" }, { "ch": 11, "fr": "la machine à coudre", "en": "sewing machine" }, { "ch": 11, "fr": "la machine à laver", "en": "washing machine" },
-            { "ch": 11, "fr": "le mixer", "en": "blender" }, { "ch": 11, "fr": "l'ouvre-boîtes", "en": "can opener" }, { "ch": 11, "fr": "le parquet", "en": "wood floor" },
-            { "ch": 11, "fr": "la pelle", "en": "spade; dustpan" }, { "ch": 11, "fr": "les persiennes", "en": "blinds" }, { "ch": 11, "fr": "le placard", "en": "cupboard" },
-            { "ch": 11, "fr": "la planche à repasser", "en": "ironing board" }, { "ch": 11, "fr": "le plumeau", "en": "feather duster" }, { "ch": 11, "fr": "le pot de fleurs", "en": "flowerpot" },
-            { "ch": 11, "fr": "la poubelle", "en": "garbage, trash can" }, { "ch": 11, "fr": "le râteau", "en": "rake" }, { "ch": 11, "fr": "le seau", "en": "pail, bucket" },
-            { "ch": 11, "fr": "le sécateur", "en": "pruning shears" }, { "ch": 11, "fr": "le sèche-linge", "en": "clothes dryer" }, { "ch": 11, "fr": "la serviette", "en": "towel; napkin" },
-            { "ch": 11, "fr": "le sous-sol", "en": "basement" }, { "ch": 11, "fr": "le store", "en": "window shade" }, { "ch": 11, "fr": "le tablier", "en": "apron" },
-            { "ch": 11, "fr": "la vaisselle", "en": "dishes" }, { "ch": 11, "fr": "la ventouse", "en": "toilet plunger" }, { "ch": 11, "fr": "le W.C.", "en": "toilet" },
-            { "ch": 11, "fr": "le tuyau", "en": "hose; pipe" }, { "ch": 11, "fr": "l'atelier", "en": "workshop" }, { "ch": 11, "fr": "la caisse à outils", "en": "toolbox" },
-            { "ch": 11, "fr": "le chauffage", "en": "heating" }, { "ch": 11, "fr": "le chauffe-eau", "en": "water heater" }, { "ch": 11, "fr": "les ciseaux", "en": "scissors" },
-            { "ch": 11, "fr": "la clé", "en": "key; wrench" }, { "ch": 11, "fr": "la climatisation", "en": "air-conditioning" }, { "ch": 11, "fr": "les clous", "en": "nails" },
-            { "ch": 11, "fr": "l'échelle", "en": "ladder" }, { "ch": 11, "fr": "l'étau", "en": "vise" }, { "ch": 11, "fr": "la fiche", "en": "electric plug" },
-            { "ch": 11, "fr": "la hache", "en": "ax" }, { "ch": 11, "fr": "l'interrupteur", "en": "switch" }, { "ch": 11, "fr": "la lampe de poche", "en": "flashlight" },
-            { "ch": 11, "fr": "le marteau", "en": "hammer" }, { "ch": 11, "fr": "le moteur", "en": "motor" }, { "ch": 11, "fr": "la peinture", "en": "paint" },
-            { "ch": 11, "fr": "la perceuse", "en": "drill" }, { "ch": 11, "fr": "la pince", "en": "pliers" }, { "ch": 11, "fr": "le pinceau", "en": "paintbrush" },
-            { "ch": 11, "fr": "la plomberie", "en": "plumbing" }, { "ch": 11, "fr": "la prise de courant", "en": "electric outlet" }, { "ch": 11, "fr": "le rabot", "en": "plane (tool)" },
-            { "ch": 11, "fr": "le robinet", "en": "faucet" }, { "ch": 11, "fr": "le rouleau", "en": "paint roller" }, { "ch": 11, "fr": "la salopette", "en": "overalls" },
-            { "ch": 11, "fr": "la scie", "en": "saw" }, { "ch": 11, "fr": "le scotch", "en": "tape" }, { "ch": 11, "fr": "la serrure", "en": "lock" },
-            { "ch": 11, "fr": "le tourne-vis", "en": "screwdriver" }, { "ch": 11, "fr": "le ventilateur", "en": "fan" }, { "ch": 11, "fr": "les vis", "en": "screws" },
-            // Chapter 12
-            { "ch": 12, "fr": "s'amuser", "en": "to have a good time, have fun" }, { "ch": 12, "fr": "se baigner", "en": "to take a bath; to go swimming" }, { "ch": 12, "fr": "se brosser", "en": "to brush" },
-            { "ch": 12, "fr": "se coucher", "en": "to go to bed" }, { "ch": 12, "fr": "se déshabiller", "en": "to get undressed" }, { "ch": 12, "fr": "se doucher", "en": "to take a shower" },
-            { "ch": 12, "fr": "s'endormir", "en": "to fall asleep" }, { "ch": 12, "fr": "s'ennuyer", "en": "to become bored" }, { "ch": 12, "fr": "s'entraîner", "en": "to work out; to train" },
-            { "ch": 12, "fr": "s'habiller", "en": "to get dressed" }, { "ch": 12, "fr": "s'installer", "en": "to sit down, get settled" }, { "ch": 12, "fr": "se laver", "en": "to wash oneself" },
-            { "ch": 12, "fr": "se lever", "en": "to stand up, get up" }, { "ch": 12, "fr": "se maquiller", "en": "to put on makeup" }, { "ch": 12, "fr": "se peigner", "en": "to comb" },
-            { "ch": 12, "fr": "se préparer (à)", "en": "to get ready, to prepare" }, { "ch": 12, "fr": "se promener", "en": "to take a walk, a drive" }, { "ch": 12, "fr": "se raser", "en": "to shave (oneself)" },
-            { "ch": 12, "fr": "se regarder", "en": "to look at (oneself)" }, { "ch": 12, "fr": "se reposer", "en": "to rest" }, { "ch": 12, "fr": "se réveiller", "en": "to wake up" },
-            { "ch": 12, "fr": "la bouche", "en": "mouth" }, { "ch": 12, "fr": "le bras", "en": "arm" }, { "ch": 12, "fr": "les cheveux", "en": "hair" },
-            { "ch": 12, "fr": "la cheville", "en": "ankle" }, { "ch": 12, "fr": "le cœur", "en": "heart" }, { "ch": 12, "fr": "les côtes", "en": "ribs" },
-            { "ch": 12, "fr": "le cou", "en": "neck" }, { "ch": 12, "fr": "le coude", "en": "elbow" }, { "ch": 12, "fr": "le crâne", "en": "skull" },
-            { "ch": 12, "fr": "la cuisse", "en": "thigh" }, { "ch": 12, "fr": "les dents", "en": "teeth" }, { "ch": 12, "fr": "le doigt", "en": "finger" },
-            { "ch": 12, "fr": "le dos", "en": "back" }, { "ch": 12, "fr": "l'épaule", "en": "shoulder" }, { "ch": 12, "fr": "l'estomac", "en": "stomach" },
-            { "ch": 12, "fr": "la figure", "en": "face" }, { "ch": 12, "fr": "le front", "en": "forehead" }, { "ch": 12, "fr": "les genoux", "en": "knees" },
-            { "ch": 12, "fr": "la gorge", "en": "throat" }, { "ch": 12, "fr": "la hanche", "en": "hip" }, { "ch": 12, "fr": "la jambe", "en": "leg" },
-            { "ch": 12, "fr": "la joue", "en": "cheek" }, { "ch": 12, "fr": "la langue", "en": "tongue" }, { "ch": 12, "fr": "les lèvres", "en": "lips" },
-            { "ch": 12, "fr": "la main", "en": "hand" }, { "ch": 12, "fr": "le menton", "en": "chin" }, { "ch": 12, "fr": "le nez", "en": "nose" },
-            { "ch": 12, "fr": "le nombril", "en": "navel" }, { "ch": 12, "fr": "l'œil (les yeux)", "en": "eye (eyes)" }, { "ch": 12, "fr": "l'ongle", "en": "nail" },
-            { "ch": 12, "fr": "l'oreille", "en": "ear" }, { "ch": 12, "fr": "l'orteil", "en": "toe" }, { "ch": 12, "fr": "le pied", "en": "foot" },
-            { "ch": 12, "fr": "le poignet", "en": "wrist" }, { "ch": 12, "fr": "la poitrine", "en": "chest, breast" }, { "ch": 12, "fr": "le pouce", "en": "thumb" },
-            { "ch": 12, "fr": "les seins", "en": "breasts" }, { "ch": 12, "fr": "le sourcil", "en": "eyebrow" }, { "ch": 12, "fr": "la taille", "en": "waist; size" },
-            { "ch": 12, "fr": "le talon", "en": "heel" }, { "ch": 12, "fr": "la tête", "en": "head" }, { "ch": 12, "fr": "le ventre", "en": "abdomen" },
-            // Chapter 13
-            { "ch": 13, "fr": "d'abord", "en": "first (of all)" }, { "ch": 13, "fr": "puis", "en": "next" }, { "ch": 13, "fr": "ensuite", "en": "and then" },
-            { "ch": 13, "fr": "après", "en": "after that" }, { "ch": 13, "fr": "enfin / finalement", "en": "finally" }, { "ch": 13, "fr": "hier", "en": "yesterday" },
-            { "ch": 13, "fr": "avant-hier", "en": "day before yesterday" }, { "ch": 13, "fr": "hier matin", "en": "yesterday morning" }, { "ch": 13, "fr": "hier après-midi", "en": "yesterday afternoon" },
-            { "ch": 13, "fr": "hier soir", "en": "yesterday evening / last night" }, { "ch": 13, "fr": "à ce moment-là", "en": "at that moment" }, { "ch": 13, "fr": "l'année passée", "en": "last year" },
-            { "ch": 13, "fr": "la semaine passée", "en": "last week" }, { "ch": 13, "fr": "ce jour-là", "en": "on that day" }, { "ch": 13, "fr": "soudain", "en": "suddenly" },
-            { "ch": 13, "fr": "tout à coup", "en": "suddenly" }, { "ch": 13, "fr": "un jour", "en": "one day" }, { "ch": 13, "fr": "une fois", "en": "once, one time" },
-            { "ch": 13, "fr": "toute la journée", "en": "the whole day" }, { "ch": 13, "fr": "assister à", "en": "to attend" }, { "ch": 13, "fr": "être fana de...", "en": "to be crazy about..." },
-            { "ch": 13, "fr": "être passionné(e) de...", "en": "to be passionate about..." }, { "ch": 13, "fr": "faire du / de la", "en": "to do..." }, { "ch": 13, "fr": "jouer au...", "en": "to play..." },
-            { "ch": 13, "fr": "l'alpinisme (m.)", "en": "mountain climbing" }, { "ch": 13, "fr": "les arts martiaux (m.)", "en": "martial arts" }, { "ch": 13, "fr": "le jujitsu", "en": "jujitsu" },
-            { "ch": 13, "fr": "le karaté", "en": "karate" }, { "ch": 13, "fr": "le tai-chi chuan", "en": "tai chi" }, { "ch": 13, "fr": "le base-ball", "en": "baseball" },
-            { "ch": 13, "fr": "le foot(ball)", "en": "soccer" }, { "ch": 13, "fr": "le football américain", "en": "football" }, { "ch": 13, "fr": "le footing", "en": "jogging" },
-            { "ch": 13, "fr": "le golf", "en": "golf" }, { "ch": 13, "fr": "la gymnastique", "en": "gymnastics" }, { "ch": 13, "fr": "le hockey", "en": "hockey" },
-            { "ch": 13, "fr": "le jogging", "en": "jogging" }, { "ch": 13, "fr": "le marathon", "en": "marathon" }, { "ch": 13, "fr": "la natation", "en": "swimming" },
-            { "ch": 13, "fr": "le patinage", "en": "skating" }, { "ch": 13, "fr": "le ping-pong", "en": "Ping-Pong" }, { "ch": 13, "fr": "la planche à roulettes", "en": "skateboarding" },
-            { "ch": 13, "fr": "le basket(-ball)", "en": "basketball" }, { "ch": 13, "fr": "le bateau", "en": "boating" }, { "ch": 13, "fr": "le canoë-kayak", "en": "kayaking" },
-            { "ch": 13, "fr": "la course", "en": "race" }, { "ch": 13, "fr": "le cyclisme (le vélo)", "en": "biking" }, { "ch": 13, "fr": "le deltaplane", "en": "hang gliding" },
-            { "ch": 13, "fr": "l'équitation (f.)", "en": "horseback riding" }, { "ch": 13, "fr": "l'escrime (f.)", "en": "fencing" }, { "ch": 13, "fr": "la planche à voile", "en": "windsurfing" },
-            { "ch": 13, "fr": "la randonnée", "en": "hiking" }, { "ch": 13, "fr": "le roller", "en": "rollerblading" }, { "ch": 13, "fr": "le rugby", "en": "rugby" },
-            { "ch": 13, "fr": "le saut", "en": "high jump" }, { "ch": 13, "fr": "le ski", "en": "skiing" }, { "ch": 13, "fr": "le snowboard", "en": "snowboarding" },
-            { "ch": 13, "fr": "le surf", "en": "surfing" }, { "ch": 13, "fr": "le tennis", "en": "tennis" }, { "ch": 13, "fr": "la voile", "en": "sailing" },
-            { "ch": 13, "fr": "le volley(-ball)", "en": "volleyball" }, { "ch": 13, "fr": "le yoga", "en": "yoga" }, { "ch": 13, "fr": "l'art (m.)", "en": "art" },
-            { "ch": 13, "fr": "l'aquarelle (f.)", "en": "watercolors" }, { "ch": 13, "fr": "le dessin", "en": "drawing" }, { "ch": 13, "fr": "la peinture à l'huile", "en": "oil painting" },
-            { "ch": 13, "fr": "la sculpture", "en": "sculpture" }, { "ch": 13, "fr": "l'artisanat (m.)", "en": "crafts" }, { "ch": 13, "fr": "la céramique", "en": "ceramics" },
-            { "ch": 13, "fr": "la menuiserie", "en": "woodworking" }, { "ch": 13, "fr": "la poterie", "en": "pottery" }, { "ch": 13, "fr": "le vitrail", "en": "stained glass" },
-            { "ch": 13, "fr": "le bricolage", "en": "do-it-yourself" }, { "ch": 13, "fr": "les cartes (f.)", "en": "cards" }, { "ch": 13, "fr": "le bridge", "en": "bridge" },
-            { "ch": 13, "fr": "le poker", "en": "poker" }, { "ch": 13, "fr": "le cirque", "en": "circus" }, { "ch": 13, "fr": "la danse", "en": "dance" },
-            { "ch": 13, "fr": "le ballet", "en": "ballet" }, { "ch": 13, "fr": "le drame", "en": "drama" }, { "ch": 13, "fr": "le film d'amour", "en": "love story" },
-            { "ch": 13, "fr": "le film d'aventures", "en": "adventure film" }, { "ch": 13, "fr": "le film d'horreur", "en": "horror film" }, { "ch": 13, "fr": "la séance", "en": "showing" },
-            { "ch": 13, "fr": "la cassette", "en": "cassette" }, { "ch": 13, "fr": "la chanson", "en": "song" }, { "ch": 13, "fr": "le chœur", "en": "choir" },
-            { "ch": 13, "fr": "le concert", "en": "concert" }, { "ch": 13, "fr": "le lecteur de DVD/CD", "en": "DVD/CD player" }, { "ch": 13, "fr": "le lecteur MP3", "en": "MP3 player" },
-            { "ch": 13, "fr": "la musique classique", "en": "classical music" }, { "ch": 13, "fr": "la musique de chambre", "en": "chamber music" }, { "ch": 13, "fr": "l'opéra (m.)", "en": "opera" },
-            { "ch": 13, "fr": "l'orchestre (m.)", "en": "orchestra; band" }, { "ch": 13, "fr": "le pop/rap/rock/jazz", "en": "pop/rap/rock/jazz" }, { "ch": 13, "fr": "le quatuor", "en": "string quartet" },
-            { "ch": 13, "fr": "la danse de salon", "en": "ballroom" }, { "ch": 13, "fr": "la danse folklorique", "en": "folk dance" }, { "ch": 13, "fr": "le tango", "en": "tango" },
-            { "ch": 13, "fr": "la danse moderne", "en": "modern dance" }, { "ch": 13, "fr": "le jardinage", "en": "gardening" }, { "ch": 13, "fr": "les jeux de hasard (m.)", "en": "gaming" },
-            { "ch": 13, "fr": "les jeux de société", "en": "board games" }, { "ch": 13, "fr": "les échecs (m.)", "en": "chess" }, { "ch": 13, "fr": "les dames (f.)", "en": "checkers" },
-            { "ch": 13, "fr": "les jeux électroniques", "en": "electronic games" }, { "ch": 13, "fr": "la lecture", "en": "reading" }, { "ch": 13, "fr": "la bande dessinée", "en": "comics" },
-            { "ch": 13, "fr": "la biographie", "en": "biography" }, { "ch": 13, "fr": "l'essai (m.)", "en": "nonfiction" }, { "ch": 13, "fr": "les magazines (m.)", "en": "magazines" },
-            { "ch": 13, "fr": "le roman", "en": "novel" }, { "ch": 13, "fr": "le roman d'amour", "en": "romance novel" }, { "ch": 13, "fr": "le roman d'aventures", "en": "adventure novel" },
-            { "ch": 13, "fr": "le roman illustré", "en": "graphic novel" }, { "ch": 13, "fr": "le roman policier", "en": "mystery" }, { "ch": 13, "fr": "les mots croisés (m.)", "en": "crossword" },
-            { "ch": 13, "fr": "le musée", "en": "museum" }, { "ch": 13, "fr": "l'exposition (f.)", "en": "exhibition" }, { "ch": 13, "fr": "la musique", "en": "music" },
-            { "ch": 13, "fr": "le cinéma", "en": "film, movies" }, { "ch": 13, "fr": "le billet", "en": "ticket" }, { "ch": 13, "fr": "le dessin animé", "en": "animated film" },
-            { "ch": 13, "fr": "le documentaire", "en": "documentary" }, { "ch": 13, "fr": "la symphonie", "en": "symphony" }, { "ch": 13, "fr": "l'observation (f.) des oiseaux", "en": "bird-watching" },
-            { "ch": 13, "fr": "la photographie", "en": "photography" }, { "ch": 13, "fr": "un appareil-photo", "en": "[still] camera" }, { "ch": 13, "fr": "un caméra", "en": "movie camera" },
-            { "ch": 13, "fr": "un caméscope", "en": "video camera" }, { "ch": 13, "fr": "la télévision", "en": "television" }, { "ch": 13, "fr": "le podcast", "en": "podcast" },
-            { "ch": 13, "fr": "la radio", "en": "radio" }, { "ch": 13, "fr": "la chaîne", "en": "channel" }, { "ch": 13, "fr": "l'émission (f.)", "en": "program" },
-            { "ch": 13, "fr": "le théâtre", "en": "theater" }, { "ch": 13, "fr": "les spectateurs (m.)", "en": "audience members" }, { "ch": 13, "fr": "la salle de théâtre", "en": "theater" },
-            { "ch": 13, "fr": "la pièce", "en": "play" }, { "ch": 13, "fr": "le spectacle", "en": "show" }, { "ch": 13, "fr": "le drame", "en": "drama" },
-            { "ch": 13, "fr": "la comédie (musicale)", "en": "[musical] comedy" }, { "ch": 13, "fr": "la tragédie", "en": "tragedy" }, { "ch": 13, "fr": "le sudoku", "en": "sudoku" },
-            { "ch": 13, "fr": "les travaux d'aiguille (m.)", "en": "needlework" }, { "ch": 13, "fr": "la broderie", "en": "embroidery" }, { "ch": 13, "fr": "la couture", "en": "sewing" },
-            { "ch": 13, "fr": "le crochet", "en": "crocheting" }, { "ch": 13, "fr": "la tapisserie", "en": "needlepoint" }, { "ch": 13, "fr": "le tissage", "en": "weaving" },
-            { "ch": 13, "fr": "le tricot", "en": "knitting" },
-            // Chapter 14
-            { "ch": 14, "fr": "à ce moment-là", "en": "at that time" }, { "ch": 14, "fr": "à cette époque-là", "en": "at that time" }, { "ch": 14, "fr": "auparavant", "en": "previously" },
-            { "ch": 14, "fr": "autrefois", "en": "in the past" }, { "ch": 14, "fr": "désormais", "en": "from then on" }, { "ch": 14, "fr": "de temps à autre", "en": "from time to time" },
-            { "ch": 14, "fr": "de temps en temps", "en": "from time to time" }, { "ch": 14, "fr": "d'habitude", "en": "usually" }, { "ch": 14, "fr": "il y a (+ time)", "en": "ago" },
-            { "ch": 14, "fr": "le lundi", "en": "on Mondays" }, { "ch": 14, "fr": "le week-end", "en": "every weekend" }, { "ch": 14, "fr": "ne... jamais", "en": "never" },
-            { "ch": 14, "fr": "normalement", "en": "normally" }, { "ch": 14, "fr": "parfois", "en": "sometimes" }, { "ch": 14, "fr": "par moments", "en": "occasionally" },
-            { "ch": 14, "fr": "pendant que", "en": "while" }, { "ch": 14, "fr": "quelquefois", "en": "sometimes" }, { "ch": 14, "fr": "souvent", "en": "often" },
-            { "ch": 14, "fr": "toujours", "en": "always" }, { "ch": 14, "fr": "tous les jours", "en": "every day" }, { "ch": 14, "fr": "l'aéroport (m.)", "en": "airport" },
-            { "ch": 14, "fr": "aller-retour", "en": "round-trip" }, { "ch": 14, "fr": "l'arrêt d'autobus (m.)", "en": "bus stop" }, { "ch": 14, "fr": "l'autocar (m.) / le car", "en": "inter-city bus" },
-            { "ch": 14, "fr": "l'avion (m.)", "en": "plane" }, { "ch": 14, "fr": "le billet", "en": "ticket" }, { "ch": 14, "fr": "la carte d'embarquement", "en": "boarding pass" },
-            { "ch": 14, "fr": "la carte d'identité", "en": "I.D. card" }, { "ch": 14, "fr": "une carte routière", "en": "road map" }, { "ch": 14, "fr": "la ceinture de sécurité", "en": "seat belt" },
-            { "ch": 14, "fr": "un chariot (à bagages)", "en": "[luggage] cart" }, { "ch": 14, "fr": "un charter", "en": "charter flight" }, { "ch": 14, "fr": "le compartiment", "en": "compartment" },
-            { "ch": 14, "fr": "composter le billet", "en": "to punch the ticket" }, { "ch": 14, "fr": "la consigne", "en": "checkroom, lockers" }, { "ch": 14, "fr": "la douane", "en": "customs" },
-            { "ch": 14, "fr": "un horaire", "en": "schedule" }, { "ch": 14, "fr": "la location de voitures", "en": "car rental" }, { "ch": 14, "fr": "le passeport", "en": "passport" },
-            { "ch": 14, "fr": "un plan", "en": "city map" }, { "ch": 14, "fr": "première/deuxième classe", "en": "first/second class" }, { "ch": 14, "fr": "la porte", "en": "gate [airport]" },
-            { "ch": 14, "fr": "le quai", "en": "train platform" }, { "ch": 14, "fr": "la salle d'attente", "en": "waiting room" }, { "ch": 14, "fr": "le siège", "en": "seat [plane, train]" },
-            { "ch": 14, "fr": "le syndicat d'initiative", "en": "tourist office" }, { "ch": 14, "fr": "le tarif", "en": "price, fare" }, { "ch": 14, "fr": "le TGV", "en": "high-speed train" },
-            { "ch": 14, "fr": "le train", "en": "train" }, { "ch": 14, "fr": "un voyage d'affaires", "en": "business trip" }, { "ch": 14, "fr": "l'addition (f.)", "en": "bill" },
-            { "ch": 14, "fr": "l'ampoule (f.)", "en": "lightbulb" }, { "ch": 14, "fr": "l'annuaire (m.)", "en": "phone book" }, { "ch": 14, "fr": "l'ascenseur (m.)", "en": "elevator" },
-            { "ch": 14, "fr": "une auberge de jeunesse", "en": "youth hostel" }, { "ch": 14, "fr": "une chambre", "en": "room" }, { "ch": 14, "fr": "à un (deux) lit(s)", "en": "with one (two) bed(s)" },
-            { "ch": 14, "fr": "un grand lit", "en": "double bed" }, { "ch": 14, "fr": "qui donne sur...", "en": "that looks out on..." }, { "ch": 14, "fr": "un chasseur", "en": "bellboy" },
-            { "ch": 14, "fr": "le chauffage", "en": "heat" }, { "ch": 14, "fr": "... ne marche pas.", "en": "... doesn't work." }, { "ch": 14, "fr": "des cintres (m.)", "en": "coat hangers" },
-            { "ch": 14, "fr": "les clés (f.)", "en": "keys" }, { "ch": 14, "fr": "le coffre-fort", "en": "safe" }, { "ch": 14, "fr": "le couloir", "en": "hallway" },
-            { "ch": 14, "fr": "une couverture", "en": "blanket" }, { "ch": 14, "fr": "l'escalier (m.)", "en": "stairs" }, { "ch": 14, "fr": "des draps (m.)", "en": "sheets" },
-            { "ch": 14, "fr": "l'étage (m.)", "en": "floor [building]" }, { "ch": 14, "fr": "la femme de chambre", "en": "chambermaid" }, { "ch": 14, "fr": "la climatisation", "en": "air-conditioning" },
-            { "ch": 14, "fr": "la lampe", "en": "lamp" }, { "ch": 14, "fr": "le loyer", "en": "rent" }, { "ch": 14, "fr": "un oreiller", "en": "pillow" },
-            { "ch": 14, "fr": "la note / l'addition (f.)", "en": "the bill" }, { "ch": 14, "fr": "la demi-pension", "en": "half-pension [with dinner]" }, { "ch": 14, "fr": "tout compris", "en": "all included" },
-            { "ch": 14, "fr": "le petit déjeuner compris", "en": "breakfast included" }, { "ch": 14, "fr": "la pension complète", "en": "full pension [three meals]" }, { "ch": 14, "fr": "une lumière (pour lire)", "en": "reading lamp" },
-            { "ch": 14, "fr": "le/la réceptionniste", "en": "desk clerk" }, { "ch": 14, "fr": "une salle de bain privée", "en": "private bath" }, { "ch": 14, "fr": "avec une baignoire", "en": "with a tub" },
-            { "ch": 14, "fr": "avec douche", "en": "with a shower" }, { "ch": 14, "fr": "du savon", "en": "soap" }, { "ch": 14, "fr": "le ventilateur", "en": "fan" },
-            { "ch": 14, "fr": "un verre", "en": "drinking glass" },
-            // Chapter 15
-            { "ch": 15, "fr": "un acompte", "en": "down payment" }, { "ch": 15, "fr": "la banque", "en": "bank" }, { "ch": 15, "fr": "le/la banquier (-ière)", "en": "banker" },
-            { "ch": 15, "fr": "des billets (de 10€) (m.)", "en": "10€ bills" }, { "ch": 15, "fr": "un bureau de change", "en": "currency exchange" }, { "ch": 15, "fr": "la caisse", "en": "cashier's desk" },
-            { "ch": 15, "fr": "le carnet de chèques", "en": "checkbook" }, { "ch": 15, "fr": "la carte de crédit", "en": "credit card" }, { "ch": 15, "fr": "la carte de paiement", "en": "ATM/debit card" },
-            { "ch": 15, "fr": "le/la caissier (-ière)", "en": "teller, cashier" }, { "ch": 15, "fr": "changer de l'argent", "en": "to exchange currency" }, { "ch": 15, "fr": "le chèque", "en": "check" },
-            { "ch": 15, "fr": "le chèque sans provision", "en": "bad check" }, { "ch": 15, "fr": "les chèques de voyage", "en": "traveler's checks" }, { "ch": 15, "fr": "le coffre-fort", "en": "safe" },
-            { "ch": 15, "fr": "le coffre de sureté", "en": "safe-deposit box" }, { "ch": 15, "fr": "le compte en banque", "en": "bank account" }, { "ch": 15, "fr": "le compte courant", "en": "checking account" },
-            { "ch": 15, "fr": "le compte d'épargne", "en": "savings account" }, { "ch": 15, "fr": "le cours / le taux du change", "en": "rate of exchange" }, { "ch": 15, "fr": "déposer / verser de l'argent", "en": "to deposit money" },
-            { "ch": 15, "fr": "un dépôt en banque", "en": "bank deposit" }, { "ch": 15, "fr": "le dépôt de garantie", "en": "security deposit" }, { "ch": 15, "fr": "le distributeur (de billets) (DAB)", "en": "ATM" },
-            { "ch": 15, "fr": "emprunter", "en": "to borrow" }, { "ch": 15, "fr": "prêter", "en": "to lend" }, { "ch": 15, "fr": "endosser un chèque", "en": "to sign a check" },
-            { "ch": 15, "fr": "des espèces (f.)", "en": "cash" }, { "ch": 15, "fr": "faire de la monnaie", "en": "to make change" }, { "ch": 15, "fr": "la fiche / le bordereau", "en": "deposit slip" },
-            { "ch": 15, "fr": "les frais (m.)", "en": "costs" }, { "ch": 15, "fr": "les grosses coupures (f.)", "en": "large bills" }, { "ch": 15, "fr": "le guichet", "en": "teller's window" },
-            { "ch": 15, "fr": "les heures d'ouverture (f.)", "en": "opening hours" }, { "ch": 15, "fr": "l'hypothèque (f.)", "en": "mortgage" }, { "ch": 15, "fr": "les impôts (m.)", "en": "taxes" },
-            { "ch": 15, "fr": "un livret", "en": "bankbook" }, { "ch": 15, "fr": "le mandat", "en": "money order" }, { "ch": 15, "fr": "la monnaie", "en": "currency; change" },
-            { "ch": 15, "fr": "la petite monnaie", "en": "small change" }, { "ch": 15, "fr": "le montant", "en": "sum, total" }, { "ch": 15, "fr": "ouvrir un compte", "en": "to open an account" },
-            { "ch": 15, "fr": "le paiement", "en": "payment" }, { "ch": 15, "fr": "payer les factures", "en": "to pay the bills" }, { "ch": 15, "fr": "la poste (la PTT)", "en": "post office" },
-            { "ch": 15, "fr": "retirer de l'argent", "en": "to withdraw money" }, { "ch": 15, "fr": "le retrait", "en": "withdrawal" }, { "ch": 15, "fr": "le taux d'intérêt", "en": "interest rate" },
-            { "ch": 15, "fr": "toucher un chèque", "en": "to cash a check" }, { "ch": 15, "fr": "transférer", "en": "to transfer" }, { "ch": 15, "fr": "le transfert de fonds", "en": "funds transfer" },
-            // Chapter 16
-            { "ch": 16, "fr": "Je voudrais vous (te) présenter...", "en": "I'd like to present..." }, { "ch": 16, "fr": "Voici mon ami(e)...", "en": "This is my friend..." }, { "ch": 16, "fr": "Je m'appelle...", "en": "My name is..." },
-            { "ch": 16, "fr": "Enchanté(e) (d'avoir fait votre connaissance).", "en": "Delighted to meet you." }, { "ch": 16, "fr": "Moi de même.", "en": "Likewise." }, { "ch": 16, "fr": "D'où venez-vous? (D'où êtes-vous?)", "en": "Where are you from?" },
-            { "ch": 16, "fr": "Depuis quand êtes-vous à...?", "en": "How long have you been in...?" }, { "ch": 16, "fr": "Combien de temps allez-vous rester ici?", "en": "How long are you going to stay here?" }, { "ch": 16, "fr": "Où habitez-vous?", "en": "Where do you live (are you staying)?" },
-            { "ch": 16, "fr": "Que faites-vous dans la vie?", "en": "What do you do?" }, { "ch": 16, "fr": "Vous avez une famille? des enfants?", "en": "Do you have a family? Children?" }, { "ch": 16, "fr": "À quoi vous intéressez-vous?", "en": "What are your interests?" },
-            { "ch": 16, "fr": "Vous aimez les sports?", "en": "Do you like sports?" }, { "ch": 16, "fr": "Êtes-vous libre de...?", "en": "Are you free to...?" }, { "ch": 16, "fr": "Voudriez-vous y aller ensemble?", "en": "Would you like to go there together?" },
-            { "ch": 16, "fr": "Oui, d'accord. Avec plaisir.", "en": "Yes, fine. With pleasure." }, { "ch": 16, "fr": "Volontiers.", "en": "Gladly." }, { "ch": 16, "fr": "Oui, j'aimerais bien.", "en": "Yes, I'd like to." },
-            { "ch": 16, "fr": "Désolé(e), je suis occupé(e).", "en": "Sorry, I'm busy." }, { "ch": 16, "fr": "C'est dommage. Je suis pris(e) ce soir-là.", "en": "What a shame. I'm busy that evening." }, { "ch": 16, "fr": "Pourriez-vous venir nous (me) voir...?", "en": "Can you come see us (me)...?" },
-            { "ch": 16, "fr": "Je pourrais venir vous chercher.", "en": "I can come pick you up." }, { "ch": 16, "fr": "Je peux vous téléphoner?", "en": "May I call you?" }, { "ch": 16, "fr": "Quel est votre numéro de téléphone?", "en": "What's your phone number?" },
-            { "ch": 16, "fr": "Quelle est votre adresse courrielle?", "en": "What's your e-mail?" }, { "ch": 16, "fr": "Nous vous attendrons à...", "en": "We'll wait for you at..." }
-        ];
+        let activeLevel = 'a1';
+        let levelVocabData = [];
+        let currentCards = [];
+        let currentIndex = 0;
 
+        // --- Universal Translation Engine & Cache ---
+        let currentTargetLang = localStorage.getItem('universalTargetLang') || 'en';
+        const translationCache = JSON.parse(localStorage.getItem('vocabTranslationCache') || '{}');
+
+        // Restore saved language in drawer selector on boot
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectElem = document.getElementById('nativeLangSelect');
+            if (selectElem) selectElem.value = currentTargetLang;
+        });
+
+        async function changeTargetLanguage(langCode) {
+            currentTargetLang = langCode;
+            localStorage.setItem('universalTargetLang', langCode);
+            loadCard();
+        }
+
+        async function fetchDynamicTranslation(frenchText, targetLang) {
+            const cleanWord = frenchText.replace(/\(.*?\)/g, '').replace(/\//g, ' ').trim();
+            const cacheKey = `${cleanWord}_${targetLang}`;
+
+            if (translationCache[cacheKey]) {
+                return translationCache[cacheKey];
+            }
+
+            try {
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanWord)}&langpair=fr|${targetLang}`);
+                const data = await res.json();
+                if (data.responseData && data.responseData.translatedText) {
+                    const result = data.responseData.translatedText.toLowerCase();
+                    translationCache[cacheKey] = result;
+                    localStorage.setItem('vocabTranslationCache', JSON.stringify(translationCache));
+                    return result;
+                }
+            } catch (err) {
+                console.warn('Live translation failed, using fallback:', err);
+            }
+            return null;
+        }
+
+        // --- Fetch Level Data & Populate Topics ---
+        async function switchProficiencyLevel(levelCode) {
+            activeLevel = levelCode;
+            try {
+                const response = await fetch(`data/vocab-${levelCode}.json`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                levelVocabData = await response.json();
+            } catch (err) {
+                console.error(`Could not load vocab-${levelCode}.json:`, err);
+                levelVocabData = [];
+            }
+
+            populateCategoryDropdown();
+            filterChapter();
+        }
+
+        function populateCategoryDropdown() {
+            const chFilter = document.getElementById('chapterFilter');
+            chFilter.innerHTML = '<option value="all">🌐 All Topics in Level</option>';
+
+            const categories = [];
+            const seen = new Set();
+
+            levelVocabData.forEach(item => {
+                const key = item.category || `Chapter ${item.catId}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    categories.push({ id: item.catId, name: key });
+                }
+            });
+
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat.id;
+                opt.innerText = `📖 ${cat.name}`;
+                chFilter.appendChild(opt);
+            });
+        }
+
+        function filterChapter() {
+            const selected = document.getElementById('chapterFilter').value;
+            currentCards = selected === "all" 
+                ? [...levelVocabData] 
+                : levelVocabData.filter(v => v.catId == selected);
+            
+            currentIndex = 0;
+            loadCard();
+            if (document.getElementById('mode-list').style.display === 'block') {
+                renderList();
+            }
+        }
+
+        function updateCounter() {
+            const counterEl = document.getElementById('cardCounter');
+            const progressEl = document.getElementById('progressBar');
+            if (currentCards.length === 0) {
+                counterEl.innerText = "0 / 0";
+                progressEl.style.width = '0%';
+            } else {
+                counterEl.innerText = `Card ${currentIndex + 1} of ${currentCards.length}`;
+                const percent = ((currentIndex + 1) / currentCards.length) * 100;
+                progressEl.style.width = `${percent}%`;
+            }
+        }
+
+        function renderList() {
+            const listContainer = document.getElementById('mode-list');
+            listContainer.innerHTML = '<div class="vocab-grid" id="vocab-grid"></div>';
+            const grid = document.getElementById('vocab-grid');
+            const selectedCat = document.getElementById('chapterFilter').value;
+            
+            let categoriesToRender = selectedCat === 'all' 
+                ? [...new Set(levelVocabData.map(item => item.category))] 
+                : [levelVocabData.find(v => v.catId == selectedCat)?.category].filter(Boolean);
+            
+            categoriesToRender.forEach(catName => {
+                const words = levelVocabData.filter(v => v.category === catName);
+                if (words.length === 0) return;
+                const block = document.createElement('div');
+                block.className = 'chapter-table-container';
+                let html = `<h3>${catName}</h3><table class="vocab-table"><thead><tr><th>French</th><th>English</th></tr></thead><tbody>`;
+                words.forEach(card => html += `<tr><td class="fr">${card.fr}</td><td class="en">${card.en}</td></tr>`);
+                html += `</tbody></table>`;
+                block.innerHTML = html;
+                grid.appendChild(block);
+            });
+        }
+
+        async function loadCard() {
+            if (currentCards.length === 0) {
+                document.getElementById('word-fr').innerText = 'No cards';
+                document.getElementById('word-en').innerText = 'No cards';
+                updateCounter();
+                return;
+            }
+            const card = currentCards[currentIndex];
+            document.getElementById('word-fr').innerText = card.fr;
+
+            const enDisplay = document.getElementById('word-en');
+            if (enDisplay) {
+                if (currentTargetLang === 'en') {
+                    enDisplay.innerText = card.en;
+                } else {
+                    const cleanWord = card.fr.replace(/\(.*?\)/g, '').replace(/\//g, ' ').trim();
+                    const cacheKey = `${cleanWord}_${currentTargetLang}`;
+
+                    if (translationCache[cacheKey]) {
+                        enDisplay.innerText = translationCache[cacheKey];
+                    } else {
+                        enDisplay.innerText = 'Translating...';
+                        const translated = await fetchDynamicTranslation(card.fr, currentTargetLang);
+                        enDisplay.innerText = translated || card.en;
+                    }
+                }
+            }
+
+            document.getElementById('flashcard').classList.remove('is-flipped');
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === currentCards.length - 1;
+            updateCounter();
+        }
+
+        function flipCard() { 
+            if (currentCards.length > 0) document.getElementById('flashcard').classList.toggle('is-flipped'); 
+        }
+        function nextCard() { 
+            if (currentIndex < currentCards.length - 1) { currentIndex++; loadCard(); } 
+        }
+        function prevCard() { 
+            if (currentIndex > 0) { currentIndex--; loadCard(); } 
+        }
         let currentCards = [...vocabData];
         let currentIndex = 0;
 
@@ -2178,9 +1870,9 @@ if ('speechSynthesis' in window) {
             document.getElementById('score-display').innerText = `Score: ${correctCount} / ${inputs.length}`;
         }
 
-        // Initialize App
+     // Initialize App
         populateExerciseList();
-        loadCard();
+        switchProficiencyLevel('a1');
     </script>
 </body>
 </html>
