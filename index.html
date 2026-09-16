@@ -508,6 +508,19 @@
             color: #f8fafc;
         }
 @media screen and (max-width: 768px) {
+    .app-main {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.view-section.active-view {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+}
     /* Allow natural scrolling on mobile instead of locking screen height */
     body {
         height: auto;
@@ -822,12 +835,6 @@ body {
                         <option value="all">🌐 All Topics in Level</option>
                     </select>
                 </div>
-
-                <div class="vocab-toggles">
-                    <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
-                    <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
-                </div>
-            </div>
 
                 <div class="vocab-toggles">
                     <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
