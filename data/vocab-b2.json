@@ -160,7 +160,6 @@
   { "id": "b2-0158", "catId": 2, "category": "Advanced Discourse Connectors & Logic", "fr": "tout bien pesé", "en": "all things considered" },
   { "id": "b2-0159", "catId": 2, "category": "Advanced Discourse Connectors & Logic", "fr": "en conclusion", "en": "in conclusion" },
   { "id": "b2-0160", "catId": 2, "category": "Advanced Discourse Connectors & Logic", "fr": "en guise de conclusion", "en": "by way of conclusion" },
-  [
   { "id": "b2-0161", "catId": 3, "category": "Ecology & Climate Transition", "fr": "l'urgence climatique", "en": "climate emergency" },
   { "id": "b2-0162", "catId": 3, "category": "Ecology & Climate Transition", "fr": "le dérèglement climatique", "en": "climate disruption" },
   { "id": "b2-0163", "catId": 3, "category": "Ecology & Climate Transition", "fr": "le point de bascule", "en": "tipping point" },
@@ -362,7 +361,6 @@
   { "id": "b2-0358", "catId": 4, "category": "Economy, Trade & Fiscal Policies", "fr": "le délit d'initié punissable", "en": "prosecutable insider trading" },
   { "id": "b2-0359", "catId": 4, "category": "Economy, Trade & Fiscal Policies", "fr": "la responsabilité sociétale des entreprises (RSE)", "en": "corporate social responsibility (CSR)" },
   { "id": "b2-0360", "catId": 4, "category": "Economy, Trade & Fiscal Policies", "fr": "l'investissement socialement responsable (ISR)", "en": "socially responsible investing (SRI)" },
-    [
   { "id": "b2-0361", "catId": 5, "category": "Law, Justice & Criminology", "fr": "l'ordre juridique", "en": "legal order / framework" },
   { "id": "b2-0362", "catId": 5, "category": "Law, Justice & Criminology", "fr": "la hiérarchie des normes", "en": "hierarchy of legal norms" },
   { "id": "b2-0363", "catId": 5, "category": "Law, Justice & Criminology", "fr": "la Constitution française", "en": "French Constitution" },
@@ -564,7 +562,6 @@
   { "id": "b2-0558", "catId": 6, "category": "Higher Education & Academic Research", "fr": "le syndicat de l'enseignement supérieur", "en": "higher education academic union" },
   { "id": "b2-0559", "catId": 6, "category": "Higher Education & Academic Research", "fr": "l'émancipation par le savoir", "en": "empowerment through knowledge" },
   { "id": "b2-0560", "catId": 6, "category": "Higher Education & Academic Research", "fr": "la démocratisation de l'enseignement", "en": "democratization of higher education" }
-  [
   { "id": "b2-0561", "catId": 7, "category": "Bioethics, AI & Digital Privacy", "fr": "le questionnement éthique", "en": "ethical inquiry / questioning" },
   { "id": "b2-0562", "catId": 7, "category": "Bioethics, AI & Digital Privacy", "fr": "le Comité consultatif national d'éthique (CCNE)", "en": "National Bioethics Advisory Committee" },
   { "id": "b2-0563", "catId": 7, "category": "Bioethics, AI & Digital Privacy", "fr": "la loi de bioéthique révisée", "en": "revised bioethics law" },
@@ -766,7 +763,6 @@
   { "id": "b2-0758", "catId": 8, "category": "Urbanism & Demographic Shifts", "fr": "la concertation publique préalable", "en": "prior public stakeholder dialogue" },
   { "id": "b2-0759", "catId": 8, "category": "Urbanism & Demographic Shifts", "fr": "la fabrique de la ville durable", "en": "making of the sustainable city" },
   { "id": "b2-0760", "catId": 8, "category": "Urbanism & Demographic Shifts", "fr": "l'appropriation citoyenne de l'espace", "en": "civic reclamation of public space" },
-    [
   { "id": "b2-0761", "catId": 9, "category": "Labor Markets & Corporate Governance", "fr": "la gouvernance d'entreprise", "en": "corporate governance" },
   { "id": "b2-0762", "catId": 9, "category": "Labor Markets & Corporate Governance", "fr": "le conseil d'administration", "en": "board of directors" },
   { "id": "b2-0763", "catId": 9, "category": "Labor Markets & Corporate Governance", "fr": "un administrateur indépendant", "en": "independent director / board member" },
@@ -968,7 +964,6 @@
   { "id": "b2-0958", "catId": 10, "category": "Culture, Aesthetics & Heritage", "fr": "la politique des auteurs", "en": "auteur theory" },
   { "id": "b2-0959", "catId": 10, "category": "Culture, Aesthetics & Heritage", "fr": "le faux raccord délibéré (jump cut)", "en": "deliberate jump cut" },
   { "id": "b2-0960", "catId": 10, "category": "Culture, Aesthetics & Heritage", "fr": "le plan-séquence virtuose", "en": "virtuoso long take / sequence shot" },
-  [
   { "id": "b2-0961", "catId": 11, "category": "Geopolitics & Global Crises", "fr": "l'échiquier géopolitique mondial", "en": "global geopolitical chessboard" },
   { "id": "b2-0962", "catId": 11, "category": "Geopolitics & Global Crises", "fr": "l'hégémonie économique et culturelle", "en": "economic and cultural hegemony" },
   { "id": "b2-0963", "catId": 11, "category": "Geopolitics & Global Crises", "fr": "la puissance douce (soft power)", "en": "soft power" },
