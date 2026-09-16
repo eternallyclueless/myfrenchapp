@@ -1,0 +1,83 @@
+name: AI Repository Inspector
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get Changed Code (Git Diff)
+        id: diff
+        run: |
+          # Get the changes made in the latest commit
+          DIFF=$(git diff HEAD~1 HEAD)
+          if [ -z "$DIFF" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            # Save diff to a file to avoid shell escaping issues
+            echo "$DIFF" > diff.txt
+          fi
+
+      - name: Set up Node.js
+        if: steps.diff.outputs.has_changes == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Google Gen AI SDK
+        if: steps.diff.outputs.has_changes == 'true'
+        run: npm install @google/genai
+
+      - name: Run Gemini Review
+        if: steps.diff.outputs.has_changes == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          node -e '
+          import { GoogleGenAI } from "@google/genai";
+          import fs from "fs";
+
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+          const diff = fs.readFileSync("diff.txt", "utf8");
+
+          async function checkDiff() {
+            const prompt = `You are an expert code reviewer and JSON validator.
+            Review the following git diff for errors:
+            - Broken JSON syntax (like duplicate brackets "][", missing commas, trailing commas).
+            - JavaScript bugs or typos.
+            - Malformed HTML/CSS.
+            - Vocabulary inconsistencies (missing id, fr, en, category).
+
+            If there are errors, explain clearly where they are and how to fix them.
+            If everything is clean and valid, respond with "✅ No errors found."
+
+            Git Diff:
+            \n\n${diff}`;
+
+            const response = await ai.models.generateContent({
+              model: "gemini-2.5-flash",
+              contents: prompt,
+            });
+
+            console.log("\n================ GEMINI CODE AUDIT ================\n");
+            console.log(response.text);
+            console.log("\n===================================================\n");
+          }
+
+          checkDiff();
+          '
