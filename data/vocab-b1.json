@@ -159,9 +159,7 @@
   { "id": "b1-0157", "catId": 2, "category": "Debate, Opinions & Nuances", "fr": "faire des concessions", "en": "to make concessions" },
   { "id": "b1-0158", "catId": 2, "category": "Debate, Opinions & Nuances", "fr": "résoudre un litige", "en": "to resolve a dispute" },
   { "id": "b1-0159", "catId": 2, "category": "Debate, Opinions & Nuances", "fr": "clore la discussion", "en": "to close the discussion" },
-  { "id": "b1-0160", "catId": 2, "category": "Debate, Opinions & Nuances", "fr": "tirer les conclusions", "en": "to draw the conclusions" }
-]
-[
+  { "id": "b1-0160", "catId": 2, "category": "Debate, Opinions & Nuances", "fr": "tirer les conclusions", "en": "to draw the conclusions" },
   { "id": "b1-0161", "catId": 3, "category": "Environment & Sustainability", "fr": "le changement climatique", "en": "climate change" },
   { "id": "b1-0162", "catId": 3, "category": "Environment & Sustainability", "fr": "le réchauffement planétaire", "en": "global warming" },
   { "id": "b1-0163", "catId": 3, "category": "Environment & Sustainability", "fr": "l'effet de serre (m.)", "en": "greenhouse effect" },
@@ -322,9 +320,7 @@
   { "id": "b1-0317", "catId": 4, "category": "Consumer Rights & Finance", "fr": "saisir un médiateur", "en": "to refer to an ombudsman / mediator" },
   { "id": "b1-0318", "catId": 4, "category": "Consumer Rights & Finance", "fr": "régler un différend à l'amiable", "en": "to settle a dispute amicably" },
   { "id": "b1-0319", "catId": 4, "category": "Consumer Rights & Finance", "fr": "porter plainte pour escroquerie", "en": "to press charges for fraud" },
-  { "id": "b1-0320", "catId": 4, "category": "Consumer Rights & Finance", "fr": "une arnaque financière", "en": "financial scam / con" }
-]
-[
+  { "id": "b1-0320", "catId": 4, "category": "Consumer Rights & Finance", "fr": "une arnaque financière", "en": "financial scam / con" },
   { "id": "b1-0321", "catId": 5, "category": "Social Issues, Justice & Civics", "fr": "la cohésion sociale", "en": "social cohesion" },
   { "id": "b1-0322", "catId": 5, "category": "Social Issues, Justice & Civics", "fr": "la mixité sociale", "en": "social diversity / integration" },
   { "id": "b1-0323", "catId": 5, "category": "Social Issues, Justice & Civics", "fr": "les inégalités de revenus", "en": "income inequalities" },
@@ -485,9 +481,7 @@
   { "id": "b1-0477", "catId": 6, "category": "Culture, Arts & Literary Analysis", "fr": "un virtuose du violon", "en": "violin virtuoso" },
   { "id": "b1-0478", "catId": 6, "category": "Culture, Arts & Literary Analysis", "fr": "l'interprétation magistrale", "en": "masterful interpretation / performance" },
   { "id": "b1-0479", "catId": 6, "category": "Culture, Arts & Literary Analysis", "fr": "susciter une émotion vive", "en": "to spark vivid emotion" },
-  { "id": "b1-0480", "catId": 6, "category": "Culture, Arts & Literary Analysis", "fr": "laisser une empreinte durable", "en": "to leave a lasting mark" }
-]
-[
+  { "id": "b1-0480", "catId": 6, "category": "Culture, Arts & Literary Analysis", "fr": "laisser une empreinte durable", "en": "to leave a lasting mark" },
   { "id": "b1-0481", "catId": 7, "category": "Science, Tech & Innovation", "fr": "la recherche scientifique", "en": "scientific research" },
   { "id": "b1-0482", "catId": 7, "category": "Science, Tech & Innovation", "fr": "le chercheur", "en": "researcher / scientist (m.)" },
   { "id": "b1-0483", "catId": 7, "category": "Science, Tech & Innovation", "fr": "la chercheuse", "en": "researcher / scientist (f.)" },
@@ -648,9 +642,7 @@
   { "id": "b1-0637", "catId": 8, "category": "Geopolitics & Global Affairs", "fr": "le renseignement militaire", "en": "military intelligence" },
   { "id": "b1-0638", "catId": 8, "category": "Geopolitics & Global Affairs", "fr": "les services secrets", "en": "secret services / intelligence agency" },
   { "id": "b1-0639", "catId": 8, "category": "Geopolitics & Global Affairs", "fr": "l'espionnage industriel", "en": "industrial espionage" },
-  { "id": "b1-0640", "catId": 8, "category": "Geopolitics & Global Affairs", "fr": "la guerre hybride", "en": "hybrid warfare" }
-]
-[
+  { "id": "b1-0640", "catId": 8, "category": "Geopolitics & Global Affairs", "fr": "la guerre hybride", "en": "hybrid warfare" },
   { "id": "b1-0641", "catId": 9, "category": "Health, Wellbeing & Lifestyle", "fr": "la santé mentale", "en": "mental health" },
   { "id": "b1-0642", "catId": 9, "category": "Health, Wellbeing & Lifestyle", "fr": "le bien-être psychologique", "en": "psychological wellbeing" },
   { "id": "b1-0643", "catId": 9, "category": "Health, Wellbeing & Lifestyle", "fr": "le surmenage professionnel", "en": "burnout / professional exhaustion" },
