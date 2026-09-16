@@ -440,6 +440,59 @@
         .menu-items .nav-icon {
             font-size: 20px;
         }
+        /* Drawer Language Dropdown */
+        .drawer-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .drawer-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .lang-dropdown {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            margin-bottom: 0;
+        }
+
+        .lang-dropdown:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .lang-dropdown option {
+            background-color: #111827;
+            color: #f8fafc;
+        }
 @media screen and (max-width: 768px) {
     /* Allow natural scrolling on mobile instead of locking screen height */
     body {
@@ -679,7 +732,7 @@ body {
                     <span>Navigation</span>
                     <button class="menu-close-btn" onclick="closeMenu()" aria-label="Close menu">&times;</button>
                 </div>
-                <div class="menu-items">
+               <div class="menu-items">
                     <button class="nav-btn active" id="btn-vocab" onclick="switchView('vocab-view')">
                         <span class="nav-icon">📚</span> Vocabulary
                     </button>
@@ -689,6 +742,34 @@ body {
                     <button class="nav-btn" id="btn-exercises" onclick="switchView('exercises-view')">
                         <span class="nav-icon">✍️</span> Exercises
                     </button>
+
+                    <!-- Universal Language Selector -->
+                    <div class="drawer-section">
+                        <span class="drawer-section-title">Translate Back To</span>
+                        <div class="custom-select-wrapper">
+                            <select id="nativeLangSelect" class="lang-dropdown" onchange="changeTargetLanguage(this.value)">
+                                <option value="en" selected>🇬🇧 English</option>
+                                <option value="es">🇪🇸 Spanish (Español)</option>
+                                <option value="de">🇩🇪 German (Deutsch)</option>
+                                <option value="it">🇮🇹 Italian (Italiano)</option>
+                                <option value="pt">🇵🇹 Portuguese (Português)</option>
+                                <option value="zh">🇨🇳 Chinese (中文)</option>
+                                <option value="ja">🇯🇵 Japanese (日本語)</option>
+                                <option value="ko">🇰🇷 Korean (한국어)</option>
+                                <option value="ar">🇸🇦 Arabic (العربية)</option>
+                                <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+                                <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+                                <option value="ru">🇷🇺 Russian (Русский)</option>
+                                <option value="tr">🇹🇷 Turkish (Türkçe)</option>
+                                <option value="vi">🇻🇳 Vietnamese (Tiếng Việt)</option>
+                                <option value="pl">🇵🇱 Polish (Polski)</option>
+                                <option value="nl">🇳🇱 Dutch (Nederlands)</option>
+                                <option value="uk">🇺🇦 Ukrainian (Українська)</option>
+                                <option value="fa">🇮🇷 Persian (فارسی)</option>
+                                <option value="tl">🇵🇭 Tagalog (Filipino)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -1796,7 +1877,46 @@ body {
             });
         }
 
-        function loadCard() {
+      // --- Universal Translation Engine & Cache ---
+        let currentTargetLang = localStorage.getItem('universalTargetLang') || 'en';
+        const translationCache = JSON.parse(localStorage.getItem('vocabTranslationCache') || '{}');
+
+        // Set saved dropdown selection on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectElem = document.getElementById('nativeLangSelect');
+            if (selectElem) selectElem.value = currentTargetLang;
+        });
+
+        async function changeTargetLanguage(langCode) {
+            currentTargetLang = langCode;
+            localStorage.setItem('universalTargetLang', langCode);
+            loadCard();
+        }
+
+        async function fetchDynamicTranslation(frenchText, targetLang) {
+            const cleanWord = frenchText.replace(/\(.*?\)/g, '').replace(/\//g, ' ').trim();
+            const cacheKey = `${cleanWord}_${targetLang}`;
+
+            if (translationCache[cacheKey]) {
+                return translationCache[cacheKey];
+            }
+
+            try {
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanWord)}&langpair=fr|${targetLang}`);
+                const data = await res.json();
+                if (data.responseData && data.responseData.translatedText) {
+                    const result = data.responseData.translatedText.toLowerCase();
+                    translationCache[cacheKey] = result;
+                    localStorage.setItem('vocabTranslationCache', JSON.stringify(translationCache));
+                    return result;
+                }
+            } catch (err) {
+                console.warn('Live translation failed, using offline fallback:', err);
+            }
+            return null;
+        }
+
+        async function loadCard() {
             if (currentCards.length === 0) {
                 document.getElementById('word-fr').innerText = 'No cards';
                 document.getElementById('word-en').innerText = 'No cards';
@@ -1804,7 +1924,25 @@ body {
             }
             const card = currentCards[currentIndex];
             document.getElementById('word-fr').innerText = card.fr;
-            document.getElementById('word-en').innerText = card.en;
+
+            const enDisplay = document.getElementById('word-en');
+            if (enDisplay) {
+                if (currentTargetLang === 'en') {
+                    enDisplay.innerText = card.en;
+                } else {
+                    const cleanWord = card.fr.replace(/\(.*?\)/g, '').replace(/\//g, ' ').trim();
+                    const cacheKey = `${cleanWord}_${currentTargetLang}`;
+
+                    if (translationCache[cacheKey]) {
+                        enDisplay.innerText = translationCache[cacheKey];
+                    } else {
+                        enDisplay.innerText = 'Translating...';
+                        const translated = await fetchDynamicTranslation(card.fr, currentTargetLang);
+                        enDisplay.innerText = translated || card.en;
+                    }
+                }
+            }
+
             document.getElementById('flashcard').classList.remove('is-flipped');
             document.getElementById('prevBtn').disabled = currentIndex === 0;
             document.getElementById('nextBtn').disabled = currentIndex === currentCards.length - 1;
