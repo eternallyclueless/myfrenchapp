@@ -1,4 +1,3 @@
-[
   { "id": "a2-0001", "catId": 1, "category": "Daily Routine & Household", "fr": "se réveiller", "en": "to wake up" },
   { "id": "a2-0002", "catId": 1, "category": "Daily Routine & Household", "fr": "le réveil", "en": "alarm clock" },
   { "id": "a2-0003", "catId": 1, "category": "Daily Routine & Household", "fr": "sonner", "en": "to ring (alarm)" },
@@ -98,9 +97,7 @@
   { "id": "a2-0097", "catId": 1, "category": "Daily Routine & Household", "fr": "mettre son pyjama", "en": "to put on one's pajamas" },
   { "id": "a2-0098", "catId": 1, "category": "Daily Routine & Household", "fr": "régler son réveil", "en": "to set one's alarm" },
   { "id": "a2-0099", "catId": 1, "category": "Daily Routine & Household", "fr": "se coucher", "en": "to go to bed" },
-  { "id": "a2-0100", "catId": 1, "category": "Daily Routine & Household", "fr": "s'endormir", "en": "to fall asleep" }
-]
-[
+  { "id": "a2-0100", "catId": 1, "category": "Daily Routine & Household", "fr": "s'endormir", "en": "to fall asleep" },
   { "id": "a2-0101", "catId": 2, "category": "City, Navigation & Transit", "fr": "le centre-ville", "en": "city center / downtown" },
   { "id": "a2-0102", "catId": 2, "category": "City, Navigation & Transit", "fr": "la banlieue", "en": "suburbs" },
   { "id": "a2-0103", "catId": 2, "category": "City, Navigation & Transit", "fr": "le quartier", "en": "neighborhood / district" },
@@ -200,9 +197,7 @@
   { "id": "a2-0197", "catId": 2, "category": "City, Navigation & Transit", "fr": "juste en face", "en": "right across / opposite" },
   { "id": "a2-0198", "catId": 2, "category": "City, Navigation & Transit", "fr": "à côté de", "en": "next to" },
   { "id": "a2-0199", "catId": 2, "category": "City, Navigation & Transit", "fr": "au coin de la rue", "en": "on the street corner" },
-  { "id": "a2-0200", "catId": 2, "category": "City, Navigation & Transit", "fr": "à quelques pas d'ici", "en": "a short walk from here" }
-]
-[
+  { "id": "a2-0200", "catId": 2, "category": "City, Navigation & Transit", "fr": "à quelques pas d'ici", "en": "a short walk from here" },
   { "id": "a2-0201", "catId": 3, "category": "Dining Out & Food Prep", "fr": "réserver une table", "en": "to book a table" },
   { "id": "a2-0202", "catId": 3, "category": "Dining Out & Food Prep", "fr": "une réservation pour deux personnes", "en": "a reservation for two people" },
   { "id": "a2-0203", "catId": 3, "category": "Dining Out & Food Prep", "fr": "en terrasse", "en": "on the patio / terrace" },
@@ -302,9 +297,7 @@
   { "id": "a2-0297", "catId": 3, "category": "Dining Out & Food Prep", "fr": "c'est ma tournée", "en": "it's my treat / round" },
   { "id": "a2-0298", "catId": 3, "category": "Dining Out & Food Prep", "fr": "je vous invite", "en": "it's on me / my treat" },
   { "id": "a2-0299", "catId": 3, "category": "Dining Out & Food Prep", "fr": "emporter les restes", "en": "to take home leftovers" },
-  { "id": "a2-0300", "catId": 3, "category": "Dining Out & Food Prep", "fr": "le pourboire en espèces", "en": "cash tip" }
-]
-[
+  { "id": "a2-0300", "catId": 3, "category": "Dining Out & Food Prep", "fr": "le pourboire en espèces", "en": "cash tip" },
   { "id": "a2-0301", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "chercher un logement", "en": "to look for housing" },
   { "id": "a2-0302", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "une agence immobilière", "en": "real estate agency" },
   { "id": "a2-0303", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "un agent immobilier", "en": "real estate agent" },
@@ -404,9 +397,7 @@
   { "id": "a2-0397", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "appeler un plombier", "en": "to call a plumber" },
   { "id": "a2-0398", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "faire des réparations", "en": "to make repairs" },
   { "id": "a2-0399", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "repeindre les murs", "en": "to repaint the walls" },
-  { "id": "a2-0400", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "déménager ses cartons", "en": "to move one's packing boxes" }
-]
-[
+  { "id": "a2-0400", "catId": 4, "category": "Housing, Real Estate & Maintenance", "fr": "déménager ses cartons", "en": "to move one's packing boxes" },
   { "id": "a2-0401", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "prendre rendez-vous", "en": "to make an appointment" },
   { "id": "a2-0402", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "le cabinet médical", "en": "doctor's office / clinic" },
   { "id": "a2-0403", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "le médecin généraliste", "en": "general practitioner / family doctor" },
@@ -506,9 +497,7 @@
   { "id": "a2-0497", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "passer une radiographie", "en": "to get an X-ray" },
   { "id": "a2-0498", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "les urgences (f.)", "en": "emergency room / ER" },
   { "id": "a2-0499", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "appeler le SAMU (15)", "en": "to call the medical emergency services (15)" },
-  { "id": "a2-0500", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "guérir complètement", "en": "to fully recover / heal" }
-]
-[
+  { "id": "a2-0500", "catId": 5, "category": "Health, Medicine & Pharmacy", "fr": "guérir complètement", "en": "to fully recover / heal" },
   { "id": "a2-0501", "catId": 6, "category": "Shopping & Transactions", "fr": "faire les magasins", "en": "to go shopping" },
   { "id": "a2-0502", "catId": 6, "category": "Shopping & Transactions", "fr": "faire les courses", "en": "to go grocery shopping" },
   { "id": "a2-0503", "catId": 6, "category": "Shopping & Transactions", "fr": "faire du lèche-vitrines", "en": "to go window shopping" },
@@ -608,9 +597,7 @@
   { "id": "a2-0597", "catId": 6, "category": "Shopping & Transactions", "fr": "rendre la monnaie", "en": "to give back change" },
   { "id": "a2-0598", "catId": 6, "category": "Shopping & Transactions", "fr": "le ticket de caisse imprimé", "en": "printed receipt" },
   { "id": "a2-0599", "catId": 6, "category": "Shopping & Transactions", "fr": "le sac en papier recyclable", "en": "recyclable paper bag" },
-  { "id": "a2-0600", "catId": 6, "category": "Shopping & Transactions", "fr": "le bon d'achat", "en": "store voucher / gift certificate" }
-]
-[
+  { "id": "a2-0600", "catId": 6, "category": "Shopping & Transactions", "fr": "le bon d'achat", "en": "store voucher / gift certificate" },
   { "id": "a2-0601", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "avoir du temps libre", "en": "to have free time" },
   { "id": "a2-0602", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "se distraire", "en": "to entertain oneself / unwind" },
   { "id": "a2-0603", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "les loisirs (m.)", "en": "leisure activities / hobbies" },
@@ -710,9 +697,7 @@
   { "id": "a2-0697", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "le score final", "en": "final score" },
   { "id": "a2-0698", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "les supporters passionnés", "en": "passionate fans / supporters" },
   { "id": "a2-0699", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "encourager son équipe", "en": "to cheer on one's team" },
-  { "id": "a2-0700", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "la médaille d'or", "en": "gold medal" }
-]
-[
+  { "id": "a2-0700", "catId": 7, "category": "Leisure, Arts & Sports", "fr": "la médaille d'or", "en": "gold medal" },
   { "id": "a2-0701", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "partir en vacances", "en": "to go on vacation" },
   { "id": "a2-0702", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "faire ses valises", "en": "to pack one's bags" },
   { "id": "a2-0703", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "défaire sa valise", "en": "to unpack one's suitcase" },
@@ -812,9 +797,7 @@
   { "id": "a2-0797", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "monter la tente", "en": "to pitch the tent" },
   { "id": "a2-0798", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "le sac de couchage", "en": "sleeping bag" },
   { "id": "a2-0799", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "acheter des souvenirs", "en": "to buy souvenirs" },
-  { "id": "a2-0800", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "envoyer une carte postale", "en": "to mail a postcard" }
-]
-[
+  { "id": "a2-0800", "catId": 8, "category": "Travel, Tourism & Lodging", "fr": "envoyer une carte postale", "en": "to mail a postcard" },
   { "id": "a2-0801", "catId": 9, "category": "Weather, Climate & Nature", "fr": "le bulletin météo", "en": "weather forecast" },
   { "id": "a2-0802", "catId": 9, "category": "Weather, Climate & Nature", "fr": "les prévisions météorologiques", "en": "meteorological forecasts" },
   { "id": "a2-0803", "catId": 9, "category": "Weather, Climate & Nature", "fr": "le climat tempéré", "en": "temperate climate" },
@@ -915,7 +898,6 @@
   { "id": "a2-0898", "catId": 9, "category": "Weather, Climate & Nature", "fr": "la faune locale", "en": "local wildlife" },
   { "id": "a2-0899", "catId": 9, "category": "Weather, Climate & Nature", "fr": "la flore sauvage", "en": "wild plants / flora" },
   { "id": "a2-0900", "catId": 9, "category": "Weather, Climate & Nature", "fr": "respirer le grand air", "en": "to breathe fresh outdoor air" },
-
   { "id": "a2-0901", "catId": 10, "category": "Education, Tech & Work", "fr": "l'école primaire", "en": "elementary school" },
   { "id": "a2-0902", "catId": 10, "category": "Education, Tech & Work", "fr": "le collège", "en": "middle school / junior high" },
   { "id": "a2-0903", "catId": 10, "category": "Education, Tech & Work", "fr": "le lycée", "en": "high school" },
@@ -1015,9 +997,7 @@
   { "id": "a2-0997", "catId": 10, "category": "Education, Tech & Work", "fr": "la clé USB", "en": "USB flash drive" },
   { "id": "a2-0998", "catId": 10, "category": "Education, Tech & Work", "fr": "le disque dur externe", "en": "external hard drive" },
   { "id": "a2-0999", "catId": 10, "category": "Education, Tech & Work", "fr": "sauvegarder sur le cloud", "en": "to back up to the cloud" },
-  { "id": "a2-1000", "catId": 10, "category": "Education, Tech & Work", "fr": "mettre à jour le logiciel", "en": "to update the software" }
-]
-[
+  { "id": "a2-1000", "catId": 10, "category": "Education, Tech & Work", "fr": "mettre à jour le logiciel", "en": "to update the software" },
   { "id": "a2-1001", "catId": 11, "category": "Media, Current Events & Society", "fr": "les actualités internationales", "en": "international news" },
   { "id": "a2-1002", "catId": 11, "category": "Media, Current Events & Society", "fr": "le journal télévisé", "en": "TV news broadcast" },
   { "id": "a2-1003", "catId": 11, "category": "Media, Current Events & Society", "fr": "le journal radio", "en": "radio news bulletin" },
@@ -1118,7 +1098,6 @@
   { "id": "a2-1098", "catId": 11, "category": "Media, Current Events & Society", "fr": "le bilinguisme", "en": "bilingualism" },
   { "id": "a2-1099", "catId": 11, "category": "Media, Current Events & Society", "fr": "l'intégration européenne", "en": "European integration" },
   { "id": "a2-1100", "catId": 11, "category": "Media, Current Events & Society", "fr": "la mondialisation", "en": "globalization" },
-
   { "id": "a2-1101", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "être heureux", "en": "to be happy" },
   { "id": "a2-1102", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "être ravi", "en": "to be delighted" },
   { "id": "a2-1103", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "ressentir de la joie", "en": "to feel joy" },
@@ -1219,4 +1198,3 @@
   { "id": "a2-1198", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "soutenir un proche", "en": "to support a loved one" },
   { "id": "a2-1199", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "apporter du réconfort", "en": "to bring comfort" },
   { "id": "a2-1200", "catId": 12, "category": "Emotions, Character & Relationships", "fr": "partager le bonheur", "en": "to share happiness" }
-]
