@@ -1600,8 +1600,7 @@ body {
 
             closeMenu();
         };
-
-        // --- Standardized Exam Bank ---
+// --- Standardized Exam Bank ---
         const liveExams = {
             delf_b2_writing: {
                 title: "DELF B2 — Production Écrite",
@@ -1678,74 +1677,11 @@ body {
                 ]
             }
         };
-            delf_b2_reading: {
-                title: "DELF B2 — Compréhension des écrits",
-                durationSeconds: 900, // 15-minute mock segment
-                passage: "Le modèle du télétravail hybride suscite d'intenses débats au sein des instances dirigeantes. Si les gains de flexibilité et d'autonomie sont indéniables pour les salariés, plusieurs sociologues alertent sur un risque d'effritement du sentiment d'appartenance collective. La dilution du lien social au travail, combinée à une frontière de plus en plus poreuse entre sphère privée et vie professionnelle, appelle une redéfinition des obligations de l'employeur. Il s'agit d'encadrer rigoureusement le droit à la déconnexion tout en garantissant des temps d'échange synchrones essentiels à la cohésion des équipes.",
-                questions: [
-                    {
-                        q: "Quel est l'axe central analysé par l'auteur ?",
-                        options: [
-                            "L'abandon définitif des bureaux physiques par toutes les entreprises",
-                            "Les répercussions contrastées de la formule de travail hybride",
-                            "La baisse de productivité imputable aux employés en distanciel",
-                            "L'obligation légale de supprimer les réunions synchrones"
-                        ],
-                        ans: 1
-                    },
-                    {
-                        q: "Que craignent les sociologues mentionnés dans le texte ?",
-                        options: [
-                            "Une perte de connexion et d'adhésion au collectif d'entreprise",
-                            "Une hausse démesurée des coûts d'infrastructure",
-                            "Le refus des salariés de se conformer aux horaires fixés",
-                            "Une surchauffe des serveurs de messagerie professionnelle"
-                        ],
-                        ans: 0
-                    },
-                    {
-                        q: "Selon le texte, quelle est la priorité pour l'employeur ?",
-                        options: [
-                            "Interdire tout travail le week-end sans exception",
-                            "Réduire les jours autorisés en télétravail",
-                            "Réguler la déconnexion et maintenir des créneaux synchrones",
-                            "Favoriser uniquement les réunions spontanées et informelles"
-                        ],
-                        ans: 2
-                    }
-                ]
-            },
-            tcf_reading: {
-                title: "TCF / TEF — Compréhension écrite",
-                durationSeconds: 600,
-                passage: "Face au vieillissement démographique et aux impératifs de décarbonation, l'urbanisme des villes moyennes doit être repensé. Les politiques territoriales récentes incitent à la réhabilitation des friches et à la limitation stricte de l'étalement urbain afin de sanctuariser les espaces naturels périphériques.",
-                questions: [
-                    {
-                        q: "Quelle stratégie foncière est expressément préconisée ?",
-                        options: [
-                            "Étendre les lotissements pavillonnaires sur les forêts adjacentes",
-                            "Reconvertir les terrains déjà artificialisés et limiter l'expansion",
-                            "Démolir les centres historiques jugés inadaptés",
-                            "Interdire toute nouvelle construction résidentielle"
-                        ],
-                        ans: 1
-                    },
-                    {
-                        q: "Quel enjeu motive en priorité ces réorientations d'aménagement ?",
-                        options: [
-                            "Le déclin du tourisme régional",
-                            "La baisse des impôts locaux",
-                            "La transition écologique et l'évolution de la population",
-                            "L'accélération de la vitesse de circulation automobile"
-                        ],
-                        ans: 2
-                    }
-                ]
-            }
-        };
-function updateWordCount(text) {
+
+        function updateWordCount(text) {
             const words = text.trim() ? text.trim().split(/\s+/).length : 0;
             const countEl = document.getElementById('live-word-count');
+            if (!countEl) return;
             countEl.innerText = `Words: ${words}`;
             
             if (words < 225) {
@@ -1756,13 +1692,14 @@ function updateWordCount(text) {
                 countEl.style.color = 'var(--error-color)';
             }
         }
+
         let currentExam = null;
         let examStepIndex = 0;
         let userExamAnswers = {};
         let examTimerInterval = null;
         let examTimeRemaining = 0;
 
-    function startLiveExam() {
+        function startLiveExam() {
             const selectedKey = document.getElementById('examTypeSelect').value;
             const timePref = document.getElementById('examTimeSelect').value;
             currentExam = liveExams[selectedKey];
@@ -1775,6 +1712,24 @@ function updateWordCount(text) {
 
             document.getElementById('live-exam-title').innerText = currentExam.title;
             document.getElementById('exam-passage-box').innerText = currentExam.passage;
+
+            // Toggle UI: Writing Mode vs Reading Mode
+            if (currentExam.type === 'writing') {
+                document.getElementById('exam-writing-box').style.display = 'flex';
+                document.querySelector('.exam-question-box').style.display = 'none';
+                document.getElementById('examPrevBtn').style.display = 'none';
+                document.getElementById('examNextBtn').style.display = 'none';
+                document.getElementById('examSubmitBtn').style.display = 'inline-block';
+                document.getElementById('exam-step-counter').style.display = 'none';
+                document.getElementById('exam-essay-input').value = '';
+                updateWordCount('');
+            } else {
+                document.getElementById('exam-writing-box').style.display = 'none';
+                document.querySelector('.exam-question-box').style.display = 'block';
+                document.getElementById('examPrevBtn').style.display = 'inline-block';
+                document.getElementById('exam-step-counter').style.display = 'inline-block';
+                renderExamStep();
+            }
 
             clearInterval(examTimerInterval);
             if (timePref === 'standard') {
@@ -1793,8 +1748,6 @@ function updateWordCount(text) {
             } else {
                 document.getElementById('exam-timer').style.display = 'none';
             }
-
-            renderExamStep();
         }
 
         function updateExamTimerDisplay() {
@@ -1839,24 +1792,41 @@ function updateWordCount(text) {
 
         function submitExam() {
             clearInterval(examTimerInterval);
-            let score = 0;
-            currentExam.questions.forEach((q, idx) => {
-                if (userExamAnswers[idx] === q.ans) score++;
-            });
-
-            const total = currentExam.questions.length;
-            const pct = Math.round((score / total) * 100);
-
             document.getElementById('exam-active-card').style.display = 'none';
             document.getElementById('exam-results-card').style.display = 'block';
-            document.getElementById('exam-score-number').innerText = `${score} / ${total}`;
 
-            let verdict = "";
-            if (pct >= 80) verdict = "🎯 Excellent — Score projecté : B2 Réussi / NCLC 7-8";
-            else if (pct >= 50) verdict = "🟡 Admis — Niveau intermédiaire consolidé (B1+)";
-            else verdict = "🔴 Non validé — Travaillez vos connecteurs et le lexique B2.";
-            
-            document.getElementById('exam-benchmark-verdict').innerText = verdict;
+            if (currentExam.type === 'writing') {
+                const text = document.getElementById('exam-essay-input').value.trim();
+                const words = text ? text.split(/\s+/).length : 0;
+                
+                document.getElementById('exam-score-number').innerText = `${words} mots`;
+                let verdict = "";
+                if (words >= 225 && words <= 275) {
+                    verdict = "🎯 Longueur optimale respectée (250 mots &plusmn;10%). Structure prête pour évaluation.";
+                } else if (words < 225) {
+                    verdict = `⚠️ Volume insuffisant (${words}/250 mots). Pénalité de longueur probable au DELF B2.`;
+                } else {
+                    verdict = `⚠️ Dépassement de consigne (${words}/250 mots). Veillez à synthétiser vos arguments.`;
+                }
+                document.getElementById('exam-benchmark-verdict').innerHTML = verdict;
+            } else {
+                let score = 0;
+                currentExam.questions.forEach((q, idx) => {
+                    if (userExamAnswers[idx] === q.ans) score++;
+                });
+
+                const total = currentExam.questions.length;
+                const pct = Math.round((score / total) * 100);
+
+                document.getElementById('exam-score-number').innerText = `${score} / ${total}`;
+
+                let verdict = "";
+                if (pct >= 80) verdict = "🎯 Excellent — Score projeté : B2 Réussi / NCLC 7-8";
+                else if (pct >= 50) verdict = "🟡 Admis — Niveau intermédiaire consolidé (B1+)";
+                else verdict = "🔴 Non validé — Travaillez vos connecteurs et le lexique B2.";
+                
+                document.getElementById('exam-benchmark-verdict').innerText = verdict;
+            }
         }
 
         function resetExamCenter() {
