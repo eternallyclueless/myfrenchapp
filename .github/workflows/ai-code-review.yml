@@ -23,13 +23,11 @@ jobs:
       - name: Get Changed Code (Git Diff)
         id: diff
         run: |
-          # Get the changes made in the latest commit
           DIFF=$(git diff HEAD~1 HEAD)
           if [ -z "$DIFF" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
-            # Save diff to a file to avoid shell escaping issues
             echo "$DIFF" > diff.txt
           fi
 
@@ -69,13 +67,28 @@ jobs:
             Git Diff:
             \n\n${diff}`;
 
-            const response = await ai.models.generateContent({
-              model: "gemini-3.6-flash",
-              contents: prompt,
-            });
+            const models = ["gemini-3.6-flash", "gemini-2.5-flash"];
+            let response = null;
+
+            for (const model of models) {
+              try {
+                console.log(`Attempting audit with ${model}...`);
+                response = await ai.models.generateContent({
+                  model: model,
+                  contents: prompt,
+                });
+                if (response?.text) break;
+              } catch (err) {
+                console.warn(`Model ${model} unavailable (${err?.status || err?.message}). Trying next...`);
+              }
+            }
 
             console.log("\n================ GEMINI CODE AUDIT ================\n");
-            console.log(response.text);
+            if (response && response.text) {
+              console.log(response.text);
+            } else {
+              console.log("⚠️ Gemini API is temporarily at capacity across available models. Diff inspection skipped for this commit.");
+            }
             console.log("\n===================================================\n");
           }
 
