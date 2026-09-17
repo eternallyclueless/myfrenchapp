@@ -909,39 +909,6 @@ body {
                 </div>
             </div>
 
-            <div id="mode-flashcards">
-                <div class="progress-container">
-                    <div class="card-counter" id="cardCounter">Card 0 of 0</div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="progressBar"></div>
-                    </div>
-                </div>
-
-                <div class="card-stack">
-                    <div class="flashcard-container" onclick="flipCard()">
-                        <div class="flashcard" id="flashcard">
-                            <div class="card-face card-front">
-                                <div class="card-audio-controls">
-                                    <button class="accent-toggle-btn" id="accentToggleBtn" onclick="toggleAccent(event)" title="Switch Accent">🇫🇷 FR</button>
-                                    <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen">🔊</button>
-                                </div>
-                                <div class="word-display" id="word-fr">Loading...</div>
-                                <span class="hint">Click deck to flip</span>
-                            </div>
-                            <div class="card-face card-back">
-                                <div class="word-display" id="word-en">Loading...</div>
-                                <span class="hint">Click to flip back</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="secondary-btn" id="prevBtn" onclick="prevCard()">&#8592; Previous</button>
-                    <button class="primary-btn" onclick="flipCard()">Flip Card</button>
-                    <button class="secondary-btn" id="nextBtn" onclick="nextCard()">Next &#8594;</button>
-                </div>
-            </div>
-
             <div id="mode-list">
                 <div class="vocab-grid" id="vocab-grid"></div>
             </div>
