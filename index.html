@@ -1833,7 +1833,7 @@ const PROXY_WORKER_URL = "https://gemini-evaluator.23navnoor.workers.dev/";
             }
         }
 
-        async function requestGeminiEssayAudit(essayText) {
+       async function requestGeminiEssayAudit(essayText) {
             const reviewSection = document.getElementById('ai-essay-review-section');
             const loadingEl = document.getElementById('ai-review-loading');
             const contentEl = document.getElementById('ai-review-content');
@@ -1849,9 +1849,11 @@ const PROXY_WORKER_URL = "https://gemini-evaluator.23navnoor.workers.dev/";
                 ? "Write your explanations, commentary, and suggestions in English, but quote the candidate's French text and provide French corrections."
                 : "Write your entire evaluation in French.";
 
+            const examTopic = currentExam?.passage || "Production écrite générale DELF B2";
+
             const systemPrompt = `You are a certified official DELF B2 and TCF/TEF examiner.
 Analyze the following candidate's written production for this prompt:
-"${currentExam.passage}"
+"${examTopic}"
 
 Candidate's Submission:
 """${essayText}"""
@@ -1873,12 +1875,18 @@ Format cleanly using bullet points. ${languageInstruction}`;
                     body: JSON.stringify({ prompt: systemPrompt })
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    critiqueText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                const data = await response.json();
+                console.log("Worker returned payload:", data);
+
+                if (response.ok && data?.candidates?.[0]?.content?.parts?.length) {
+                    critiqueText = data.candidates[0].content.parts.map(p => p.text || '').join('\n');
+                } else if (data?.candidates?.[0]?.finishReason && data.candidates[0].finishReason !== 'STOP') {
+                    critiqueText = `⚠️ Evaluation halted by safety filter: ${data.candidates[0].finishReason}`;
+                } else if (data?.error) {
+                    critiqueText = `⚠️ Google API Error: ${data.error.message || JSON.stringify(data.error)}`;
                 }
             } catch (err) {
-                console.warn("Proxy audit failed:", err);
+                console.error("Proxy audit fetch error:", err);
             }
 
             loadingEl.style.display = 'none';
@@ -1888,10 +1896,11 @@ Format cleanly using bullet points. ${languageInstruction}`;
                 const formattedHtml = critiqueText
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/^\* (.*$)/gim, '<li>$1</li>')
-                    .replace(/\n\n/g, '<br><br>');
+                    .replace(/\n\n/g, '<br><br>')
+                    .replace(/\n/g, '<br>');
                 contentEl.innerHTML = formattedHtml;
             } else {
-                contentEl.innerHTML = `<p style="color: var(--error-color); margin: 0;">⚠️ Unable to generate evaluation. Please check your connection and try again.</p>`;
+                contentEl.innerHTML = `<p style="color: var(--error-color); margin: 0;">⚠️ Unable to parse model response. Open browser DevTools Console to inspect the returned object.</p>`;
             }
         }
         function submitExam() {
