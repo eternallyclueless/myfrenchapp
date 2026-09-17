@@ -1578,24 +1578,20 @@ body {
 
                 <!-- AI Essay Evaluation Section -->
                 <div id="ai-essay-review-section" style="display: none; text-align: left; margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 25px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <h4 style="margin: 0; color: #fff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-                            <span>🤖</span> DELF/TCF Automated Examiner Audit
-                        </h4>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <select id="aiAuditLangSelect" onchange="reAuditWithCurrentLanguage()" style="width: auto; margin-bottom: 0; padding: 6px 12px; font-size: 12px; background: rgba(15, 23, 42, 0.9);">
-                                <option value="fr" selected>🇫🇷 Français</option>
-                                <option value="en">🇬🇧 English</option>
-                            </select>
-                            <button class="secondary-btn" onclick="promptApiKeyModal()" style="padding: 6px 12px; font-size: 12px;">🔑 Set API Key</button>
-                        </div>
-                    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <h4 style="margin: 0; color: #fff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+            <span>🤖</span> DELF/TCF Automated Examiner Audit
+        </h4>
+        <select id="aiAuditLangSelect" onchange="reAuditWithCurrentLanguage()" style="width: auto; margin-bottom: 0; padding: 6px 12px; font-size: 12px; background: rgba(15, 23, 42, 0.9);">
+            <option value="fr" selected>🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+        </select>
+    </div>
 
-                    <div id="ai-review-loading" style="display: none; text-align: center; padding: 25px; color: var(--text-muted);">
-                        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
-                        Analyzing syntax, lexical richness, and task completion against DELF B2 standards...
-                    </div>
-
+    <div id="ai-review-loading" style="display: none; text-align: center; padding: 25px; color: var(--text-muted);">
+        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+        Analyzing syntax, lexical richness, and task completion against DELF B2 standards...
+    </div>
                     <div id="ai-review-content" class="exam-briefing" style="display: none; line-height: 1.8; color: #e2e8f0; font-size: 15px; border-left-color: var(--accent-color);">
                         <!-- AI critique rendered here -->
                     </div>
@@ -1828,16 +1824,7 @@ body {
             examStepIndex += delta;
             renderExamStep();
         }
-function promptApiKeyModal() {
-            const existingKey = localStorage.getItem('geminiUserApiKey') || '';
-            const key = prompt("Enter your Google Gemini API Key for on-demand writing evaluations:\n(Stored strictly locally in your browser)", existingKey);
-            if (key !== null) {
-                localStorage.setItem('geminiUserApiKey', key.trim());
-                if (key.trim() && currentExam?.type === 'writing') {
-                    requestGeminiEssayAudit(document.getElementById('exam-essay-input').value.trim());
-                }
-            }
-        }
+const PROXY_WORKER_URL = "https://gemini-evaluator.23navnoor.workers.dev/";
 
         function reAuditWithCurrentLanguage() {
             const text = document.getElementById('exam-essay-input')?.value.trim();
@@ -1847,7 +1834,6 @@ function promptApiKeyModal() {
         }
 
         async function requestGeminiEssayAudit(essayText) {
-            const apiKey = localStorage.getItem('geminiUserApiKey');
             const reviewSection = document.getElementById('ai-essay-review-section');
             const loadingEl = document.getElementById('ai-review-loading');
             const contentEl = document.getElementById('ai-review-content');
@@ -1857,21 +1843,11 @@ function promptApiKeyModal() {
 
             reviewSection.style.display = 'block';
             contentEl.style.display = 'none';
-
-            if (!apiKey) {
-                loadingEl.style.display = 'none';
-                contentEl.style.display = 'block';
-                contentEl.innerHTML = `
-                    <p style="margin: 0;"><strong>🔑 API Key Required:</strong> Click <em>"Set API Key"</em> above to provide a Gemini API key for automated DELF evaluation.</p>
-                `;
-                return;
-            }
-
             loadingEl.style.display = 'block';
 
             const languageInstruction = selectedLang === 'en' 
-                ? 'Write your explanations, commentary, and suggestions in English, but quote the candidate\'s French text and provide French corrections.'
-                : 'Write your entire evaluation in French.';
+                ? "Write your explanations, commentary, and suggestions in English, but quote the candidate's French text and provide French corrections."
+                : "Write your entire evaluation in French.";
 
             const systemPrompt = `You are a certified official DELF B2 and TCF/TEF examiner.
 Analyze the following candidate's written production for this prompt:
@@ -1888,28 +1864,21 @@ Provide a concise, professional evaluation using this exact structure:
 
 Format cleanly using bullet points. ${languageInstruction}`;
 
-            const models = ["gemini-2.5-flash", "gemini-3.6-flash"];
             let critiqueText = null;
 
-            for (const model of models) {
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{ text: systemPrompt }]
-                            }]
-                        })
-                    });
+            try {
+                const response = await fetch(PROXY_WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: systemPrompt })
+                });
 
-                    if (!response.ok) continue;
+                if (response.ok) {
                     const data = await response.json();
                     critiqueText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (critiqueText) break;
-                } catch (err) {
-                    console.warn(`Model ${model} request failed:`, err);
                 }
+            } catch (err) {
+                console.warn("Proxy audit failed:", err);
             }
 
             loadingEl.style.display = 'none';
@@ -1922,10 +1891,9 @@ Format cleanly using bullet points. ${languageInstruction}`;
                     .replace(/\n\n/g, '<br><br>');
                 contentEl.innerHTML = formattedHtml;
             } else {
-                contentEl.innerHTML = `<p style="color: var(--error-color); margin: 0;">⚠️ Unable to generate evaluation. Please verify your Gemini API key or check network connectivity.</p>`;
+                contentEl.innerHTML = `<p style="color: var(--error-color); margin: 0;">⚠️ Unable to generate evaluation. Please check your connection and try again.</p>`;
             }
         }
-
         function submitExam() {
             clearInterval(examTimerInterval);
             document.getElementById('exam-active-card').style.display = 'none';
