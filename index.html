@@ -806,8 +806,40 @@ body {
                         <span class="nav-icon">✍️</span> Exercises
                     </button>
 
-                    <!-- Universal Language Selector -->
-                 <!-- Direct Flashcard Toolbar: Level Selector + Translation Selector + Counter -->
+  </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="app-main">
+
+        <!-- View 1: Vocabulary -->
+        <div id="vocab-view" class="view-section active-view">
+            
+            <div class="page-banner">
+                <h2>Vocabulary Deck</h2>
+                <p>Master high-frequency French words from Chapters 1 through 16</p>
+            </div>
+
+         <div class="vocab-header">
+                <!-- Keep Chapter Filter at the top -->
+                <div class="filter-controls-row" style="grid-template-columns: 1fr; max-width: 450px;">
+                    <select id="chapterFilter" onchange="filterChapter()">
+                        <option value="all">🌐 All Topics in Level</option>
+                    </select>
+                </div>
+
+                <div class="vocab-toggles">
+                    <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
+                    <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
+                </div>
+            </div>
+
+            <div id="mode-flashcards">
+                <!-- Direct Flashcard Toolbar: Level Selector + Card Counter -->
+            <!-- Direct Flashcard Toolbar: Level Selector + Translation Selector + Counter -->
                 <div class="flashcard-toolbar" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px;">
                         <!-- CEFR Level Dropdown -->
@@ -846,51 +878,6 @@ body {
 
                     <div class="card-counter" id="cardCounter" style="text-align: center; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-top: 4px;">Card 0 of 0</div>
                 </div>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <!-- Main Content Wrapper -->
-    <div class="app-main">
-
-        <!-- View 1: Vocabulary -->
-        <div id="vocab-view" class="view-section active-view">
-            
-            <div class="page-banner">
-                <h2>Vocabulary Deck</h2>
-                <p>Master high-frequency French words from Chapters 1 through 16</p>
-            </div>
-
-         <div class="vocab-header">
-                <!-- Keep Chapter Filter at the top -->
-                <div class="filter-controls-row" style="grid-template-columns: 1fr; max-width: 450px;">
-                    <select id="chapterFilter" onchange="filterChapter()">
-                        <option value="all">🌐 All Topics in Level</option>
-                    </select>
-                </div>
-
-                <div class="vocab-toggles">
-                    <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
-                    <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
-                </div>
-            </div>
-
-            <div id="mode-flashcards">
-                <!-- Direct Flashcard Toolbar: Level Selector + Card Counter -->
-                <div class="flashcard-toolbar" style="width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <select id="levelFilter" onchange="switchProficiencyLevel(this.value)" style="max-width: 220px; margin-bottom: 0; padding: 8px 14px; font-size: 14px;">
-                        <option value="a1" selected>🟢 A1: Beginner</option>
-                        <option value="a2">🟢 A2: Elementary</option>
-                        <option value="b1">🟡 B1: Intermediate</option>
-                        <option value="b2">🟡 B2: Upper-Intermediate</option>
-                        <option value="c1">🔴 C1: Advanced</option>
-                        <option value="c2">🟣 C2: Mastery</option>
-                    </select>
-
-                    <div class="card-counter" id="cardCounter" style="margin-bottom: 0; font-size: 14px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">Card 0 of 0</div>
-                </div>
-
                 <div class="progress-container" style="max-width: 500px; margin-bottom: 25px;">
                     <div class="progress-bar-bg">
                         <div class="progress-bar-fill" id="progressBar"></div>
