@@ -1494,14 +1494,14 @@ body {
                 <h2>Standardized Exam Simulator</h2>
                 <p>Timed practice modules adhering to official DELF B2 & TCF/TEF standards</p>
             </div>
-
-            <!-- Exam Hub Setup Card -->
+<!-- Exam Hub Setup Card -->
             <div id="exam-setup-card" class="exam-card">
                 <h3 class="exam-header-title">Select an Assessment Module</h3>
                 <div class="filter-controls-row" style="grid-template-columns: 1fr 1fr; margin-bottom: 25px;">
                     <select id="examTypeSelect">
                         <option value="delf_b2_reading">📘 DELF B2 — Compréhension des écrits</option>
                         <option value="tcf_reading">⏱️ TCF / TEF — Reading Assessment (Timed)</option>
+                        <option value="delf_b2_writing">✍️ DELF B2 — Production Écrite (Essay & Letter)</option>
                     </select>
                     <select id="examTimeSelect">
                         <option value="standard">⏳ Standard Official Time Limit</option>
@@ -1533,7 +1533,17 @@ body {
                 <div class="exam-passage-box" id="exam-passage-box">
                     <!-- Passage injected dynamically -->
                 </div>
+<!-- Interactive Writing Workspace -->
+                <div id="exam-writing-box" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); font-weight: 600;">
+                        <span>Target: 250 words (&plusmn;10%)</span>
+                        <span id="live-word-count">Words: 0</span>
+                    </div>
 
+                    <textarea id="exam-essay-input" rows="12" placeholder="Rédigez votre réponse argumentée ici..." 
+                        oninput="updateWordCount(this.value)"
+                        style="width: 100%; box-sizing: border-box; padding: 16px; border-radius: var(--radius-md); background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid var(--glass-border); font-family: inherit; font-size: 15px; line-height: 1.6; resize: vertical; outline: none;"></textarea>
+                </div>
                 <div class="exam-question-box">
                     <div class="exam-question-text" id="exam-question-text">Loading question...</div>
                     <div class="exam-options-grid" id="exam-options-grid">
@@ -1593,6 +1603,81 @@ body {
 
         // --- Standardized Exam Bank ---
         const liveExams = {
+            delf_b2_writing: {
+                title: "DELF B2 — Production Écrite",
+                durationSeconds: 3600, // 60 minutes
+                type: "writing",
+                passage: "Sujet : Vous résidez dans une commune où la municipalité envisage de supprimer plusieurs pistes cyclables et couloirs de bus pour fluidifier le trafic automobile. En tant que représentant d'un collectif d'usagers, vous rédigez une lettre argumentée au maire pour contester cette décision, défendre les transports doux et proposer des solutions alternatives concrètes (250 mots environ).",
+                minWords: 225,
+                maxWords: 275
+            },
+            delf_b2_reading: {
+                title: "DELF B2 — Compréhension des écrits",
+                durationSeconds: 900,
+                type: "reading",
+                passage: "Le modèle du télétravail hybride suscite d'intenses débats au sein des instances dirigeantes. Si les gains de flexibilité et d'autonomie sont indéniables pour les salariés, plusieurs sociologues alertent sur un risque d'effritement du sentiment d'appartenance collective. La dilution du lien social au travail, combinée à une frontière de plus en plus poreuse entre sphère privée et vie professionnelle, appelle une redéfinition des obligations de l'employeur. Il s'agit d'encadrer rigoureusement le droit à la déconnexion tout en garantissant des temps d'échange synchrones essentiels à la cohésion des équipes.",
+                questions: [
+                    {
+                        q: "Quel est l'axe central analysé par l'auteur ?",
+                        options: [
+                            "L'abandon définitif des bureaux physiques par toutes les entreprises",
+                            "Les répercussions contrastées de la formule de travail hybride",
+                            "La baisse de productivité imputable aux employés en distanciel",
+                            "L'obligation légale de supprimer les réunions synchrones"
+                        ],
+                        ans: 1
+                    },
+                    {
+                        q: "Que craignent les sociologues mentionnés dans le texte ?",
+                        options: [
+                            "Une perte de connexion et d'adhésion au collectif d'entreprise",
+                            "Une hausse démesurée des coûts d'infrastructure",
+                            "Le refus des salariés de se conformer aux horaires fixés",
+                            "Une surchauffe des serveurs de messagerie professionnelle"
+                        ],
+                        ans: 0
+                    },
+                    {
+                        q: "Selon le texte, quelle est la priorité pour l'employeur ?",
+                        options: [
+                            "Interdire tout travail le week-end sans exception",
+                            "Réduire les jours autorisés en télétravail",
+                            "Réguler la déconnexion et maintenir des créneaux synchrones",
+                            "Favoriser uniquement les réunions spontanées et informelles"
+                        ],
+                        ans: 2
+                    }
+                ]
+            },
+            tcf_reading: {
+                title: "TCF / TEF — Compréhension écrite",
+                durationSeconds: 600,
+                type: "reading",
+                passage: "Face au vieillissement démographique et aux impératifs de décarbonation, l'urbanisme des villes moyennes doit être repensé. Les politiques territoriales récentes incitent à la réhabilitation des friches et à la limitation stricte de l'étalement urbain afin de sanctuariser les espaces naturels périphériques.",
+                questions: [
+                    {
+                        q: "Quelle stratégie foncière est expressément préconisée ?",
+                        options: [
+                            "Étendre les lotissements pavillonnaires sur les forêts adjacentes",
+                            "Reconvertir les terrains déjà artificialisés et limiter l'expansion",
+                            "Démolir les centres historiques jugés inadaptés",
+                            "Interdire toute nouvelle construction résidentielle"
+                        ],
+                        ans: 1
+                    },
+                    {
+                        q: "Quel enjeu motive en priorité ces réorientations d'aménagement ?",
+                        options: [
+                            "Le déclin du tourisme régional",
+                            "La baisse des impôts locaux",
+                            "La transition écologique et l'évolution de la population",
+                            "L'accélération de la vitesse de circulation automobile"
+                        ],
+                        ans: 2
+                    }
+                ]
+            }
+        };
             delf_b2_reading: {
                 title: "DELF B2 — Compréhension des écrits",
                 durationSeconds: 900, // 15-minute mock segment
@@ -1658,14 +1743,26 @@ body {
                 ]
             }
         };
-
+function updateWordCount(text) {
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const countEl = document.getElementById('live-word-count');
+            countEl.innerText = `Words: ${words}`;
+            
+            if (words < 225) {
+                countEl.style.color = 'var(--text-muted)';
+            } else if (words <= 275) {
+                countEl.style.color = 'var(--success-color)';
+            } else {
+                countEl.style.color = 'var(--error-color)';
+            }
+        }
         let currentExam = null;
         let examStepIndex = 0;
         let userExamAnswers = {};
         let examTimerInterval = null;
         let examTimeRemaining = 0;
 
-        function startLiveExam() {
+    function startLiveExam() {
             const selectedKey = document.getElementById('examTypeSelect').value;
             const timePref = document.getElementById('examTimeSelect').value;
             currentExam = liveExams[selectedKey];
