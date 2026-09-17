@@ -1578,11 +1578,17 @@ body {
 
                 <!-- AI Essay Evaluation Section -->
                 <div id="ai-essay-review-section" style="display: none; text-align: left; margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                         <h4 style="margin: 0; color: #fff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                             <span>🤖</span> DELF/TCF Automated Examiner Audit
                         </h4>
-                        <button class="secondary-btn" onclick="promptApiKeyModal()" style="padding: 6px 12px; font-size: 12px;">🔑 Set API Key</button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select id="aiAuditLangSelect" onchange="reAuditWithCurrentLanguage()" style="width: auto; margin-bottom: 0; padding: 6px 12px; font-size: 12px; background: rgba(15, 23, 42, 0.9);">
+                                <option value="fr" selected>🇫🇷 Français</option>
+                                <option value="en">🇬🇧 English</option>
+                            </select>
+                            <button class="secondary-btn" onclick="promptApiKeyModal()" style="padding: 6px 12px; font-size: 12px;">🔑 Set API Key</button>
+                        </div>
                     </div>
 
                     <div id="ai-review-loading" style="display: none; text-align: center; padding: 25px; color: var(--text-muted);">
@@ -1833,11 +1839,19 @@ function promptApiKeyModal() {
             }
         }
 
+        function reAuditWithCurrentLanguage() {
+            const text = document.getElementById('exam-essay-input')?.value.trim();
+            if (text && currentExam?.type === 'writing') {
+                requestGeminiEssayAudit(text);
+            }
+        }
+
         async function requestGeminiEssayAudit(essayText) {
             const apiKey = localStorage.getItem('geminiUserApiKey');
             const reviewSection = document.getElementById('ai-essay-review-section');
             const loadingEl = document.getElementById('ai-review-loading');
             const contentEl = document.getElementById('ai-review-content');
+            const selectedLang = document.getElementById('aiAuditLangSelect')?.value || 'fr';
 
             if (!reviewSection || !loadingEl || !contentEl) return;
 
@@ -1855,6 +1869,10 @@ function promptApiKeyModal() {
 
             loadingEl.style.display = 'block';
 
+            const languageInstruction = selectedLang === 'en' 
+                ? 'Write your explanations, commentary, and suggestions in English, but quote the candidate\'s French text and provide French corrections.'
+                : 'Write your entire evaluation in French.';
+
             const systemPrompt = `You are a certified official DELF B2 and TCF/TEF examiner.
 Analyze the following candidate's written production for this prompt:
 "${currentExam.passage}"
@@ -1864,11 +1882,11 @@ Candidate's Submission:
 
 Provide a concise, professional evaluation using this exact structure:
 1. **Estimated CEFR Level**: State the level (e.g., A2, B1, B2, C1) and justify in 1 sentence.
-2. **Task Completion & Word Count**: Did they respect the letter/essay format, register, and argument?
+2. **Task Completion & Word Count**: Assess format adherence, formal tone/register, and argument quality.
 3. **Key Grammatical & Syntactic Corrections**: Mention 2-4 specific phrases written by the candidate that contain errors (agreements, conjugations, prepositions), and show the correct version.
 4. **Vocabulary & Connectors**: Highlight strong discourse connectors used or suggest 2-3 higher-level alternatives (e.g., en revanche, par conséquent).
 
-Format cleanly using bullet points. Write your evaluation in French.`;
+Format cleanly using bullet points. ${languageInstruction}`;
 
             const models = ["gemini-2.5-flash", "gemini-3.6-flash"];
             let critiqueText = null;
