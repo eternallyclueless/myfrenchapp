@@ -503,10 +503,41 @@
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
         }
 
-        .lang-dropdown option {
+      .lang-dropdown option {
             background-color: #111827;
             color: #f8fafc;
         }
+
+        /* --- Direct Flashcard Toolbar --- */
+        .flashcard-toolbar {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .flashcard-toolbar select {
+            max-width: 220px;
+            margin-bottom: 0;
+            padding: 10px 16px;
+            font-size: 14px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .flashcard-toolbar .card-counter {
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
 @media screen and (max-width: 768px) {
     .app-main {
     display: flex !important;
@@ -818,19 +849,9 @@ body {
                 <p>Master high-frequency French words from Chapters 1 through 16</p>
             </div>
 
-           <div class="vocab-header">
-                <div class="filter-controls-row">
-                    <!-- CEFR Level Picker -->
-                    <select id="levelFilter" onchange="switchProficiencyLevel(this.value)">
-                        <option value="a1" selected>🟢 A1: Beginner</option>
-                        <option value="a2">🟢 A2: Elementary</option>
-                        <option value="b1">🟡 B1: Intermediate</option>
-                        <option value="b2">🟡 B2: Upper-Intermediate</option>
-                        <option value="c1">🔴 C1: Advanced</option>
-                        <option value="c2">🟣 C2: Mastery</option>
-                    </select>
-
-                    <!-- Dynamic Topic/Chapter Picker -->
+         <div class="vocab-header">
+                <!-- Keep Chapter Filter at the top -->
+                <div class="filter-controls-row" style="grid-template-columns: 1fr; max-width: 450px;">
                     <select id="chapterFilter" onchange="filterChapter()">
                         <option value="all">🌐 All Topics in Level</option>
                     </select>
@@ -839,6 +860,52 @@ body {
                 <div class="vocab-toggles">
                     <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
                     <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
+                </div>
+            </div>
+
+            <div id="mode-flashcards">
+                <!-- Direct Flashcard Toolbar: Level Selector + Card Counter -->
+                <div class="flashcard-toolbar" style="width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <select id="levelFilter" onchange="switchProficiencyLevel(this.value)" style="max-width: 220px; margin-bottom: 0; padding: 8px 14px; font-size: 14px;">
+                        <option value="a1" selected>🟢 A1: Beginner</option>
+                        <option value="a2">🟢 A2: Elementary</option>
+                        <option value="b1">🟡 B1: Intermediate</option>
+                        <option value="b2">🟡 B2: Upper-Intermediate</option>
+                        <option value="c1">🔴 C1: Advanced</option>
+                        <option value="c2">🟣 C2: Mastery</option>
+                    </select>
+
+                    <div class="card-counter" id="cardCounter" style="margin-bottom: 0; font-size: 14px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">Card 0 of 0</div>
+                </div>
+
+                <div class="progress-container" style="max-width: 500px; margin-bottom: 25px;">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <div class="card-stack">
+                    <div class="flashcard-container" onclick="flipCard()">
+                        <div class="flashcard" id="flashcard">
+                            <div class="card-face card-front">
+                                <div class="card-audio-controls">
+                                    <button class="accent-toggle-btn" id="accentToggleBtn" onclick="toggleAccent(event)" title="Switch Accent">🇫🇷 FR</button>
+                                    <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen">🔊</button>
+                                </div>
+                                <div class="word-display" id="word-fr">Loading...</div>
+                                <span class="hint">Click deck to flip</span>
+                            </div>
+                            <div class="card-face card-back">
+                                <div class="word-display" id="word-en">Loading...</div>
+                                <span class="hint">Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="secondary-btn" id="prevBtn" onclick="prevCard()">&#8592; Previous</button>
+                    <button class="primary-btn" onclick="flipCard()">Flip Card</button>
+                    <button class="secondary-btn" id="nextBtn" onclick="nextCard()">Next &#8594;</button>
                 </div>
             </div>
 
