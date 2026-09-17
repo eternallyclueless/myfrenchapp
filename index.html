@@ -807,32 +807,45 @@ body {
                     </button>
 
                     <!-- Universal Language Selector -->
-                    <div class="drawer-section">
-                        <span class="drawer-section-title">Translate Back To</span>
-                        <div class="custom-select-wrapper">
-                            <select id="nativeLangSelect" class="lang-dropdown" onchange="changeTargetLanguage(this.value)">
-                                <option value="en" selected>🇬🇧 English</option>
-                                <option value="es">🇪🇸 Spanish (Español)</option>
-                                <option value="de">🇩🇪 German (Deutsch)</option>
-                                <option value="it">🇮🇹 Italian (Italiano)</option>
-                                <option value="pt">🇵🇹 Portuguese (Português)</option>
-                                <option value="zh">🇨🇳 Chinese (中文)</option>
-                                <option value="ja">🇯🇵 Japanese (日本語)</option>
-                                <option value="ko">🇰🇷 Korean (한국어)</option>
-                                <option value="ar">🇸🇦 Arabic (العربية)</option>
-                                <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
-                                <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
-                                <option value="ru">🇷🇺 Russian (Русский)</option>
-                                <option value="tr">🇹🇷 Turkish (Türkçe)</option>
-                                <option value="vi">🇻🇳 Vietnamese (Tiếng Việt)</option>
-                                <option value="pl">🇵🇱 Polish (Polski)</option>
-                                <option value="nl">🇳🇱 Dutch (Nederlands)</option>
-                                <option value="uk">🇺🇦 Ukrainian (Українська)</option>
-                                <option value="fa">🇮🇷 Persian (فارسی)</option>
-                                <option value="tl">🇵🇭 Tagalog (Filipino)</option>
-                            </select>
-                        </div>
+                 <!-- Direct Flashcard Toolbar: Level Selector + Translation Selector + Counter -->
+                <div class="flashcard-toolbar" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px;">
+                        <!-- CEFR Level Dropdown -->
+                        <select id="levelFilter" onchange="switchProficiencyLevel(this.value)" style="flex: 1; margin-bottom: 0; padding: 8px 12px; font-size: 13px;">
+                            <option value="a1" selected>🟢 A1: Beginner</option>
+                            <option value="a2">🟢 A2: Elementary</option>
+                            <option value="b1">🟡 B1: Intermediate</option>
+                            <option value="b2">🟡 B2: Upper-Intermediate</option>
+                            <option value="c1">🔴 C1: Advanced</option>
+                            <option value="c2">🟣 C2: Mastery</option>
+                        </select>
+
+                        <!-- Universal Language Selector -->
+                        <select id="nativeLangSelect" onchange="changeTargetLanguage(this.value)" style="flex: 1; margin-bottom: 0; padding: 8px 12px; font-size: 13px;">
+                            <option value="en" selected>🇬🇧 English</option>
+                            <option value="es">🇪🇸 Spanish (Español)</option>
+                            <option value="de">🇩🇪 German (Deutsch)</option>
+                            <option value="it">🇮🇹 Italian (Italiano)</option>
+                            <option value="pt">🇵🇹 Portuguese (Português)</option>
+                            <option value="zh">🇨🇳 Chinese (中文)</option>
+                            <option value="ja">🇯🇵 Japanese (日本語)</option>
+                            <option value="ko">🇰🇷 Korean (한국어)</option>
+                            <option value="ar">🇸🇦 Arabic (العربية)</option>
+                            <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+                            <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+                            <option value="ru">🇷🇺 Russian (Русский)</option>
+                            <option value="tr">🇹🇷 Turkish (Türkçe)</option>
+                            <option value="vi">🇻🇳 Vietnamese (Tiếng Việt)</option>
+                            <option value="pl">🇵🇱 Polish (Polski)</option>
+                            <option value="nl">🇳🇱 Dutch (Nederlands)</option>
+                            <option value="uk">🇺🇦 Ukrainian (Українська)</option>
+                            <option value="fa">🇮🇷 Persian (فارسی)</option>
+                            <option value="tl">🇵🇭 Tagalog (Filipino)</option>
+                        </select>
                     </div>
+
+                    <div class="card-counter" id="cardCounter" style="text-align: center; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-top: 4px;">Card 0 of 0</div>
+                </div>
                 </div>
             </nav>
         </div>
