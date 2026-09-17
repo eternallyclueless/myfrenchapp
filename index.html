@@ -537,7 +537,152 @@
             color: var(--text-muted);
             white-space: nowrap;
         }
+/* --- Standardized Exam Simulator Styles --- */
+        .exam-card {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 35px;
+            box-sizing: border-box;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 30px;
+        }
 
+        .exam-header-title {
+            margin-top: 0;
+            font-size: 20px;
+            color: #fff;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+        }
+
+        .exam-briefing {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 4px solid var(--primary-color);
+            padding: 16px 20px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .exam-briefing h4 {
+            margin: 0 0 8px 0;
+            color: #fff;
+        }
+
+        .exam-briefing ul {
+            margin: 0;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        .exam-live-statusbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+        }
+
+        .exam-tag {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--french-text);
+        }
+
+        .exam-timer-pill {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--error-color);
+            color: #fca5a5;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-family: 'Consolas', monospace;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .exam-passage-box {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #e2e8f0;
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .exam-question-text {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .exam-options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .exam-option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .exam-option-label:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-color);
+        }
+
+        .exam-option-label input[type="radio"] {
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .exam-actions-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
+        }
+
+        .exam-score-badge {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--success-color);
+            margin: 20px auto;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success-color);
+            border-radius: 100px;
+            width: 180px;
+            padding: 12px 0;
+        }
 @media screen and (max-width: 768px) {
     .app-main {
     display: flex !important;
@@ -1343,7 +1488,75 @@ body {
                 </div>
             </div>
         </div>
+<!-- View 4: Live Exam Center -->
+        <div id="exams-view" class="view-section">
+            <div class="page-banner">
+                <h2>Standardized Exam Simulator</h2>
+                <p>Timed practice modules adhering to official DELF B2 & TCF/TEF standards</p>
+            </div>
 
+            <!-- Exam Hub Setup Card -->
+            <div id="exam-setup-card" class="exam-card">
+                <h3 class="exam-header-title">Select an Assessment Module</h3>
+                <div class="filter-controls-row" style="grid-template-columns: 1fr 1fr; margin-bottom: 25px;">
+                    <select id="examTypeSelect">
+                        <option value="delf_b2_reading">📘 DELF B2 — Compréhension des écrits</option>
+                        <option value="tcf_reading">⏱️ TCF / TEF — Reading Assessment (Timed)</option>
+                    </select>
+                    <select id="examTimeSelect">
+                        <option value="standard">⏳ Standard Official Time Limit</option>
+                        <option value="practice">⚡ Express Practice (No Timer)</option>
+                    </select>
+                </div>
+
+                <div class="exam-briefing">
+                    <h4>Official Format Guidelines</h4>
+                    <ul>
+                        <li>Strict countdown timer simulating real testing room pressure.</li>
+                        <li>One active question rendered per step with back-and-forth review navigation.</li>
+                        <li>Full automated scoring converted directly to CEFR and Canadian Language Benchmarks (NCLC/CLB).</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="primary-btn" onclick="startLiveExam()">Launch Timed Exam</button>
+                </div>
+            </div>
+
+            <!-- Active Exam Screen -->
+            <div id="exam-active-card" class="exam-card" style="display: none;">
+                <div class="exam-live-statusbar">
+                    <div class="exam-tag" id="live-exam-title">DELF B2</div>
+                    <div class="exam-timer-pill" id="exam-timer">00:00</div>
+                </div>
+
+                <div class="exam-passage-box" id="exam-passage-box">
+                    <!-- Passage injected dynamically -->
+                </div>
+
+                <div class="exam-question-box">
+                    <div class="exam-question-text" id="exam-question-text">Loading question...</div>
+                    <div class="exam-options-grid" id="exam-options-grid">
+                        <!-- Radio options injected here -->
+                    </div>
+                </div>
+
+                <div class="exam-actions-footer">
+                    <button class="secondary-btn" id="examPrevBtn" onclick="navigateExam(-1)">&#8592; Previous</button>
+                    <span id="exam-step-counter" style="font-weight: 700; color: var(--text-muted);">1 / 5</span>
+                    <button class="secondary-btn" id="examNextBtn" onclick="navigateExam(1)">Next &#8594;</button>
+                    <button class="primary-btn" id="examSubmitBtn" style="background: var(--success-color); display: none;" onclick="submitExam()">Finish & Score</button>
+                </div>
+            </div>
+
+            <!-- Exam Results Card -->
+            <div id="exam-results-card" class="exam-card" style="display: none; text-align: center;">
+                <h3 style="font-size: 26px; margin-bottom: 10px;">Evaluation Complete</h3>
+                <div class="exam-score-badge" id="exam-score-number">-- / --</div>
+                <div id="exam-benchmark-verdict" style="font-size: 18px; margin: 20px 0; color: var(--french-text);"></div>
+                <button class="secondary-btn" onclick="resetExamCenter()">Return to Exam Hub</button>
+            </div>
+        </div>
     </div>
 
     <!-- Application Logic -->
@@ -1365,7 +1578,7 @@ body {
             document.getElementById('menu-btn').setAttribute('aria-expanded', 'false');
         }
 
-        function switchView(viewId) {
+      function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active-view'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(viewId).classList.add('active-view');
@@ -1373,8 +1586,185 @@ body {
             if (viewId === 'vocab-view') document.getElementById('btn-vocab').classList.add('active');
             else if (viewId === 'grammar-view') document.getElementById('btn-grammar').classList.add('active');
             else if (viewId === 'exercises-view') document.getElementById('btn-exercises').classList.add('active');
+            else if (viewId === 'exams-view') document.getElementById('btn-exams')?.classList.add('active');
 
             closeMenu();
+        };
+
+        // --- Standardized Exam Bank ---
+        const liveExams = {
+            delf_b2_reading: {
+                title: "DELF B2 — Compréhension des écrits",
+                durationSeconds: 900, // 15-minute mock segment
+                passage: "Le modèle du télétravail hybride suscite d'intenses débats au sein des instances dirigeantes. Si les gains de flexibilité et d'autonomie sont indéniables pour les salariés, plusieurs sociologues alertent sur un risque d'effritement du sentiment d'appartenance collective. La dilution du lien social au travail, combinée à une frontière de plus en plus poreuse entre sphère privée et vie professionnelle, appelle une redéfinition des obligations de l'employeur. Il s'agit d'encadrer rigoureusement le droit à la déconnexion tout en garantissant des temps d'échange synchrones essentiels à la cohésion des équipes.",
+                questions: [
+                    {
+                        q: "Quel est l'axe central analysé par l'auteur ?",
+                        options: [
+                            "L'abandon définitif des bureaux physiques par toutes les entreprises",
+                            "Les répercussions contrastées de la formule de travail hybride",
+                            "La baisse de productivité imputable aux employés en distanciel",
+                            "L'obligation légale de supprimer les réunions synchrones"
+                        ],
+                        ans: 1
+                    },
+                    {
+                        q: "Que craignent les sociologues mentionnés dans le texte ?",
+                        options: [
+                            "Une perte de connexion et d'adhésion au collectif d'entreprise",
+                            "Une hausse démesurée des coûts d'infrastructure",
+                            "Le refus des salariés de se conformer aux horaires fixés",
+                            "Une surchauffe des serveurs de messagerie professionnelle"
+                        ],
+                        ans: 0
+                    },
+                    {
+                        q: "Selon le texte, quelle est la priorité pour l'employeur ?",
+                        options: [
+                            "Interdire tout travail le week-end sans exception",
+                            "Réduire les jours autorisés en télétravail",
+                            "Réguler la déconnexion et maintenir des créneaux synchrones",
+                            "Favoriser uniquement les réunions spontanées et informelles"
+                        ],
+                        ans: 2
+                    }
+                ]
+            },
+            tcf_reading: {
+                title: "TCF / TEF — Compréhension écrite",
+                durationSeconds: 600,
+                passage: "Face au vieillissement démographique et aux impératifs de décarbonation, l'urbanisme des villes moyennes doit être repensé. Les politiques territoriales récentes incitent à la réhabilitation des friches et à la limitation stricte de l'étalement urbain afin de sanctuariser les espaces naturels périphériques.",
+                questions: [
+                    {
+                        q: "Quelle stratégie foncière est expressément préconisée ?",
+                        options: [
+                            "Étendre les lotissements pavillonnaires sur les forêts adjacentes",
+                            "Reconvertir les terrains déjà artificialisés et limiter l'expansion",
+                            "Démolir les centres historiques jugés inadaptés",
+                            "Interdire toute nouvelle construction résidentielle"
+                        ],
+                        ans: 1
+                    },
+                    {
+                        q: "Quel enjeu motive en priorité ces réorientations d'aménagement ?",
+                        options: [
+                            "Le déclin du tourisme régional",
+                            "La baisse des impôts locaux",
+                            "La transition écologique et l'évolution de la population",
+                            "L'accélération de la vitesse de circulation automobile"
+                        ],
+                        ans: 2
+                    }
+                ]
+            }
+        };
+
+        let currentExam = null;
+        let examStepIndex = 0;
+        let userExamAnswers = {};
+        let examTimerInterval = null;
+        let examTimeRemaining = 0;
+
+        function startLiveExam() {
+            const selectedKey = document.getElementById('examTypeSelect').value;
+            const timePref = document.getElementById('examTimeSelect').value;
+            currentExam = liveExams[selectedKey];
+            examStepIndex = 0;
+            userExamAnswers = {};
+
+            document.getElementById('exam-setup-card').style.display = 'none';
+            document.getElementById('exam-results-card').style.display = 'none';
+            document.getElementById('exam-active-card').style.display = 'block';
+
+            document.getElementById('live-exam-title').innerText = currentExam.title;
+            document.getElementById('exam-passage-box').innerText = currentExam.passage;
+
+            clearInterval(examTimerInterval);
+            if (timePref === 'standard') {
+                examTimeRemaining = currentExam.durationSeconds;
+                document.getElementById('exam-timer').style.display = 'block';
+                updateExamTimerDisplay();
+                examTimerInterval = setInterval(() => {
+                    examTimeRemaining--;
+                    updateExamTimerDisplay();
+                    if (examTimeRemaining <= 0) {
+                        clearInterval(examTimerInterval);
+                        alert("Le temps imparti est écoulé ! Soumission automatique.");
+                        submitExam();
+                    }
+                }, 1000);
+            } else {
+                document.getElementById('exam-timer').style.display = 'none';
+            }
+
+            renderExamStep();
+        }
+
+        function updateExamTimerDisplay() {
+            const m = Math.floor(examTimeRemaining / 60).toString().padStart(2, '0');
+            const s = (examTimeRemaining % 60).toString().padStart(2, '0');
+            document.getElementById('exam-timer').innerText = `⏱️ ${m}:${s}`;
+        }
+
+        function renderExamStep() {
+            const qObj = currentExam.questions[examStepIndex];
+            document.getElementById('exam-step-counter').innerText = `${examStepIndex + 1} / ${currentExam.questions.length}`;
+            document.getElementById('exam-question-text').innerText = `${examStepIndex + 1}. ${qObj.q}`;
+
+            const container = document.getElementById('exam-options-grid');
+            container.innerHTML = '';
+
+            qObj.options.forEach((optText, optIdx) => {
+                const isChecked = userExamAnswers[examStepIndex] === optIdx;
+                const label = document.createElement('label');
+                label.className = 'exam-option-label';
+                label.innerHTML = `
+                    <input type="radio" name="exam-q" value="${optIdx}" ${isChecked ? 'checked' : ''} onchange="selectExamOption(${optIdx})">
+                    <span>${optText}</span>
+                `;
+                container.appendChild(label);
+            });
+
+            document.getElementById('examPrevBtn').disabled = examStepIndex === 0;
+            const isLast = examStepIndex === currentExam.questions.length - 1;
+            document.getElementById('examNextBtn').style.display = isLast ? 'none' : 'inline-block';
+            document.getElementById('examSubmitBtn').style.display = isLast ? 'inline-block' : 'none';
+        }
+
+        function selectExamOption(idx) {
+            userExamAnswers[examStepIndex] = idx;
+        }
+
+        function navigateExam(delta) {
+            examStepIndex += delta;
+            renderExamStep();
+        }
+
+        function submitExam() {
+            clearInterval(examTimerInterval);
+            let score = 0;
+            currentExam.questions.forEach((q, idx) => {
+                if (userExamAnswers[idx] === q.ans) score++;
+            });
+
+            const total = currentExam.questions.length;
+            const pct = Math.round((score / total) * 100);
+
+            document.getElementById('exam-active-card').style.display = 'none';
+            document.getElementById('exam-results-card').style.display = 'block';
+            document.getElementById('exam-score-number').innerText = `${score} / ${total}`;
+
+            let verdict = "";
+            if (pct >= 80) verdict = "🎯 Excellent — Score projecté : B2 Réussi / NCLC 7-8";
+            else if (pct >= 50) verdict = "🟡 Admis — Niveau intermédiaire consolidé (B1+)";
+            else verdict = "🔴 Non validé — Travaillez vos connecteurs et le lexique B2.";
+            
+            document.getElementById('exam-benchmark-verdict').innerText = verdict;
+        }
+
+        function resetExamCenter() {
+            document.getElementById('exam-results-card').style.display = 'none';
+            document.getElementById('exam-setup-card').style.display = 'block';
         }
 
         // Close drawer with Escape key
