@@ -1,26 +1,26 @@
  /* --- Core Variables & Reset --- */
+   /* --- Premium Deep Dark Theme (Default) --- */
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --surface-color: #1e293b;
-            --surface-hover: #334155;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #0d111a 0%, #05070c 100%);
+            --glass-bg: rgba(10, 14, 23, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --surface-color: #0c101a;
+            --surface-hover: #161c2d;
             --primary-color: #3b82f6; 
             --primary-hover: #2563eb;
-            --accent-color: #8b5cf6;
+            --accent-color: #6366f1;
             --success-color: #10b981;
-            --error-color: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --error-color: #f43f5e;
+            --text-main: #f1f5f9;
+            --text-muted: #8492a6;
             --french-text: #60a5fa; 
             --english-text: #cbd5e1; 
             --radius-md: 12px;
             --radius-lg: 24px;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-soft: 0 12px 32px -4px rgba(0, 0, 0, 0.65);
+            --shadow-glow: 0 0 24px rgba(59, 130, 246, 0.22);
+            --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
 /* --- Refined Light Mode Palette --- */
         [data-theme="light"] {
             --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -556,9 +556,10 @@
             margin-bottom: 30px;
         }
         .home-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
+            background: rgba(12, 16, 26, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: var(--radius-lg);
             padding: 28px;
             box-shadow: var(--shadow-soft);
@@ -571,8 +572,9 @@
         }
         .home-card:hover {
             transform: translateY(-4px);
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow-glow);
+            background: rgba(18, 24, 38, 0.85);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.8), var(--shadow-glow);
         }
         .home-card-header {
             display: flex;
@@ -604,11 +606,11 @@
         }
 
         /* Daily Word Mini-Card */
-        .home-daily-box {
+       .home-daily-box {
             width: 100%;
             max-width: 1000px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-            border: 1px solid var(--glass-border);
+            background: linear-gradient(135deg, rgba(13, 18, 30, 0.85) 0%, rgba(7, 10, 17, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-lg);
             padding: 25px 30px;
             margin-bottom: 25px;
@@ -688,7 +690,7 @@
     right: 0;
     width: 280px;
     height: 100vh;
-    background: #111827;
+    background: #080b12;
     border-left: 1px solid var(--glass-border);
     padding: 24px 20px;
     box-sizing: border-box;
@@ -1245,13 +1247,13 @@ body {
 } 
 
 .stat-cell { 
-    background: rgba(15, 23, 42, 0.6); 
-    border: 1px solid var(--glass-border); 
+    background: rgba(8, 11, 18, 0.7); 
+    border: 1px solid rgba(255, 255, 255, 0.06); 
     border-radius: var(--radius-md); 
     padding: 16px; 
     text-align: center; 
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); 
-} 
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); 
+}
 
 .stat-number { 
     display: block; 
