@@ -327,6 +327,131 @@
         
         .exercise-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-top: 1px solid var(--glass-border); padding-top: 30px;}
         .score-display { font-size: 24px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);}
+        /* --- View 0: Home Section --- */
+        .home-hero {
+            text-align: center;
+            padding: 20px 0 35px;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .home-hero h2 {
+            font-size: 38px;
+            font-weight: 800;
+            margin: 0 0 15px 0;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .home-hero h2 span {
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .home-hero p {
+            color: var(--text-muted);
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .home-quick-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 30px;
+        }
+        .home-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            cursor: pointer;
+            text-align: left;
+        }
+        .home-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-glow);
+        }
+        .home-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .home-card-icon {
+            font-size: 28px;
+        }
+        .home-card h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #fff;
+        }
+        .home-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .home-card-link {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--french-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Daily Word Mini-Card */
+        .home-daily-box {
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-soft);
+            box-sizing: border-box;
+        }
+        .home-daily-meta {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+        .home-daily-word {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--french-text);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .home-daily-def {
+            font-size: 15px;
+            color: var(--english-text);
+            font-style: italic;
+            margin-top: 4px;
+        }
 /* --- Mobile Responsive Rules --- */
         /* --- Menu Tab Button --- */
         .menu-tab-btn {
@@ -936,7 +1061,7 @@ body {
    <!-- Floating Navbar with Slide-Out Menu Tab -->
     <div class="navbar-container">
         <div class="navbar">
-            <h1>LearningFrench<span>Sucks</span><span class="logo-tld">.com</span></h1>
+           <h1 style="cursor: pointer;" onclick="switchView('home-view')">LearningFrench<span>Sucks</span><span class="logo-tld">.com</span></h1>
             
             <button id="menu-btn" class="menu-tab-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
                 <span class="menu-tab-icon">☰</span>
@@ -953,6 +1078,9 @@ body {
                     <button class="menu-close-btn" onclick="closeMenu()" aria-label="Close menu">&times;</button>
                 </div>
                <div class="menu-items">
+                   <button class="nav-btn active" id="btn-home" onclick="switchView('home-view')">
+                        <span class="nav-icon">🏠</span> Home
+                    </button>
                     <button class="nav-btn active" id="btn-vocab" onclick="switchView('vocab-view')">
                         <span class="nav-icon">📚</span> Vocabulary
                     </button>
@@ -975,9 +1103,83 @@ body {
 
     <!-- Main Content Wrapper -->
     <div class="app-main">
+<!-- View 0: Home Landing -->
+        <div id="home-view" class="view-section active-view">
+            
+            <div class="home-hero">
+                <h2>Master French <span>Without the Fluff</span></h2>
+                <p>Interactive drills, comprehensive grammar rules, and automated DELF & TCF standardized exam simulations.</p>
+                <div class="home-quick-actions">
+                    <button class="primary-btn" onclick="switchView('vocab-view')">Start Flashcards</button>
+                    <button class="secondary-btn" onclick="switchView('exams-view')">Take Mock Exam</button>
+                </div>
+            </div>
 
+            <!-- Mot du Jour Widget -->
+            <div class="home-daily-box">
+                <div>
+                    <div class="home-daily-meta">Mot du Jour (Word of the Day)</div>
+                    <div class="home-daily-word">
+                        <span>Démarche</span>
+                        <button class="audio-btn" style="width: 32px; height: 32px; font-size: 14px;" onclick="speakDailyWord('Démarche')" title="Pronounce">🔊</button>
+                    </div>
+                    <div class="home-daily-def">Approach, procedure, initiative</div>
+                </div>
+                <button class="secondary-btn" style="padding: 10px 18px; font-size: 13px;" onclick="switchView('vocab-view')">Browse Decks &rarr;</button>
+            </div>
+
+            <!-- Core Hub Modules -->
+            <div class="home-grid">
+                
+                <div class="home-card" onclick="switchView('vocab-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">🗂️</span>
+                            <h3>Vocabulary Decks</h3>
+                        </div>
+                        <p>Over 1,000+ words structured across A1 through C2 levels with instant audio pronunciation and translations.</p>
+                    </div>
+                    <span class="home-card-link">Open Flashcards &rarr;</span>
+                </div>
+
+                <div class="home-card" onclick="switchView('grammar-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">📖</span>
+                            <h3>Grammar Library</h3>
+                        </div>
+                        <p>16 organized structural chapters covering everything from basic gender agreements to advanced subjunctive moods.</p>
+                    </div>
+                    <span class="home-card-link">Study Rules &rarr;</span>
+                </div>
+
+                <div class="home-card" onclick="switchView('exercises-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">✍️</span>
+                            <h3>Interactive Drills</h3>
+                        </div>
+                        <p>Fill-in-the-blank workbook questions with real-time feedback and grading against official textbook answers.</p>
+                    </div>
+                    <span class="home-card-link">Practice Now &rarr;</span>
+                </div>
+
+                <div class="home-card" onclick="switchView('exams-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">⏱️</span>
+                            <h3>Exam Simulator</h3>
+                        </div>
+                        <p>Timed DELF B2 & TCF assessments featuring full automated AI essay audits and benchmark scoring.</p>
+                    </div>
+                    <span class="home-card-link">Launch Simulator &rarr;</span>
+                </div>
+
+            </div>
+
+        </div>
         <!-- View 1: Vocabulary -->
-        <div id="vocab-view" class="view-section active-view">
+        <div id="vocab-view" class="view-section">
             
             <div class="page-banner">
                 <h2>Vocabulary Deck</h2>
@@ -1636,6 +1838,15 @@ body {
 
             closeMenu();
         };
+        // Pronunciation helper for homepage widget
+        function speakDailyWord(word) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = currentAccent || 'fr-FR';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
 // --- Standardized Exam Bank ---
         const liveExams = {
             delf_b2_writing: {
