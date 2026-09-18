@@ -20,13 +20,21 @@
 
     <!-- Floating Navbar with Slide-Out Menu Tab -->
     <div class="navbar-container">
-        <div class="navbar">
+     <div class="navbar">
             <h1 style="cursor: pointer;" onclick="switchView('home-view')">LearningFrench<span>Sucks</span><span class="logo-tld">.com</span></h1>
             
-            <button id="menu-btn" class="menu-tab-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
-                <span class="menu-tab-icon">☰</span>
-                <span class="menu-tab-label">Menu</span>
-            </button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <!-- Theme Toggle Button -->
+                <button id="theme-btn" class="menu-tab-btn" aria-label="Toggle theme" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+                    <span id="theme-icon">🌙</span>
+                </button>
+
+                <!-- Menu Button -->
+                <button id="menu-btn" class="menu-tab-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
+                    <span class="menu-tab-icon">☰</span>
+                    <span class="menu-tab-label">Menu</span>
+                </button>
+            </div>
 
             <!-- Dimmed Backdrop -->
             <div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
