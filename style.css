@@ -20,7 +20,72 @@
             --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+/* --- Light Mode Palette Override --- */
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --surface-color: #ffffff;
+            --surface-hover: #f8fafc;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-color: #7c3aed;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --french-text: #1d4ed8;
+            --english-text: #334155;
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.15);
+        }
 
+        [data-theme="light"] body::before {
+            background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px);
+        }
+
+        [data-theme="light"] .navbar h1 {
+            color: #0f172a;
+        }
+
+        [data-theme="light"] .menu-tab-btn {
+            background: rgba(0, 0, 0, 0.05);
+            color: #0f172a;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .menu-drawer {
+            background: #f8fafc;
+            border-left-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .menu-drawer-header {
+            color: #0f172a;
+        }
+
+        [data-theme="light"] .menu-items .nav-btn {
+            background: rgba(0, 0, 0, 0.03);
+            color: #334155;
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] select,
+        [data-theme="light"] .inline-input,
+        [data-theme="light"] #exam-essay-input {
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="light"] .card-front {
+            background: radial-gradient(circle at top right, #ffffff, #f1f5f9);
+        }
+
+        [data-theme="light"] .card-back {
+            background: radial-gradient(circle at bottom left, #e0e7ff, #ede9fe);
+        }
+
+        [data-theme="light"] .card-back .word-display {
+            color: #1e1b4b;
+        }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
             background: var(--bg-gradient);
