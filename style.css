@@ -20,71 +20,207 @@
             --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-/* --- Light Mode Palette Override --- */
+
+/* --- Refined Light Mode Palette --- */
         [data-theme="light"] {
-            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(0, 0, 0, 0.08);
+            --glass-border: rgba(15, 23, 42, 0.12);
             --surface-color: #ffffff;
-            --surface-hover: #f8fafc;
-            --primary-color: #2563eb;
+            --surface-hover: #f1f5f9;
+            --primary-color: #2563eb; 
             --primary-hover: #1d4ed8;
             --accent-color: #7c3aed;
+            --success-color: #059669;
+            --error-color: #dc2626;
             --text-main: #0f172a;
-            --text-muted: #64748b;
-            --french-text: #1d4ed8;
-            --english-text: #334155;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            --text-muted: #475569;
+            --french-text: #1d4ed8; 
+            --english-text: #334155; 
+            --shadow-soft: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
             --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.15);
         }
 
+        /* Subtle Light Dot Grid */
         [data-theme="light"] body::before {
-            background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
         }
 
+        /* Navbar & Drawer */
         [data-theme="light"] .navbar h1 {
             color: #0f172a;
         }
-
         [data-theme="light"] .menu-tab-btn {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(15, 23, 42, 0.06);
             color: #0f172a;
-            border-color: rgba(0, 0, 0, 0.1);
+            border-color: rgba(15, 23, 42, 0.12);
         }
-
         [data-theme="light"] .menu-drawer {
-            background: #f8fafc;
-            border-left-color: rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border-left: 1px solid rgba(15, 23, 42, 0.1);
         }
-
         [data-theme="light"] .menu-drawer-header {
             color: #0f172a;
+            border-bottom-color: rgba(15, 23, 42, 0.08);
         }
-
         [data-theme="light"] .menu-items .nav-btn {
-            background: rgba(0, 0, 0, 0.03);
+            background: rgba(15, 23, 42, 0.04);
             color: #334155;
-            border-color: rgba(0, 0, 0, 0.08);
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+        [data-theme="light"] .menu-items .nav-btn:hover {
+            background: rgba(15, 23, 42, 0.08);
+            color: #0f172a;
         }
 
+        /* Homepage Hero Text Fix */
+        [data-theme="light"] .home-hero h2 {
+            color: #0f172a;
+        }
+        [data-theme="light"] .home-hero p {
+            color: #475569;
+        }
+
+        /* Homepage Cards & Word of the Day Fix */
+        [data-theme="light"] .home-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(15, 23, 42, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+        }
+        [data-theme="light"] .home-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 14px 30px -5px rgba(37, 99, 235, 0.15);
+        }
+        [data-theme="light"] .home-card h3 {
+            color: #0f172a;
+        }
+        [data-theme="light"] .home-card p {
+            color: #475569;
+        }
+
+        [data-theme="light"] .home-daily-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-color: rgba(15, 23, 42, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+        }
+        [data-theme="light"] .home-daily-meta {
+            color: #64748b;
+        }
+        [data-theme="light"] .home-daily-word {
+            color: #1d4ed8;
+        }
+        [data-theme="light"] .home-daily-def {
+            color: #334155;
+        }
+
+        /* Stats Strip */
+        [data-theme="light"] .stat-cell {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(15, 23, 42, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        [data-theme="light"] .stat-number {
+            color: #1d4ed8;
+        }
+        [data-theme="light"] .stat-tag {
+            color: #64748b;
+        }
+
+        /* Form Controls & Inputs */
         [data-theme="light"] select,
         [data-theme="light"] .inline-input,
         [data-theme="light"] #exam-essay-input {
-            background: rgba(255, 255, 255, 0.9);
+            background: #ffffff;
             color: #0f172a;
-            border-color: rgba(0, 0, 0, 0.15);
+            border-color: rgba(15, 23, 42, 0.18);
+        }
+        [data-theme="light"] select option {
+            background-color: #ffffff;
+            color: #0f172a;
+        }
+        [data-theme="light"] .secondary-btn {
+            background-color: rgba(15, 23, 42, 0.05);
+            color: #0f172a;
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+        [data-theme="light"] .secondary-btn:hover:not(:disabled) {
+            background-color: rgba(15, 23, 42, 0.1);
         }
 
+        /* Flashcards */
+        [data-theme="light"] .card-stack::before,
+        [data-theme="light"] .card-stack::after {
+            background: #e2e8f0;
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+        [data-theme="light"] .card-face {
+            border-color: rgba(15, 23, 42, 0.1);
+        }
         [data-theme="light"] .card-front {
-            background: radial-gradient(circle at top right, #ffffff, #f1f5f9);
+            background: radial-gradient(circle at top right, #ffffff, #f8fafc);
         }
-
+        [data-theme="light"] .card-front .word-display {
+            color: #1d4ed8;
+        }
         [data-theme="light"] .card-back {
-            background: radial-gradient(circle at bottom left, #e0e7ff, #ede9fe);
+            background: radial-gradient(circle at bottom left, #eef2ff, #e0e7ff);
         }
-
         [data-theme="light"] .card-back .word-display {
             color: #1e1b4b;
+        }
+        [data-theme="light"] .card-audio-controls .accent-toggle-btn,
+        [data-theme="light"] .card-audio-controls .audio-btn {
+            background: rgba(15, 23, 42, 0.06);
+            border-color: rgba(15, 23, 42, 0.12);
+            color: #0f172a;
+        }
+
+        /* Other Views (Grammar & Exams) */
+        [data-theme="light"] .page-banner {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+        [data-theme="light"] .page-banner h2 {
+            color: #0f172a;
+        }
+        [data-theme="light"] details {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+        [data-theme="light"] summary {
+            background: rgba(15, 23, 42, 0.03);
+            color: #0f172a;
+        }
+        [data-theme="light"] .grammar-content {
+            color: #334155;
+        }
+        [data-theme="light"] .grammar-content li strong {
+            color: #0f172a;
+        }
+        [data-theme="light"] .grammar-table th {
+            background: rgba(15, 23, 42, 0.05);
+        }
+        [data-theme="light"] .example-box {
+            background: #ffffff;
+            border-color: var(--accent-color);
+        }
+        [data-theme="light"] .exam-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+        [data-theme="light"] .exam-header-title,
+        [data-theme="light"] .exam-question-text {
+            color: #0f172a;
+        }
+        [data-theme="light"] .exam-passage-box {
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: rgba(15, 23, 42, 0.1);
+        }
+        [data-theme="light"] .exam-option-label {
+            background: rgba(15, 23, 42, 0.03);
+            border-color: rgba(15, 23, 42, 0.1);
+            color: #0f172a;
         }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
