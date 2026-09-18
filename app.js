@@ -1,3 +1,30 @@
+/* --- Theme Engine --- */
+function initTheme() {
+    const savedTheme = localStorage.getItem('lf_theme') || 'dark';
+    applyTheme(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('lf_theme', theme);
+    
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+        icon.innerText = theme === 'light' ? '☀️' : '🌙';
+    }
+
+    // Update PWA / mobile status bar color
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', theme === 'light' ? '#f1f5f9' : '#0f172a');
+    }
+}
 function toggleMenu() {
     const drawer = document.getElementById('menu-drawer');
     drawer.classList.contains('open') ? closeMenu() : openMenu();
@@ -819,6 +846,7 @@ function checkAnswers() {
 }
 
 // App Boot
+initTheme();
 recordDailyVisit();
 updateStatsUI();
 populateExerciseList();
