@@ -769,4 +769,6 @@ function checkAnswers() {
 
 // App Boot
 populateExerciseList();
-switchProficiencyLevel('a1');
+switchProficiencyLevel('a1').then(() => {
+    loadDailyWord();
+});
