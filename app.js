@@ -37,7 +37,37 @@ function speakDailyWord(word) {
     utterance.rate = 0.85;
     window.speechSynthesis.speak(utterance);
 }
+async function loadDailyWord() {
+    const wordFrEl = document.getElementById('dailyWordFr');
+    const wordEnEl = document.getElementById('dailyWordEn');
+    if (!wordFrEl || !wordEnEl) return;
 
+    // Pull from current level data or fallback list
+    let pool = levelVocabData.length > 0 ? levelVocabData : [
+        { fr: "Démarche", en: "Approach / Procedure" },
+        { fr: "Incontournable", en: "Essential / Unavoidable" },
+        { fr: "Épanouissement", en: "Fulfillment / Thriving" },
+        { fr: "Auparavant", en: "Previously / Beforehand" },
+        { fr: "Cependant", en: "However / Nevertheless" }
+    ];
+
+    // Seed index by day of the year so it stays stable all day
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now - start;
+    const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const selected = pool[dayOfYear % pool.length];
+
+    wordFrEl.innerText = selected.fr;
+    wordEnEl.innerText = "Loading...";
+
+    if (currentTargetLang === 'en') {
+        wordEnEl.innerText = selected.en;
+    } else {
+        const translated = await fetchDynamicTranslation(selected.fr, currentTargetLang);
+        wordEnEl.innerText = translated || selected.en;
+    }
+}
 // --- Standardized Exam Bank ---
 const liveExams = {
     delf_b2_writing: {
