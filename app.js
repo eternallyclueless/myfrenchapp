@@ -41,6 +41,49 @@ async function loadDailyWord() {
     const wordFrEl = document.getElementById('dailyWordFr');
     const wordEnEl = document.getElementById('dailyWordEn');
     if (!wordFrEl || !wordEnEl) return;
+    /* --- User Stats & Streak Engine --- */
+function updateStatsUI() {
+    const streak = localStorage.getItem('lf_streak') || 1;
+    const cardsExplored = localStorage.getItem('lf_cards_viewed') || 0;
+    const currentLevel = (localStorage.getItem('lf_user_level') || activeLevel || 'a1').toUpperCase();
+
+    const streakEl = document.getElementById('homeStreak');
+    const cardsEl = document.getElementById('homeCardsMastered');
+    const levelEl = document.getElementById('homeLevelDisplay');
+
+    if (streakEl) streakEl.innerText = streak;
+    if (cardsEl) cardsEl.innerText = cardsExplored;
+    if (levelEl) levelEl.innerText = currentLevel;
+}
+
+function recordDailyVisit() {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem('lf_last_visit');
+    let streak = parseInt(localStorage.getItem('lf_streak') || '0', 10);
+
+    if (!lastVisit) {
+        streak = 1;
+    } else if (lastVisit !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (lastVisit === yesterday.toDateString()) {
+            streak += 1;
+        } else {
+            streak = 1; // Streak broken
+        }
+    }
+
+    localStorage.setItem('lf_last_visit', today);
+    localStorage.setItem('lf_streak', streak);
+}
+
+function incrementCardsExplored() {
+    let count = parseInt(localStorage.getItem('lf_cards_viewed') || '0', 10);
+    count += 1;
+    localStorage.setItem('lf_cards_viewed', count);
+    updateStatsUI();
+}
 
     // Pull from current level data or fallback list
     let pool = levelVocabData.length > 0 ? levelVocabData : [
@@ -572,10 +615,18 @@ async function loadCard() {
 }
 
 function flipCard() { 
-    if (currentCards.length > 0) document.getElementById('flashcard').classList.toggle('is-flipped'); 
+    if (currentCards.length > 0) {
+        document.getElementById('flashcard').classList.toggle('is-flipped');
+        incrementCardsExplored();
+    } 
 }
+
 function nextCard() { 
-    if (currentIndex < currentCards.length - 1) { currentIndex++; loadCard(); } 
+    if (currentIndex < currentCards.length - 1) { 
+        currentIndex++; 
+        loadCard(); 
+        incrementCardsExplored();
+    } 
 }
 function prevCard() { 
     if (currentIndex > 0) { currentIndex--; loadCard(); } 
@@ -768,7 +819,10 @@ function checkAnswers() {
 }
 
 // App Boot
+recordDailyVisit();
+updateStatsUI();
 populateExerciseList();
 switchProficiencyLevel('a1').then(() => {
     loadDailyWord();
+    updateStatsUI();
 });
