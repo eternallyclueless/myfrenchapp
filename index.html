@@ -1,22 +1,763 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" />
     <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Match Phone Status Bar & Enable Native App Mode -->
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>freefrenchlearningresource</title>
-    
-    <!-- PWA Manifest & Service Worker -->
-<link rel="manifest" href="/manifest.json">
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-  }
-      <script src="app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>LearningFrenchSucks — Free French Learning Resource</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="/manifest.json">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+</head>
+<body>
+
+    <!-- Floating Navbar with Slide-Out Menu Tab -->
+    <div class="navbar-container">
+        <div class="navbar">
+            <h1 style="cursor: pointer;" onclick="switchView('home-view')">LearningFrench<span>Sucks</span><span class="logo-tld">.com</span></h1>
+            
+            <button id="menu-btn" class="menu-tab-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
+                <span class="menu-tab-icon">☰</span>
+                <span class="menu-tab-label">Menu</span>
+            </button>
+
+            <!-- Dimmed Backdrop -->
+            <div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
+
+            <!-- Slide-out Drawer Panel -->
+            <nav id="menu-drawer" class="menu-drawer">
+                <div class="menu-drawer-header">
+                    <span>Navigation</span>
+                    <button class="menu-close-btn" onclick="closeMenu()" aria-label="Close menu">&times;</button>
+                </div>
+                <div class="menu-items">
+                    <button class="nav-btn active" id="btn-home" onclick="switchView('home-view')">
+                        <span class="nav-icon">🏠</span> Home
+                    </button>
+                    <button class="nav-btn" id="btn-vocab" onclick="switchView('vocab-view')">
+                        <span class="nav-icon">📚</span> Vocabulary
+                    </button>
+                    <button class="nav-btn" id="btn-grammar" onclick="switchView('grammar-view')">
+                        <span class="nav-icon">📖</span> Grammar Library
+                    </button>
+                    <button class="nav-btn" id="btn-exercises" onclick="switchView('exercises-view')">
+                        <span class="nav-icon">✍️</span> Exercises
+                    </button>
+                    <button class="nav-btn" id="btn-exams" onclick="switchView('exams-view')">
+                        <span class="nav-icon">⏱️</span> Mock Exams
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="app-main">
+
+        <!-- View 0: Home Landing -->
+        <div id="home-view" class="view-section active-view">
+            <div class="home-hero">
+                <h2>Master French <span>Without the Fluff</span></h2>
+                <p>Interactive drills, comprehensive grammar rules, and automated DELF & TCF standardized exam simulations.</p>
+                <div class="home-quick-actions">
+                    <button class="primary-btn" onclick="switchView('vocab-view')">Start Flashcards</button>
+                    <button class="secondary-btn" onclick="switchView('exams-view')">Take Mock Exam</button>
+                </div>
+            </div>
+
+            <!-- Mot du Jour Widget -->
+            <div class="home-daily-box">
+                <div>
+                    <div class="home-daily-meta">Mot du Jour (Word of the Day)</div>
+                    <div class="home-daily-word">
+                        <span>Démarche</span>
+                        <button class="audio-btn" style="width: 32px; height: 32px; font-size: 14px;" onclick="speakDailyWord('Démarche')" title="Pronounce">🔊</button>
+                    </div>
+                    <div class="home-daily-def">Approach, procedure, initiative</div>
+                </div>
+                <button class="secondary-btn" style="padding: 10px 18px; font-size: 13px;" onclick="switchView('vocab-view')">Browse Decks &rarr;</button>
+            </div>
+
+            <!-- Core Hub Modules -->
+            <div class="home-grid">
+                <div class="home-card" onclick="switchView('vocab-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">🗂️</span>
+                            <h3>Vocabulary Decks</h3>
+                        </div>
+                        <p>Over 1,000+ words structured across A1 through C2 levels with instant audio pronunciation and translations.</p>
+                    </div>
+                    <span class="home-card-link">Open Flashcards &rarr;</span>
+                </div>
+
+                <div class="home-card" onclick="switchView('grammar-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">📖</span>
+                            <h3>Grammar Library</h3>
+                        </div>
+                        <p>16 organized structural chapters covering everything from basic gender agreements to advanced subjunctive moods.</p>
+                    </div>
+                    <span class="home-card-link">Study Rules &rarr;</span>
+                </div>
+
+                <div class="home-card" onclick="switchView('exercises-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">✍️</span>
+                            <h3>Interactive Drills</h3>
+                        </div>
+                        <p>Fill-in-the-blank workbook questions with real-time feedback and grading against official textbook answers.</p>
+                    </div>
+                    <span class="home-card-link">Practice Now &rarr;</span>
+                </div>
+
+                <div class="home-card" onclick="switchView('exams-view')">
+                    <div>
+                        <div class="home-card-header">
+                            <span class="home-card-icon">⏱️</span>
+                            <h3>Exam Simulator</h3>
+                        </div>
+                        <p>Timed DELF B2 & TCF assessments featuring full automated AI essay audits and benchmark scoring.</p>
+                    </div>
+                    <span class="home-card-link">Launch Simulator &rarr;</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 1: Vocabulary -->
+        <div id="vocab-view" class="view-section">
+            <div class="page-banner">
+                <h2>Vocabulary Deck</h2>
+                <p>Master high-frequency French words from Chapters 1 through 16</p>
+            </div>
+
+            <div class="vocab-header">
+                <div class="filter-controls-row" style="grid-template-columns: 1fr; max-width: 450px;">
+                    <select id="chapterFilter" onchange="filterChapter()">
+                        <option value="all">🌐 All Topics in Level</option>
+                    </select>
+                </div>
+
+                <div class="vocab-toggles">
+                    <button id="toggle-flashcard" class="active" onclick="switchVocabMode('flashcards')">🗂️ Flashcards</button>
+                    <button id="toggle-list" onclick="switchVocabMode('list')">📄 List View</button>
+                </div>
+            </div>
+
+            <div id="mode-flashcards">
+                <div class="flashcard-toolbar" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px;">
+                        <select id="levelFilter" onchange="switchProficiencyLevel(this.value)" style="flex: 1; margin-bottom: 0; padding: 8px 12px; font-size: 13px;">
+                            <option value="a1" selected>🟢 A1: Beginner</option>
+                            <option value="a2">🟢 A2: Elementary</option>
+                            <option value="b1">🟡 B1: Intermediate</option>
+                            <option value="b2">🟡 B2: Upper-Intermediate</option>
+                            <option value="c1">🔴 C1: Advanced</option>
+                            <option value="c2">🟣 C2: Mastery</option>
+                        </select>
+
+                        <select id="nativeLangSelect" onchange="changeTargetLanguage(this.value)" style="flex: 1; margin-bottom: 0; padding: 8px 12px; font-size: 13px;">
+                            <option value="en" selected>🇬🇧 English</option>
+                            <option value="es">🇪🇸 Spanish (Español)</option>
+                            <option value="de">🇩🇪 German (Deutsch)</option>
+                            <option value="it">🇮🇹 Italian (Italiano)</option>
+                            <option value="pt">🇵🇹 Portuguese (Português)</option>
+                            <option value="zh">🇨🇳 Chinese (中文)</option>
+                            <option value="ja">🇯🇵 Japanese (日本語)</option>
+                            <option value="ko">🇰🇷 Korean (한국어)</option>
+                            <option value="ar">🇸🇦 Arabic (العربية)</option>
+                            <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+                            <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+                            <option value="ru">🇷🇺 Russian (Русский)</option>
+                            <option value="tr">🇹🇷 Turkish (Türkçe)</option>
+                            <option value="vi">🇻🇳 Vietnamese (Tiếng Việt)</option>
+                            <option value="pl">🇵🇱 Polish (Polski)</option>
+                            <option value="nl">🇳🇱 Dutch (Nederlands)</option>
+                            <option value="uk">🇺🇦 Ukrainian (Українська)</option>
+                            <option value="fa">🇮🇷 Persian (فਾਰسی)</option>
+                            <option value="tl">🇵🇭 Tagalog (Filipino)</option>
+                        </select>
+                    </div>
+
+                    <div class="card-counter" id="cardCounter" style="text-align: center; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-top: 4px;">Card 0 of 0</div>
+                </div>
+
+                <div class="progress-container" style="max-width: 500px; margin-bottom: 25px;">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <div class="card-stack">
+                    <div class="flashcard-container" onclick="flipCard()">
+                        <div class="flashcard" id="flashcard">
+                            <div class="card-face card-front">
+                                <div class="card-audio-controls">
+                                    <button class="accent-toggle-btn" id="accentToggleBtn" onclick="toggleAccent(event)" title="Switch Accent">🇫🇷 FR</button>
+                                    <button class="audio-btn" id="audioBtn" onclick="speakCurrentWord(event)" title="Listen">🔊</button>
+                                </div>
+                                <div class="word-display" id="word-fr">Loading...</div>
+                                <span class="hint">Click deck to flip</span>
+                            </div>
+                            <div class="card-face card-back">
+                                <div class="word-display" id="word-en">Loading...</div>
+                                <span class="hint">Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="secondary-btn" id="prevBtn" onclick="prevCard()">&#8592; Previous</button>
+                    <button class="primary-btn" onclick="flipCard()">Flip Card</button>
+                    <button class="secondary-btn" id="nextBtn" onclick="nextCard()">Next &#8594;</button>
+                </div>
+            </div>
+
+            <div id="mode-list">
+                <div class="vocab-grid" id="vocab-grid"></div>
+            </div>
+        </div>
+
+        <!-- View 2: Grammar Guide -->
+        <div id="grammar-view" class="view-section">
+            <div class="grammar-container">
+                <div class="page-banner">
+                    <h2>Grammar Library</h2>
+                    <p>Comprehensive structural rules and conjugations</p>
+                </div>
+
+                <details>
+                    <summary><span>1. Nouns, Articles, and Adjectives</span></summary>
+                    <div class="grammar-content">
+                        <h4>Definite & Indefinite Articles</h4>
+                        <ul>
+                            <li><strong>Definite Articles (The):</strong> Indicate a specific person, place, or thing. Use <span class="fr">le</span> (masculine singular), <span class="fr">la</span> (feminine singular), <span class="fr">l'</span> (before a vowel or mute h), and <span class="fr">les</span> (plural).</li>
+                            <li><strong>Indefinite Articles (A/An/Some):</strong> Use <span class="fr">un</span> (masculine), <span class="fr">une</span> (feminine), and <span class="fr">des</span> (plural).</li>
+                        </ul>
+                        <h4>Adjectives</h4>
+                        <ul>
+                            <li>Descriptive adjectives usually follow the nouns they modify and agree in gender and number.</li>
+                            <li>The feminine form usually ends in <span class="fr">-e</span>, and the plural adds an <span class="fr">-s</span>.</li>
+                            <li>Exceptions that precede the noun: <span class="fr">autre, beau, bon, grand, gros, jeune, joli, mauvais, même, nouveau, petit, vieux</span>.</li>
+                            <li>Adjectives of color follow the noun and agree with it, except for <span class="fr">marron</span> and <span class="fr">orange</span>, which are invariable.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>2. The Verbs être and avoir, Pronouns & Negation</span></summary>
+                    <div class="grammar-content">
+                        <p>These are the two most essential irregular verbs in French.</p>
+                        <table class="grammar-table">
+                            <tr><th>Pronoun</th><th>être (to be)</th><th>avoir (to have)</th></tr>
+                            <tr><td><span class="fr">Je / J'</span></td><td>suis</td><td>ai</td></tr>
+                            <tr><td><span class="fr">Tu</span></td><td>es</td><td>as</td></tr>
+                            <tr><td><span class="fr">Il/Elle/On</span></td><td>est</td><td>a</td></tr>
+                            <tr><td><span class="fr">Nous</span></td><td>sommes</td><td>avons</td></tr>
+                            <tr><td><span class="fr">Vous</span></td><td>êtes</td><td>avez</td></tr>
+                            <tr><td><span class="fr">Ils/Elles</span></td><td>sont</td><td>ont</td></tr>
+                        </table>
+                        <ul>
+                            <li><strong>Subject Pronouns:</strong> <span class="fr">Tu</span> is familiar singular; <span class="fr">vous</span> is polite singular or plural. <span class="fr">On</span> means one, we, or people.</li>
+                            <li><strong>Idioms with avoir:</strong> Avoir is used for age (<span class="fr">J'ai vingt ans</span>), feeling hot/cold (<span class="fr">avoir chaud/froid</span>), and hunger/thirst (<span class="fr">avoir faim/soif</span>).</li>
+                            <li><strong>Negation:</strong> Place <span class="fr">ne</span> before the conjugated verb and <span class="fr">pas</span> after it (e.g., <span class="fr">Je ne suis pas</span>). Indefinite articles change to <span class="fr">de/d'</span> in negative sentences with <span class="fr">avoir</span>.</li>
+                            <li><strong>There is/There are:</strong> Use the invariable expression <span class="fr">Il y a...</span>. Its negative is <span class="fr">Il n'y a pas de...</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>3. Regular -er Verbs and Interrogatives</span></summary>
+                    <div class="grammar-content">
+                        <h4>Regular <span class="fr">-er</span> Verbs (e.g., parler)</h4>
+                        <p>Drop the -er and add the standard endings: <span class="fr">-e, -es, -e, -ons, -ez, -ent</span>.</p>
+                        <div class="example-box">
+                            <p><span class="fr">Je parl<b>e</b>, Tu parl<b>es</b>, Il parl<b>e</b></span></p>
+                            <p><span class="fr">Nous parl<b>ons</b>, Vous parl<b>ez</b>, Ils parl<b>ent</b></span></p>
+                        </div>
+                        <h4>Forming Questions (Interrogatives)</h4>
+                        <ul>
+                            <li><strong>Intonation:</strong> Raise the pitch of your voice at the end of the sentence (<span class="fr">Vous êtes d'ici?</span>).</li>
+                            <li><strong>Tag Questions:</strong> Add <span class="fr">n'est-ce pas?</span> to the end of a statement to expect agreement.</li>
+                            <li><strong>Est-ce que:</strong> Precede the entire statement with <span class="fr">est-ce que</span> (e.g., <span class="fr">Est-ce qu'elle a une opinion?</span>).</li>
+                            <li><strong>Inversion:</strong> Invert the subject pronoun and verb, connecting them with a hyphen (<span class="fr">Êtes-vous déjà en retard?</span>). Insert a <span class="fr">-t-</span> between two vowels for third-person singular (<span class="fr">Parle-t-il?</span>).</li>
+                            <li><strong>Information Words:</strong> <span class="fr">Qui</span> (who), <span class="fr">Que/Qu'est-ce que</span> (what), <span class="fr">Comment</span> (how), <span class="fr">Où</span> (where), <span class="fr">Quand</span> (when), <span class="fr">Quel</span> (which), <span class="fr">Pourquoi</span> (why).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>4. Time, Dates, and Regular -ir Verbs</span></summary>
+                    <div class="grammar-content">
+                        <h4>Regular <span class="fr">-ir</span> Verbs (e.g., choisir)</h4>
+                        <p>Drop the -ir and add the standard endings: <span class="fr">-is, -is, -it, -issons, -issez, -issent</span>.</p>
+                        <div class="example-box">
+                            <p><span class="fr">Je chois<b>is</b>, Tu chois<b>is</b>, Il chois<b>it</b></span></p>
+                            <p><span class="fr">Nous chois<b>issons</b>, Vous chois<b>issez</b>, Ils chois<b>issent</b></span></p>
+                        </div>
+                        <h4>Telling Time & Dates</h4>
+                        <ul>
+                            <li>Use <span class="fr">Il est...</span> to tell time (e.g., <span class="fr">Il est deux heures</span>).</li>
+                            <li>Use <span class="fr">midi</span> for noon and <span class="fr">minuit</span> for midnight.</li>
+                            <li>To express time after the hour, state the hour plus the minutes (<span class="fr">Il est cinq heures dix</span>). Use <span class="fr">et quart</span> (quarter past) and <span class="fr">et demie</span> (half past).</li>
+                            <li>Dates use the definite article <span class="fr">le</span> + cardinal number + month (<span class="fr">le cinq juillet</span>), except the 1st of the month which uses the ordinal <span class="fr">le premier</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>5. Regular -re Verbs and Spelling Changes</span></summary>
+                    <div class="grammar-content">
+                        <h4>Regular <span class="fr">-re</span> Verbs (e.g., attendre)</h4>
+                        <p>Drop the -re and add: <span class="fr">-s, -s, [nothing], -ons, -ez, -ent</span>.</p>
+                        <div class="example-box">
+                            <p><span class="fr">J'attend<b>s</b>, Tu attend<b>s</b>, Il attend</span></p>
+                            <p><span class="fr">Nous attend<b>ons</b>, Vous attend<b>ez</b>, Ils attend<b>ent</b></span></p>
+                        </div>
+                        <h4>Spelling Changes in <span class="fr">-er</span> Verbs</h4>
+                        <ul>
+                            <li><strong>-cer verbs (commencer):</strong> Change <span class="fr">c</span> to <span class="fr">ç</span> before an -o- in the nous form (<span class="fr">nous commençons</span>) to keep the soft 's' sound.</li>
+                            <li><strong>-ger verbs (manger):</strong> Add an <span class="fr">e</span> before an -o- in the nous form (<span class="fr">nous mangeons</span>) to keep the soft 'g' sound.</li>
+                            <li><strong>-e-er verbs (acheter):</strong> Change mute <span class="fr">e</span> to <span class="fr">è</span> in forms with a mute e ending (e.g., <span class="fr">j'achète</span>, but <span class="fr">nous achetons</span>).</li>
+                            <li><strong>-é-er verbs (préférer):</strong> Change <span class="fr">é</span> to <span class="fr">è</span> in forms where it occurs in the final sounded syllable (e.g., <span class="fr">je préfère</span>, but <span class="fr">nous préférons</span>).</li>
+                            <li><strong>-eler/-eter verbs (appeler/jeter):</strong> Double the consonant <span class="fr">l</span> or <span class="fr">t</span> when the ending contains a mute e (e.g., <span class="fr">j'appelle, je jette</span>).</li>
+                            <li><strong>-yer verbs (envoyer):</strong> Change <span class="fr">y</span> to <span class="fr">i</span> before a mute e ending (e.g., <span class="fr">j'envoie</span>).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>6. Aller, Prepositions, and faire</span></summary>
+                    <div class="grammar-content">
+                        <h4>The Verbs aller (to go) and faire (to do/make)</h4>
+                        <table class="grammar-table">
+                            <tr><th>Pronoun</th><th>aller</th><th>faire</th></tr>
+                            <tr><td><span class="fr">Je / J'</span></td><td>vais</td><td>fais</td></tr>
+                            <tr><td><span class="fr">Tu</span></td><td>vas</td><td>fais</td></tr>
+                            <tr><td><span class="fr">Il/Elle/On</span></td><td>va</td><td>fait</td></tr>
+                            <tr><td><span class="fr">Nous</span></td><td>allons</td><td>faisons</td></tr>
+                            <tr><td><span class="fr">Vous</span></td><td>allez</td><td>faites</td></tr>
+                            <tr><td><span class="fr">Ils/Elles</span></td><td>vont</td><td>font</td></tr>
+                        </table>
+                        <ul>
+                            <li><strong>Futur Proche:</strong> Use the conjugated form of <span class="fr">aller</span> + an infinitive verb to express the near future (e.g., <span class="fr">Je vais dîner</span> <span class="en">&mdash; I'm going to eat dinner</span>).</li>
+                            <li><strong>Weather & Idioms with faire:</strong> Use <span class="fr">Il fait...</span> to describe weather (e.g., <span class="fr">Il fait chaud</span>). <span class="fr">Faire</span> is used in many chores and activities like <span class="fr">faire le ménage</span> (clean house) and <span class="fr">faire du sport</span> (play sports).</li>
+                            <li><strong>Prepositions à and de:</strong> <span class="fr">à</span> indicates location/destination (at/to) or indirect objects. <span class="fr">de</span> indicates origin (from) or possession (of).</li>
+                            <li><strong>Contractions:</strong> They must contract with <span class="fr">le</span> and <span class="fr">les</span>. <span class="fr">à + le = au</span>; <span class="fr">à + les = aux</span>; <span class="fr">de + le = du</span>; <span class="fr">de + les = des</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>7. Irregular Verbs I & Infinitive Constructions</span></summary>
+                    <div class="grammar-content">
+                        <h4>Key Irregular Verb Families</h4>
+                        <ul>
+                            <li><strong>partir (to leave):</strong> <span class="fr">je pars, tu pars, il part, nous partons, vous partez, ils partent</span>. (Also: <span class="fr">dormir, sortir, servir, sentir</span>).</li>
+                            <li><strong>venir (to come):</strong> <span class="fr">je viens, tu viens, il vient, nous venons, vous venez, ils viennent</span>. (Also: <span class="fr">tenir, devenir, revenir</span>). Note: <span class="fr">venir de</span> + infinitive means "to have just done something".</li>
+                            <li><strong>dire (to say):</strong> <span class="fr">je dis, tu dis, il dit, nous disons, vous <b>dites</b>, ils disent</span>.</li>
+                            <li><strong>lire (to read):</strong> <span class="fr">je lis, tu lis, il lit, nous lisons, vous lisez, ils lisent</span>.</li>
+                            <li><strong>écrire (to write):</strong> <span class="fr">j'écris, tu écris, il écrit, nous écrivons, vous écrivez, ils écrivent</span>.</li>
+                            <li><strong>mettre (to put/place):</strong> <span class="fr">je mets, tu mets, il met, nous mettons, vous mettez, ils mettent</span>.</li>
+                            <li><strong>pouvoir (can/able to):</strong> <span class="fr">je peux, tu peux, il peut, nous pouvons, vous pouvez, ils peuvent</span>.</li>
+                            <li><strong>vouloir (to want):</strong> <span class="fr">je veux, tu veux, il veut, nous voulons, vous voulez, ils veulent</span>.</li>
+                            <li><strong>devoir (must/owe):</strong> <span class="fr">je dois, tu dois, il doit, nous devons, vous devez, ils doivent</span>.</li>
+                            <li><strong>recevoir (to receive):</strong> <span class="fr">je reçois, tu reçois, il reçoit, nous recevons, vous recevez, ils reçoivent</span>.</li>
+                        </ul>
+                        <h4>Verb + Verb Constructions</h4>
+                        <ul>
+                            <li>Some verbs require no preposition before a following infinitive (e.g., <span class="fr">aimer, aller, devoir, pouvoir, vouloir</span>).</li>
+                            <li>Some require <span class="fr">à</span> (e.g., <span class="fr">aider à, commencer à, réussir à</span>).</li>
+                            <li>Some require <span class="fr">de</span> (e.g., <span class="fr">accepter de, décider de, essayer de, refuser de</span>).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>8. Irregular Verbs II & Relative Pronouns</span></summary>
+                    <div class="grammar-content">
+                        <h4>Connaître vs. Savoir</h4>
+                        <ul>
+                            <li><strong>connaître:</strong> Means to be acquainted with a person, place, or thing. <span class="fr">je connais, tu connais, il connaît, nous connaissons, vous connaissez, ils connaissent</span>.</li>
+                            <li><strong>savoir:</strong> Means to know a fact or how to do something. <span class="fr">je sais, tu sais, il sait, nous savons, vous savez, ils savent</span>.</li>
+                        </ul>
+                        <h4>More Irregular Families</h4>
+                        <ul>
+                            <li><strong>voir (to see):</strong> <span class="fr">je vois, tu vois, il voit, nous voyons, vous voyez, ils voient</span>. (Also: <span class="fr">croire</span> - to believe).</li>
+                            <li><strong>courir (to run):</strong> <span class="fr">je cours, tu cours, il court, nous courons, vous courez, ils courent</span>.</li>
+                            <li><strong>rire (to laugh):</strong> <span class="fr">je ris, tu ris, il rit, nous rions, vous riez, ils rient</span>.</li>
+                            <li><strong>offrir (to offer):</strong> <span class="fr">j'offre, tu offres, il offre, nous offrons, vous offrez, ils offrent</span>. (Takes -er verb endings! Also: <span class="fr">ouvrir, couvrir, découvrir</span>).</li>
+                            <li><strong>conduire (to drive):</strong> <span class="fr">je conduis, tu conduis, il conduit, nous conduisons, vous conduisez, ils conduisent</span>.</li>
+                            <li><strong>suivre (to follow):</strong> <span class="fr">je suis, tu suis, il suit, nous suivons, vous suivez, ils suivent</span>.</li>
+                            <li><strong>vivre (to live):</strong> <span class="fr">je vis, tu vis, il vit, nous vivons, vous vivez, ils vivent</span>.</li>
+                            <li><strong>craindre (to fear):</strong> <span class="fr">je crains, tu crarains, il craint, nous craignons, vous craignez, ils craignent</span>.</li>
+                        </ul>
+                        <h4>Relative Pronouns</h4>
+                        <ul>
+                            <li><span class="fr">qui</span> (who/that/which) is the subject of a relative clause.</li>
+                            <li><span class="fr">que</span> (whom/that/which) is the direct object of a relative clause.</li>
+                            <li><span class="fr">où</span> is used for time and place (where/when).</li>
+                            <li><span class="fr">lequel/laquelle</span> replaces object of prepositions.</li>
+                            <li><span class="fr">dont</span> (of whom/of which/whose) replaces "de + an object" or indicates possession.</li>
+                            <li>Indefinite relative pronouns (what) are <span class="fr">ce qui, ce que, ce dont</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>9. Prendre, boire, Partitives & Object Pronouns</span></summary>
+                    <div class="grammar-content">
+                        <h4>Prendre (to take/have) & Boire (to drink)</h4>
+                        <ul>
+                            <li><strong>prendre:</strong> <span class="fr">je prends, tu prends, il prend, nous prenons, vous prenez, ils pre<b>nn</b>ent</span>.</li>
+                            <li><strong>boire:</strong> <span class="fr">je bois, tu bois, il boit, nous b<b>uv</b>ons, vous b<b>uv</b>ez, ils boivent</span>.</li>
+                        </ul>
+                        <h4>The Partitive Article (Some/Any)</h4>
+                        <ul>
+                            <li>Used for unmeasurable quantities (food/drink). Forms: <span class="fr">du</span> (masc), <span class="fr">de la</span> (fem), <span class="fr">de l'</span> (vowel).</li>
+                            <li>In the negative, or after expressions of quantity (like <span class="fr">beaucoup</span>), all partitive and indefinite articles shorten to <span class="fr">de/d'</span>.</li>
+                        </ul>
+                        <h4>Direct and Indirect Object Pronouns</h4>
+                        <ul>
+                            <li><strong>Direct Objects:</strong> Receive the action directly (answers what? or whom?). Pronouns: <span class="fr">me, te, le, la, nous, vous, les</span>. Placed directly before the conjugated verb.</li>
+                            <li><strong>Indirect Objects:</strong> Answer "to whom?" or "for whom?" (requires à). Pronouns: <span class="fr">me, te, lui, nous, vous, leur</span>. Placed before the conjugated verb.</li>
+                        </ul>
+                        <h4>The Pronouns "y" and "en"</h4>
+                        <ul>
+                            <li><span class="fr">y</span> replaces a preposition of location (there) or "à + a thing/idea".</li>
+                            <li><span class="fr">en</span> replaces nouns preceded by a partitive/indefinite article (some/any) or "de + a noun".</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>10. Possessives, Demonstratives, Comparatives</span></summary>
+                    <div class="grammar-content">
+                        <h4>Possessive Adjectives and Pronouns</h4>
+                        <ul>
+                            <li><strong>Adjectives:</strong> Match the gender/number of the item owned, not the owner. <span class="fr">mon/ma/mes, ton/ta/tes, son/sa/ses, notre/nos, votre/vos, leur/leurs</span>. Use <span class="fr">mon/ton/son</span> before feminine words starting with a vowel.</li>
+                            <li><strong>Pronouns:</strong> Stand alone to mean "mine, yours, etc." Always preceded by a definite article. <span class="fr">le mien, le tien, le sien, le nôtre, le vôtre, le leur</span> (and their feminine/plural forms).</li>
+                        </ul>
+                        <h4>Demonstrative Adjectives and Pronouns</h4>
+                        <ul>
+                            <li><strong>Adjectives (this/that/these/those):</strong> Always precede a noun. <span class="fr">ce</span> (masc), <span class="fr">cet</span> (masc vowel), <span class="fr">cette</span> (fem), <span class="fr">ces</span> (plural).</li>
+                            <li><strong>Pronouns (this one/that one):</strong> Must be followed by -ci/-là, a preposition, or relative clause. <span class="fr">celui, celle, ceux, celles</span>.</li>
+                            <li><strong>Indefinite Demonstratives:</strong> <span class="fr">ceci, cela, ça</span>.</li>
+                        </ul>
+                        <h4>Comparatives and Superlatives</h4>
+                        <ul>
+                            <li><strong>Adjectives/Adverbs:</strong> Compare using <span class="fr">plus...que</span> (more), <span class="fr">aussi...que</span> (as), <span class="fr">moins...que</span> (less). Superlatives use <span class="fr">le/la/les plus</span> or <span class="fr">le moins</span>.</li>
+                            <li><strong>Nouns:</strong> Compare quantities using <span class="fr">plus de...que</span>, <span class="fr">autant de...que</span>, <span class="fr">moins de...que</span>.</li>
+                            <li><strong>Verbs:</strong> Compare actions using <span class="fr">plus que, autant que, moins que</span> after the verb.</li>
+                            <li><strong>Irregulars:</strong> <span class="fr">bon</span> -> <span class="fr">meilleur</span> (better); <span class="fr">bien</span> -> <span class="fr">mieux</span> (better).</li>
+                        </ul>
+                        <h4>Adverbs</h4>
+                        <ul>
+                            <li>Usually formed by adding <span class="fr">-ment</span> to the feminine form of an adjective (e.g., <span class="fr">douce</span> -> <span class="fr">doucement</span>). Or to the masculine if it ends in a vowel (<span class="fr">vraiment</span>). Adjectives ending in -ent/-ant become <span class="fr">-emment</span> and <span class="fr">-amment</span>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>11. Negatives, Stressed Pronouns, Imperative</span></summary>
+                    <div class="grammar-content">
+                        <h4>Negative Expressions</h4>
+                        <p>Instead of "pas", use these with "ne" before the verb:</p>
+                        <ul>
+                            <li><span class="fr">ne... jamais</span> (never)</li>
+                            <li><span class="fr">ne... pas encore</span> (not yet)</li>
+                            <li><span class="fr">ne... plus</span> (no longer)</li>
+                            <li><span class="fr">ne... rien</span> (nothing)</li>
+                            <li><span class="fr">ne... personne</span> (no one)</li>
+                            <li>To express limits (only), use <span class="fr">ne... que...</span> where "que" is placed before the limited noun.</li>
+                        </ul>
+                        <h4>Stressed (Tonic) Pronouns</h4>
+                        <ul>
+                            <li>Forms: <span class="fr">moi, toi, lui, elle, soi, nous, vous, eux, elles</span>.</li>
+                            <li>Used after prepositions (<span class="fr">avec moi</span>), in compound subjects (<span class="fr">Thomas et toi</span>), for emphasis, after c'est/ce sont, and to indicate possession with "être à".</li>
+                        </ul>
+                        <h4>The Imperative (Commands)</h4>
+                        <ul>
+                            <li>Conjugated in three persons without subject pronouns: <span class="fr">tu, nous, vous</span>.</li>
+                            <li>For -er verbs (and aller), drop the final "s" in the "tu" form (e.g., <span class="fr">Parle!</span> <span class="fr">Va!</span>).</li>
+                            <li><strong>Object Pronouns in Commands:</strong> Attached with a hyphen in affirmative commands (<span class="fr">Passe-moi le sel!</span>), but precede the verb in negative commands (<span class="fr">Ne me passe pas le sel!</span>).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>12. Pronominal Verbs and Present Participle</span></summary>
+                    <div class="grammar-content">
+                        <h4>Pronominal (Reflexive) Verbs</h4>
+                        <ul>
+                            <li>Used when the action reflects back on the subject (e.g., <span class="fr">se laver</span> - to wash oneself).</li>
+                            <li>Accompanied by a reflexive pronoun matching the subject: <span class="fr">je me, tu te, il se, nous nous, vous vous, ils se</span>.</li>
+                            <li><strong>Reciprocal verbs:</strong> Express a mutual action involving two or more people (e.g., <span class="fr">Ils se regardent</span> - They look at each other).</li>
+                            <li><strong>Idiomatic pronominals:</strong> Verbs that change meaning when made reflexive (e.g., <span class="fr">mettre</span> = to put; <span class="fr">se mettre à</span> = to begin to).</li>
+                        </ul>
+                        <h4>The Present Participle</h4>
+                        <ul>
+                            <li>Equivalent to English "-ing".</li>
+                            <li>Formed by dropping the <span class="fr">-ons</span> ending from the "nous" form of the present tense and adding <span class="fr">-ant</span> (e.g., <span class="fr">faisons</span> -> <span class="fr">faisant</span>).</li>
+                            <li>Irregulars: <span class="fr">ayant</span> (avoir), <span class="fr">étant</span> (être), <span class="fr">sachant</span> (savoir).</li>
+                            <li>Often preceded by the preposition <span class="fr">en</span> (while, upon, in, by) to express simultaneous actions or cause and effect (e.g., <span class="fr">en étudiant</span> - by studying).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>13. The Passé Composé</span></summary>
+                    <div class="grammar-content">
+                        <p>The passé composé indicates completed action or actions in the past.</p>
+                        <ul>
+                            <li>It is a compound tense formed with the present tense of the auxiliary verb <span class="fr">avoir</span> (or être for specific verbs) + the past participle of the main verb.</li>
+                        </ul>
+                        <h4>Regular Past Participles</h4>
+                        <ul>
+                            <li>Drop the infinitive ending and replace it.</li>
+                            <li><strong>-er verbs:</strong> add <span class="fr">-é</span> (e.g., parler -> <span class="fr">parlé</span>).</li>
+                            <li><strong>-ir verbs:</strong> add <span class="fr">-i</span> (e.g., choisir -> <span class="fr">choisi</span>).</li>
+                            <li><strong>-re verbs:</strong> add <span class="fr">-u</span> (e.g., attendre -> <span class="fr">attendu</span>).</li>
+                        </ul>
+                        <h4>Key Irregular Past Participles</h4>
+                        <p><span class="fr">eu</span> (avoir), <span class="fr">bu</span> (boire), <span class="fr">vu</span> (voir), <span class="fr">dû</span> (devoir), <span class="fr">lu</span> (lire), <span class="fr">pu</span> (pouvoir), <span class="fr">su</span> (savoir), <span class="fr">pris</span> (prendre), <span class="fr">compris</span> (comprendre), <span class="fr">mis</span> (mettre), <span class="fr">dit</span> (dire), <span class="fr">écrit</span> (écrire), <span class="fr">fait</span> (faire), <span class="fr">offert</span> (offrir), <span class="fr">ouvert</span> (ouvrir).</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>14. The Imparfait & Past Narration</span></summary>
+                    <div class="grammar-content">
+                        <h4>The Imparfait (Imperfect)</h4>
+                        <p>The imparfait is used to describe continuous or habitual past actions or states, and to set the scene in descriptions.</p>
+                        <ul>
+                            <li><strong>Formation:</strong> Drop the <span class="fr">-ons</span> ending from the <span class="fr">nous</span> form of the present tense, and add the endings: <span class="fr">-ais, -ais, -ait, -ions, -iez, -aient</span>.</li>
+                        </ul>
+                        <div class="example-box">
+                            <p><span class="fr">nous parlons</span> -> <span class="fr">je parlais, tu parlais, il parlait, nous parlions, vous parliez, ils parlaient</span>.</p>
+                        </div>
+                        <h4>Passé Composé vs. Imparfait</h4>
+                        <ul>
+                            <li><strong>Passé Composé:</strong> Expresses a completed past action or a sequence of actions (sudden changes, interruptions).</li>
+                            <li><strong>Imparfait:</strong> Indicates ongoing, habitual, background actions, descriptions, and mental/emotional states.</li>
+                        </ul>
+                        <div class="example-box">
+                            <p><span class="fr">J'avais faim quand je me suis réveillé.</span> <span class="en">&mdash; I was (felt) hungry when I woke up.</span></p>
+                        </div>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>15. Future, Conditional, & Pluperfect</span></summary>
+                    <div class="grammar-content">
+                        <h4>The Future Tense</h4>
+                        <ul>
+                            <li><strong>Formation:</strong> Add the endings <span class="fr">-ai, -as, -a, -ons, -ez, -ont</span> to the entire verb infinitive (drop the final -e for -re verbs).</li>
+                            <li><strong>Irregular stems:</strong> <span class="fr">aller (ir-), avoir (aur-), courir (courr-), devoir (devr-), être (ser-), faire (fer-), pouvoir (pourr-), savoir (saur-), venir (viendr-), voir (verr-), vouloir (voudr-)</span>.</li>
+                        </ul>
+                        <h4>The Conditional</h4>
+                        <ul>
+                            <li>Equivalent to the English "would" + infinitive.</li>
+                            <li><strong>Formation:</strong> Use the exact same stem as the future tense, but add the imparfait endings: <span class="fr">-ais, -ais, -ait, -ions, -iez, -aient</span>.</li>
+                        </ul>
+                        <h4>Si-Clauses (If... Then)</h4>
+                        <ul>
+                            <li>If the <span class="fr">si</span> clause uses the <strong>imparfait</strong>, the main clause uses the <strong>conditional</strong>.</li>
+                            <li>If the <span class="fr">si</span> clause uses the <strong>pluperfect</strong>, the main clause uses the <strong>past conditional</strong>.</li>
+                        </ul>
+                        <h4>The Pluperfect (Plus-que-parfait)</h4>
+                        <p>Expresses "had done" something. Formed with the imparfait of the auxiliary verb (<span class="fr">avoir</span> or <span class="fr">être</span>) + the past participle of the main verb.</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary><span>16. The Subjunctive Mood</span></summary>
+                    <div class="grammar-content">
+                        <p>The subjunctive mood expresses the speaker's feelings about an action, concerning necessity, importance, emotion, possibility, or doubt. It usually appears in a dependent clause following <span class="fr">que/qu'</span>.</p>
+                        <h4>Formation</h4>
+                        <ul>
+                            <li>Drop the <span class="fr">-ent</span> from the <span class="fr">ils/elles</span> form of the present indicative, and add the subjunctive endings: <span class="fr">-e, -es, -e, -ions, -iez, -ent</span>.</li>
+                        </ul>
+                        <div class="example-box">
+                            <p><span class="fr">que je parle, que tu parles, qu'il parle, que nous parlions, que vous parliez, qu'ils parlent</span>.</p>
+                        </div>
+                        <h4>Highly Irregular Subjunctives</h4>
+                        <ul>
+                            <li><strong>faire:</strong> <span class="fr">que je fasse, que nous fassions</span></li>
+                            <li><strong>pouvoir:</strong> <span class="fr">que je puisse, que nous puissions</span></li>
+                            <li><strong>savoir:</strong> <span class="fr">que je sache, que nous sachions</span></li>
+                            <li><strong>aller:</strong> <span class="fr">que j'aille, que nous allions</span></li>
+                            <li><strong>vouloir:</strong> <span class="fr">que je veuille, que nous voulions</span></li>
+                            <li><strong>être:</strong> <span class="fr">que je sois, que tu sois, qu'il soit, que nous soyons, que vous soyez, qu'ils soient</span></li>
+                            <li><strong>avoir:</strong> <span class="fr">que j'aie, que tu aies, qu'il ait, que nous ayons, que vous ayez, qu'ils aient</span></li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- View 3: Exercises -->
+        <div id="exercises-view" class="view-section">
+            <div class="exercise-wrapper">
+                <div class="page-banner">
+                    <h2>Interactive Workbook</h2>
+                    <p>Fill in the blanks to test your knowledge</p>
+                </div>
+
+                <div class="exercise-filters">
+                    <select id="exChapterFilter" onchange="populateExerciseList()">
+                        <option value="1">Chapter 1</option>
+                        <option value="2">Chapter 2</option>
+                        <option value="3">Chapter 3</option>
+                        <option value="4">Chapter 4</option>
+                        <option value="5">Chapter 5</option>
+                        <option value="6">Chapter 6</option>
+                        <option value="7">Chapter 7</option>
+                        <option value="8">Chapter 8</option>
+                        <option value="9">Chapter 9</option>
+                        <option value="10">Chapter 10</option>
+                        <option value="11">Chapter 11</option>
+                        <option value="12">Chapter 12</option>
+                        <option value="13">Chapter 13</option>
+                        <option value="14">Chapter 14</option>
+                        <option value="15">Chapter 15</option>
+                        <option value="16">Chapter 16</option>
+                    </select>
+                    <select id="exerciseSelect" onchange="renderExercise()">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="exercise-card" id="exercise-card">
+                    <h3 class="exercise-instruction" id="ex-instruction">Loading instruction...</h3>
+                    <div id="ex-questions-container">
+                        <!-- Questions injected here -->
+                    </div>
+                    
+                    <div class="exercise-actions">
+                        <div class="score-display" id="score-display">Score: --</div>
+                        <div>
+                            <button class="secondary-btn" onclick="renderExercise()" style="margin-right: 10px;">Reset</button>
+                            <button class="primary-btn" onclick="checkAnswers()">Check Answers</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 4: Live Exam Center -->
+        <div id="exams-view" class="view-section">
+            <div class="page-banner">
+                <h2>Standardized Exam Simulator</h2>
+                <p>Timed practice modules adhering to official DELF B2 & TCF/TEF standards</p>
+            </div>
+
+            <div id="exam-setup-card" class="exam-card">
+                <h3 class="exam-header-title">Select an Assessment Module</h3>
+                <div class="filter-controls-row" style="grid-template-columns: 1fr 1fr; margin-bottom: 25px;">
+                    <select id="examTypeSelect">
+                        <option value="delf_b2_reading">📘 DELF B2 — Compréhension des écrits</option>
+                        <option value="tcf_reading">⏱️ TCF / TEF — Reading Assessment (Timed)</option>
+                        <option value="delf_b2_writing">✍️ DELF B2 — Production Écrite (Essay & Letter)</option>
+                    </select>
+                    <select id="examTimeSelect">
+                        <option value="standard">⏳ Standard Official Time Limit</option>
+                        <option value="practice">⚡ Express Practice (No Timer)</option>
+                    </select>
+                </div>
+
+                <div class="exam-briefing">
+                    <h4>Official Format Guidelines</h4>
+                    <ul>
+                        <li>Strict countdown timer simulating real testing room pressure.</li>
+                        <li>One active question rendered per step with back-and-forth review navigation.</li>
+                        <li>Full automated scoring converted directly to CEFR and Canadian Language Benchmarks (NCLC/CLB).</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="primary-btn" onclick="startLiveExam()">Launch Timed Exam</button>
+                </div>
+            </div>
+
+            <!-- Active Exam Screen -->
+            <div id="exam-active-card" class="exam-card" style="display: none;">
+                <div class="exam-live-statusbar">
+                    <div class="exam-tag" id="live-exam-title">DELF B2</div>
+                    <div class="exam-timer-pill" id="exam-timer">00:00</div>
+                </div>
+
+                <div class="exam-passage-box" id="exam-passage-box">
+                    <!-- Passage injected dynamically -->
+                </div>
+
+                <div id="exam-writing-box" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); font-weight: 600;">
+                        <span>Target: 250 words (&plusmn;10%)</span>
+                        <span id="live-word-count">Words: 0</span>
+                    </div>
+
+                    <textarea id="exam-essay-input" rows="12" placeholder="Rédigez votre réponse argumentée ici..." 
+                        oninput="updateWordCount(this.value)"
+                        style="width: 100%; box-sizing: border-box; padding: 16px; border-radius: var(--radius-md); background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid var(--glass-border); font-family: inherit; font-size: 15px; line-height: 1.6; resize: vertical; outline: none;"></textarea>
+                </div>
+
+                <div class="exam-question-box">
+                    <div class="exam-question-text" id="exam-question-text">Loading question...</div>
+                    <div class="exam-options-grid" id="exam-options-grid">
+                        <!-- Radio options injected here -->
+                    </div>
+                </div>
+
+                <div class="exam-actions-footer">
+                    <button class="secondary-btn" id="examPrevBtn" onclick="navigateExam(-1)">&#8592; Previous</button>
+                    <span id="exam-step-counter" style="font-weight: 700; color: var(--text-muted);">1 / 5</span>
+                    <button class="secondary-btn" id="examNextBtn" onclick="navigateExam(1)">Next &#8594;</button>
+                    <button class="primary-btn" id="examSubmitBtn" style="background: var(--success-color); display: none;" onclick="submitExam()">Finish & Score</button>
+                </div>
+            </div>
+
+            <!-- Exam Results Card -->
+            <div id="exam-results-card" class="exam-card" style="display: none; text-align: center;">
+                <h3 style="font-size: 26px; margin-bottom: 10px;">Evaluation Complete</h3>
+                <div class="exam-score-badge" id="exam-score-number">-- / --</div>
+                <div id="exam-benchmark-verdict" style="font-size: 18px; margin: 20px 0; color: var(--french-text);"></div>
+
+                <div id="ai-essay-review-section" style="display: none; text-align: left; margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <h4 style="margin: 0; color: #fff; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                            <span>🤖</span> DELF/TCF Automated Examiner Audit
+                        </h4>
+                        <select id="aiAuditLangSelect" onchange="reAuditWithCurrentLanguage()" style="width: auto; margin-bottom: 0; padding: 6px 12px; font-size: 12px; background: rgba(15, 23, 42, 0.9);">
+                            <option value="fr" selected>🇫🇷 Français</option>
+                            <option value="en">🇬🇧 English</option>
+                        </select>
+                    </div>
+
+                    <div id="ai-review-loading" style="display: none; text-align: center; padding: 25px; color: var(--text-muted);">
+                        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                        Analyzing syntax, lexical richness, and task completion against DELF B2 standards...
+                    </div>
+                    <div id="ai-review-content" class="exam-briefing" style="display: none; line-height: 1.8; color: #e2e8f0; font-size: 15px; border-left-color: var(--accent-color);"></div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="secondary-btn" onclick="resetExamCenter()">Return to Exam Hub</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Hook -->
+    <script src="app.js"></script>
 </body>
 </html>
